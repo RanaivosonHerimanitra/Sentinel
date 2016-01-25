@@ -1,0 +1,41 @@
+---
+title: "Surveillance Fièvres et Paludisme"
+author: "Institut Pasteur de Madagascar"
+date: "25 janvier 2016"
+output: pdf_document
+---
+
+
+
+```{r,echo=F,out.extra='',comment='', message=FALSE , warning=FALSE}
+#load source code:
+source("import1.r");source("tdrplus.R");require(ggplot2)
+PaluConf_tdr= tdr_malaria()
+#extract years and select obs starting from 2009:
+PaluConf_tdr[,years:=as.numeric(substr(code,1,4))]
+PaluConf_tdr=PaluConf_tdr[years>=2009]
+
+#melting:
+malaria= PaluConf_tdr[,list(code,deb_sem,malaria_cases)]
+setnames(malaria,"malaria_cases","value")
+malaria[,Légende:="Paludisme TDR+"]
+fievre= PaluConf_tdr[,list(code,deb_sem,SyndF)]
+setnames(fievre,"SyndF","value")
+fievre[,Légende:="Fièvres"]
+PaluConf_tdr=rbind(malaria, fievre)
+PaluConf_tdr$deb_sem=as.Date(PaluConf_tdr$deb_sem)
+PaluConf_tdr[,weeks:=week(deb_sem)]
+setnames(PaluConf_tdr,"deb_sem","Date")
+d= ggplot(data=PaluConf_tdr,
+          aes(x=Date,y=value,fill=Légende,colour=Légende)) 
+d=d + geom_line(alpha=0.6)
+debut_annee=as.numeric(unique(PaluConf_tdr[weeks==1,Date]))
+d= d + geom_vline(xintercept = debut_annee,
+                  linetype=4,colour="purple")
+d=d + ggtitle(label="Fièvres et Paludisme dans le réseau sentinel")
+d=d + xlab("Date") + ylab("Cas de Fièvres et Paludisme")
+d
+```
+Fièvres dans le réseau sentinel HTC
+
+Paludisme dans le réseau sentinel HTC
