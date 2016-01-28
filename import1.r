@@ -1,6 +1,6 @@
 #whether to run on local for debugging and development purpose
 #or to pull data directly from the server:
-remote_server=F;writing_to_disk=F
+remote_server=T;writing_to_disk=T
 #load required packages:
 source("libraries.R")
 if ( exists("PaluConf")==F ) #to speed up things
@@ -30,7 +30,11 @@ if ( exists("PaluConf")==F ) #to speed up things
     Diarrh_feb=tbl(sentinel,
                build_sql('SELECT * FROM "crosstab_diarrhfeb_format"'))
     #définir taille de cercle f(Nb total diarrhée) dans map
-    
+    ili=tbl(sentinel,
+        build_sql('SELECT * FROM "crosstab_grippsusp_autrvirresp_format"'))
+    #palu autochtone:
+    palu_autoch=tbl(sentinel,
+            build_sql('SELECT * FROM "crosstab_autoch_format"'))
     #cat('query of Land Surface Temperature(lst)\n')
     lst=tbl(data_iri_env,
             build_sql('SELECT * FROM "groupe_lst_day_format"'))
@@ -50,8 +54,8 @@ if ( exists("PaluConf")==F ) #to speed up things
     mild<-fread("mild_export.csv")
     
     #cat('query of TDR effectif\n')
-    tdr_eff= tbl(sentinel,
-                    build_sql('SELECT * FROM "vue_csb_sms_centre_format"'))
+     tdr_eff= tbl(sentinel,
+                     build_sql('SELECT * FROM "vue_csb_sms_centre_format"'))
     
     if (writing_to_disk==T )
     {
@@ -66,6 +70,8 @@ if ( exists("PaluConf")==F ) #to speed up things
       write.table(pmm,"pmm.csv",sep=";",row.names=F)
       write.table(caid,"caid.csv",sep=";",row.names=F)
       write.table(tdr_eff,"tdr_eff.csv",sep=";",row.names=F)
+      write.table(ili,"ili.csv",sep=";",row.names=F)
+      write.table(palu_autoch,"palu_autoch.csv",sep=";",row.names=F)
       #cat('DONE\n')
     }
     
@@ -99,9 +105,7 @@ if ( exists("PaluConf")==F ) #to speed up things
   sentinel_latlong=fread("sentinel.csv");
   setnames(sentinel_latlong,"CODE","sites")
   sentinel_latlong[,sites:=tolower(sites)]
-  #to handle reporting for Antananarivo:
-  # sentinel_latlong[sites %in% c("cda","bhk"),name:="Antananarivo"]
-  #cat("DONE\n")
+ 
   
 } else {
   #cat("No need to pull data anymore!\n")
