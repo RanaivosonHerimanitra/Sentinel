@@ -1,0 +1,125 @@
+################################ Generate weekly reporting ####################
+library(ReporteRs)
+
+doc <- docx() 
+
+# Change the default font size and font family
+options('ReporteRs-fontsize'=11, 'ReporteRs-default-font'='Arial')
+
+# Add a formatted paragraph of texts
+#++++++++++++++++++++++++++++++
+doc = addTitle(doc, "Surveillance sentinelle", level=1)
+doc = addParagraph(doc , pot( Sys.Date(), textItalic() ) )
+doc = addParagraph(doc, "        ")
+# Define a style to highlight a text
+highlight_tdr <- textProperties(color='#ffb90f',
+                                font.size = 11,
+                                font.weight = 'bold', 
+                                font.family = 'Courier New' )
+en_gras = function ( fontsize=11,fontweight='bold',fontfamily='Courier New')
+{
+  return(textProperties(font.size = fontsize, 
+                 font.weight = fontweight, 
+                 font.family = fontfamily))
+}
+en_gras_green = textProperties(color='#4bc725',
+                               font.size = 11, 
+                               font.weight = 'bold', 
+                               font.family = 'Courier New')
+en_gras_rouge = textProperties(color='red',
+                         font.size = 11, 
+                         font.weight = 'bold', 
+                         font.family = 'Courier New')
+en_gras_blue = textProperties(color='blue',
+                               font.size = 11, 
+                               font.weight = 'bold', 
+                               font.family = 'Courier New')
+sous_titre1= pot("Rapport sur les cas historiques de Malaria et de Diarrhée à Madagascar:",
+                     format=textBoldItalic(underline = TRUE ))
+doc <- addParagraph(doc, sous_titre1)
+sous_titre2 = pot("Les paramètres d'alerte sont:")
+doc <- addParagraph(doc, sous_titre2)
+
+alert_parameter1 = pot("Le 90ième percentile calculé sur toutes les semaines historiques exceptées la semaine en cours.")
+alert_parameter2 = pot("03 semaines consécutives sont nécessaire pour déclencher une ")+pot("alerte",format=en_gras()) 
+alert_parameter2=alert_parameter2 + pot(" (i.e lorsque les cas de Malaria ou de Diarrhée dépassent le 90ième percentile durant ces 03 semaines consécutives).")
+
+alert_parameter= set_of_paragraphs(alert_parameter1,alert_parameter2)
+doc=addParagraph( doc, value = alert_parameter, stylename="BulletList")
+
+######################### R code to generate the report ##########################
+require(tidyr);source("import1.r");source("percentile.R");
+source("tdrplus.R");source("preprocessing.R");
+mydata=preprocessing_disease()
+PaluConf_tdr= tdr_malaria()
+Malaria=mydata[["Malaria"]]
+diarrh=mydata[["Diarrhée"]]
+
+percentile_palu_alerte=calculate_percentile(data=Malaria,
+                                            week_length=3,
+                                            percentile_value=90)$mydata
+percentile_diar_alerte=calculate_percentile(data=diarrh,
+                                            week_length=3,
+                                            percentile_value=90)$mydata
+                                            
+
+percentile_palu_alerte=merge(percentile_palu_alerte,sentinel_latlong,
+                             by.x=c("sites"),by.y=c("sites"))
+percentile_diar_alerte=merge(percentile_diar_alerte,sentinel_latlong,
+                             by.x=c("sites"),by.y=c("sites"))
+PaluConf_tdr=merge(PaluConf_tdr,sentinel_latlong,
+                   by.x=c("sites"),by.y=c("sites"))
+setorder(PaluConf_tdr,sites,-deb_sem)
+
+tana_centre = c("Manjakaray","Andohatapenaka","Tsaralalana","Behoririka")
+tana_haut_plateau= c("Fianarantsoa","Antsirabe","Anjozorobe")
+
+setkey(percentile_palu_alerte,code)
+setorder(percentile_palu_alerte,sites,-deb_sem)
+mycode=unique(c(percentile_palu_alerte$code,
+                percentile_diar_alerte$code,
+                PaluConf_tdr$code))
+setkey(percentile_diar_alerte,code)
+setorder(percentile_diar_alerte,sites,-deb_sem)
+#perc_rank <- function(x, xo)  round(length( which(x <= xo) )/length(x)*100)
+perc_rank = function(x,x0) {f=ecdf(x);return(round(100*f(x0)) )}
+mydocument = list()
+for ( j in mycode )
+{
+  cat("writing report for Semaine épidémiologique:",j,'\n')
+  semaine = as.numeric(unlist(strsplit(j,"_"))[2])
+  semaine= ifelse(semaine<10,paste0("0",semaine),semaine)
+  annee = as.numeric(unlist(strsplit(j,"_"))[1])
+  alerte_palu= percentile_palu_alerte[code == j & alert_status=="alert",c("code","name",grep("^alert",names(percentile_palu_alerte),value=T)),with=F]
+  alerte_diar= percentile_diar_alerte[code == j & alert_status=="alert",c("code","name",grep("^alert",names(percentile_diar_alerte),value=T)),with=F] 
+  alerte_manque_tdr=PaluConf_tdr[code==j & manque_tdr==1,list(code,name,manque_tdr,TestPalu,SyndF)]
+  palu_NA= percentile_palu_alerte[code == j & is.na(occurence)==T,get("name")]
+  diar_NA= percentile_diar_alerte[code == j & is.na(occurence)==T,get("name")]
+  mydate = pot(paste0(annee,"-",semaine,":"),format=textBoldItalic(underline = TRUE ))
+  #add space between semaine épidémiologique:
+  doc <- addParagraph(doc, "          ")
+  doc <- addParagraph(doc, mydate)
+  doc <- addParagraph(doc, "          ")
+  
+  #position of the current epidemiologic in j:
+  pos_j=which(mycode %in% j)
+  #generate narration per site, per week :
+  mysites=unique(c(alerte_palu$name,
+                   alerte_diar$name,
+                   alerte_manque_tdr$name,palu_NA,diar_NA))
+  #mysites[mysites %in% tana_centre]="Antananarivo"
+  mysites=unique(mysites)
+ 
+#   for ( k in mysites )
+#   {
+#       source("generate_narration.R",local = T)
+#   }
+  
+  unlist(lapply(mysites, function(k) source("generate_narration.R",local = T)));
+}
+
+
+cat("Writing document to a word document...")
+writeDoc(doc, file = "report.docx")
+cat('DONE\n')
+

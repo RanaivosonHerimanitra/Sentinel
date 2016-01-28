@@ -1,0 +1,18 @@
+select_disease = function(disease="Malaria")
+{
+  if ( disease=="Malaria") 
+  {
+    #cat("You have chosen to display",disease,"\n")
+    return(PaluConf)
+  }
+  if ( disease=="Diarrhée") 
+  {
+    #cat("You have chosen to display",disease,"\n")
+    return(Diarrh)
+  }
+  if ( disease=="Diarrhée fébrile")
+  {
+    #cat("You have chosen to display",disease,"\n")
+    return(Diarrh_feb)
+  }
+}

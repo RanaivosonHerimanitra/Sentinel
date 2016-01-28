@@ -1,0 +1,22 @@
+
+body {
+  margin:0.1cm;
+  font-size: 14px;
+}
+
+.shiny-output-error {
+  visibility: hidden;
+}
+
+.shiny-progress {
+  font-family: Verdana, sans-serif;
+  top : 50%;
+  left: 50%;
+  font-size: 12px; 
+  color: #0000FF;
+  font-size: 25px;
+  background-color: #020202;
+  text-align : center; 
+
+
+}

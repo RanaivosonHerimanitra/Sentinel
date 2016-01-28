@@ -1,0 +1,82 @@
+---
+title: "Surveillance sentinelle"
+author: "Rapport automatisé (R & LateX)"
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+linkcolor: blue
+citecolor: red
+output:
+  pdf_document:
+    highlight: pygments
+params:
+  disease1: !r as.character("Malaria")
+  disease2: !r as.character("Diarrhée")
+---
+
+**Rapport sur les cas historiques de `r params$disease1` et de `r params$disease2` à Madagascar**:
+
+
+Les paramètres d'alerte sont:
+
+1. Le 90ième percentile calculé sur toutes les semaines historiques exceptées la semaine en cours.
+
+2. 03 semaines consécutives sont nécessaire pour déclencher une **alerte** (i.e lorsque les cas de `r params$disease1` ou de `r params$disease2` dépassent le 90ième percentile durant ces **03 semaines consécutives**).
+
+
+ 
+```{r,echo=FALSE ,results='asis',out.extra='',comment='', message=FALSE , warning=FALSE}
+#
+require(tidyr);
+source("import1.r");
+source("percentile.R");
+source("tdrplus.R");
+source("preprocessing.R");
+mydata=preprocessing_disease()
+PaluConf_tdr= tdr_malaria()
+Malaria=mydata[["Malaria"]]
+diarrh=mydata[["Diarrhée"]]
+
+percentile_palu_alerte=calculate_percentile(data=Malaria,
+                              week_choice=week( Sys.Date() ),
+                              week_length=3,
+                              percentile_value=90,
+                              year_choice=year( Sys.Date() ))$mydata
+percentile_diar_alerte=calculate_percentile(data=diarrh,
+                              week_choice=week( Sys.Date() ),
+                              week_length=3,
+                              percentile_value=90,
+                              year_choice=year( Sys.Date() ))$mydata
+
+percentile_palu_alerte=merge(percentile_palu_alerte,sentinel_latlong,
+                              by.x=c("sites"),by.y=c("sites"))
+percentile_diar_alerte=merge(percentile_diar_alerte,sentinel_latlong,
+                              by.x=c("sites"),by.y=c("sites"))
+PaluConf_tdr=merge(PaluConf_tdr,sentinel_latlong,
+                              by.x=c("sites"),by.y=c("sites"))
+
+setkey(percentile_palu_alerte,code)
+setorder(percentile_palu_alerte,sites,-deb_sem)
+mycode=unique(percentile_palu_alerte$code)
+setkey(percentile_diar_alerte,code)
+setorder(percentile_diar_alerte,sites,-deb_sem)
+
+for ( j in mycode )
+  {
+   semaine = as.numeric(unlist(strsplit(j,"_"))[2])
+   annee = as.numeric(unlist(strsplit(j,"_"))[1])
+   alerte_palu= percentile_palu_alerte[code == j & alert_status=="alert",list(code,name,alert,alert_status)]
+   alerte_diar= percentile_diar_alerte[code == j & alert_status=="alert",list(code,name,alert,alert_status)] 
+   alerte_manque_tdr=PaluConf_tdr[code==j & manque_tdr==1,list(code,name,manque_tdr,test_nb,malaria_cases)]
+   cat("<p>**Semaine:**",semaine,",**année:**",annee,":</p>")
+    lapply(alerte_palu[,name], 
+           function(k) cat("<p>",k,"est en **alerte** Paludisme depuis `03` semaines consécutives  </p>") )
+    lapply(alerte_diar[,name], 
+           function(k) cat("<p>",k,"est en **alerte** [Diarrhée](#) depuis `03` semaines consécutives</p>") )
+    lapply(alerte_manque_tdr[,name], 
+           function(k) cat("<p>",k,
+                           "est PROBABLEMENT en **manque de TDR** cette semaine (",alerte_manque_tdr[k==name,get("malaria_cases")],
+                           "cas de Malaria pour seulement",
+                           alerte_manque_tdr[k==name,get("test_nb")],
+                           "TDR effectués)</p>") )
+}
+```
+

@@ -1,41 +1,106 @@
 ---
-title: "Surveillance Fièvres et Paludisme"
+title: "Surveillance Fièvres et Paludisme dans le réseau sentinelle"
 author: "Institut Pasteur de Madagascar"
-date: "25 janvier 2016"
+date: "`r format(Sys.time(), '%d %B, %Y')`"
 output: pdf_document
 ---
 
 
 
-```{r,echo=F,out.extra='',comment='', message=FALSE , warning=FALSE}
+```{r,echo=F,out.width = '100%', out.extra='',comment='', message=FALSE , warning=FALSE}
 #load source code:
-source("import1.r");source("tdrplus.R");require(ggplot2)
-PaluConf_tdr= tdr_malaria()
-#extract years and select obs starting from 2009:
-PaluConf_tdr[,years:=as.numeric(substr(code,1,4))]
-PaluConf_tdr=PaluConf_tdr[years>=2009]
-
-#melting:
-malaria= PaluConf_tdr[,list(code,deb_sem,malaria_cases)]
-setnames(malaria,"malaria_cases","value")
-malaria[,Légende:="Paludisme TDR+"]
-fievre= PaluConf_tdr[,list(code,deb_sem,SyndF)]
-setnames(fievre,"SyndF","value")
-fievre[,Légende:="Fièvres"]
-PaluConf_tdr=rbind(malaria, fievre)
-PaluConf_tdr$deb_sem=as.Date(PaluConf_tdr$deb_sem)
-PaluConf_tdr[,weeks:=week(deb_sem)]
-setnames(PaluConf_tdr,"deb_sem","Date")
-d= ggplot(data=PaluConf_tdr,
-          aes(x=Date,y=value,fill=Légende,colour=Légende)) 
-d=d + geom_line(alpha=0.6)
-debut_annee=as.numeric(unique(PaluConf_tdr[weeks==1,Date]))
-d= d + geom_vline(xintercept = debut_annee,
-                  linetype=4,colour="purple")
-d=d + ggtitle(label="Fièvres et Paludisme dans le réseau sentinel")
-d=d + xlab("Date") + ylab("Cas de Fièvres et Paludisme")
-d
+source("import1.r");source("tdrplus.R");require(ggplot2); require(gridExtra)
+mydata= tdr_malaria()
+source("reporting_plot.R",local = T)
+generate_plot(htc="all",
+              mydata=mydata,
+              legend.disease1="Paludisme TDR+",
+              legend.disease2="Fièvres",
+              disease1.targetvar="malaria_cases",
+              disease2.targetvar="SyndF",
+              title.label="Fièvres et Paludisme dans le réseau sentinel",
+              title.label.list="Fièvres et Paludisme à",
+              title.ylab="Cas de Fièvres et Paludisme")
 ```
-Fièvres dans le réseau sentinel HTC
 
-Paludisme dans le réseau sentinel HTC
+
+```{r,echo=F,out.extra='',comment='', message=FALSE , warning=FALSE}
+
+semaine=array()
+max_deb_sem=max(as.Date(mydata$deb_sem))
+semaine[6]= max_deb_sem-2*7 
+p=1
+for ( k in 2:6 )
+{
+  semaine[p]=semaine[6]-(k-1)*7
+  p=p+1
+}
+#select last 07 seven weeks for each disease:
+
+#Malaria selection for last 6 weeks before current week:
+malaria=mydata[as.Date(deb_sem) %in% semaine,list(deb_sem,sites,malaria_cases)]
+#transform NA into XX
+malaria$malaria_cases=as.character(malaria$malaria_cases)
+malaria[,malaria_cases:=ifelse(is.na(malaria_cases)==T,"XX",malaria_cases)]
+malaria[,malaria_cases:=ifelse(nchar(malaria_cases)<2,paste0("0",malaria_cases),malaria_cases)]
+#inline historical occurence:
+malaria[,vals:=paste(malaria_cases,collapse = "-"),by="sites"]
+#append latest week per site:
+malaria[,malaria_cases:=NULL]
+malaria= merge(unique(malaria[,list(sites,vals)]), 
+               unique(mydata[as.Date(deb_sem)==max_deb_sem-7,list(sites,malaria_cases)]),
+               by.x="sites", by.y="sites")
+malaria= merge(malaria,sentinel_latlong[,list(name,sites)],by.x="sites",by.y="sites")
+malaria[,sites:=NULL]; setnames(malaria,c("name","vals","malaria_cases"),
+                                c("Sites","6 semaines précédentes","Semaine dernière"))
+
+
+
+#Fiever selection for last 6 weeks before current week:
+fievre=mydata[as.Date(deb_sem) %in% semaine,list(deb_sem,sites,SyndF)]
+#transform NA into XX
+fievre$SyndF=as.character(fievre$SyndF)
+fievre[,SyndF:=ifelse(is.na(SyndF)==T,"XX",SyndF)]
+fievre[,SyndF:=ifelse(nchar(SyndF)<2,paste0("0",SyndF),SyndF)]
+#inline historical occurence:
+fievre[,vals:=paste(SyndF,collapse = "-"),by="sites"]
+#append latest week per site:
+fievre[,SyndF:=NULL]
+fievre= merge(unique(fievre[,list(sites,vals)]), 
+               unique(mydata[as.Date(deb_sem)==max_deb_sem-7,list(sites,SyndF)]),
+              by.x="sites", by.y="sites")
+               
+#merge with sentinel_latlong:
+fievre= merge(fievre,sentinel_latlong[,list(name,sites)],
+              by.x="sites",by.y="sites")
+fievre[,sites:=NULL]; setnames(fievre,c("name","vals","SyndF"),
+                               c("Sites","6 semaines précédentes","Semaine dernière"))
+
+
+
+
+#generate tables:
+knitr::kable(fievre[,c("Sites","6 semaines précédentes","Semaine dernière"),with=F],
+             caption="Fièvres dans le réseau sentinel HTC")
+
+knitr::kable(malaria[,c("Sites","6 semaines précédentes","Semaine dernière"),with=F],
+             caption="Paludisme dans le réseau sentinel HTC")
+```
+
+```{r,echo=F, fig.show = "hold" ,out.width = '50%', out.extra='',comment='', message=FALSE , warning=FALSE}
+
+
+#merge with sentinel_latlong:
+mydata=merge(mydata,sentinel_latlong, by.x="sites",by.y="sites")
+                    
+generate_plot(htc="dsd",
+              mydata=mydata,
+              disease1=malaria,
+              disease2=fievre,
+              disease1.targetvar="malaria_cases",
+              disease2.targetvar="SyndF",
+              legend.disease1="Paludisme TDR+",
+              legend.disease2="Fièvres",
+              title.label="Fièvres et Paludisme dans le réseau sentinel",
+              title.ylab="Cas de Fièvres et Paludisme")
+```

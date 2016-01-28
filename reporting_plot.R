@@ -1,7 +1,14 @@
 ##################Source code for plotting Malaria TDR + and Fiever######
-generate_plot=function(htc="all",mydata=PaluConf_tdr,legend.disease1=NULL,
+generate_plot=function(htc="all",mydata=PaluConf_tdr,
+                       disease1=NULL,
+                       disease2=NULL,
+                       disease1.targetvar=NULL,
+                       disease2.targetvar=NULL,
+                       legend.disease1=NULL,
                        legend.disease2=NULL,
-                       title.label=NULL)
+                       title.label=NULL,
+                       title.label.list=NULL,
+                       title.ylab=NULL)
 {
   if (htc=="all")
   {
@@ -10,14 +17,14 @@ generate_plot=function(htc="all",mydata=PaluConf_tdr,legend.disease1=NULL,
     mydata=mydata[years>=2009]
     
     #melting:
-    malaria= mydata[,list(code,deb_sem,malaria_cases)]
-    setnames(malaria,"malaria_cases","value")
-    malaria[,Légende:=legend.disease1]
-    fievre= mydata[,list(code,deb_sem,SyndF)]
-    setnames(fievre,"SyndF","value")
-    fievre[,Légende:=legend.disease2]
+    disease1= mydata[,c("code","deb_sem",disease1.targetvar),with=F]
+    setnames(disease1,disease1.targetvar,"value")
+    disease1[,Légende:=legend.disease1]
+    disease2= mydata[,c("code","deb_sem",disease2.targetvar),with=F]
+    setnames(disease2,disease2.targetvar,"value")
+    disease2[,Légende:=legend.disease2]
     
-    X=rbind(malaria, fievre)
+    X=rbind(disease1, disease2)
     X$deb_sem=as.Date(X$deb_sem)
     X[,weeks:=week(deb_sem)]
     setnames(X,"deb_sem","Date")
@@ -28,8 +35,8 @@ generate_plot=function(htc="all",mydata=PaluConf_tdr,legend.disease1=NULL,
       debut_annee=as.numeric(unique(X[weeks==1,Date]))
       d= d + geom_vline(xintercept = debut_annee,
                         linetype=4,colour="purple")
-      d=d + ggtitle(label="Fièvres et Paludisme dans le réseau sentinel")
-      d=d + xlab("Date(ligne violette=1er janvier)") + ylab("Cas de Fièvres et Paludisme")
+      d=d + ggtitle(label=title.label)
+      d=d + xlab("Date(ligne violette=1er janvier)") + ylab(title.ylab)
       return(d)
   } else {
     
@@ -41,14 +48,14 @@ generate_plot=function(htc="all",mydata=PaluConf_tdr,legend.disease1=NULL,
     myplot=list()
     for ( p in 1:L )
     {
-      malaria= mydata[name==myname[p],list(code,deb_sem,malaria_cases)]
-      setnames(malaria,"malaria_cases","value")
-      malaria[,Légende:="Paludisme TDR+"]
-      fievre= mydata[,list(code,deb_sem,SyndF)]
-      setnames(fievre,"SyndF","value")
-      fievre[,Légende:="Fièvres"]
+      disease1= mydata[name==myname[p],c("code","deb_sem",disease1.targetvar),with=F]
+      setnames(disease1,disease1.targetvar,"value")
+      disease1[,Légende:=legend.disease1]
+      disease2= mydata[name==myname[p],c("code","deb_sem",disease2.targetvar),with=F]
+      setnames(disease2,disease2.targetvar,"value")
+      disease2[,Légende:=legend.disease2]
       
-      X=rbind(malaria, fievre)
+      X=rbind(disease1, disease2)
       X$deb_sem=as.Date(X$deb_sem)
       X[,weeks:=week(deb_sem)]
       setnames(X,"deb_sem","Date")
@@ -58,8 +65,8 @@ generate_plot=function(htc="all",mydata=PaluConf_tdr,legend.disease1=NULL,
       debut_annee=as.numeric(unique(X[weeks==1,Date]))
       d= d + geom_vline(xintercept = debut_annee,
                         linetype=4,colour="purple")
-      d=d + ggtitle(label=paste("Fièvres et Paludisme à", myname[p]))
-      d=d + xlab("Date (ligne violette=1er janvier)") + ylab("Cas de Fièvres et Paludisme")
+      d=d + ggtitle(label=paste(title.label.list, myname[p]))
+      d=d + xlab("Date (ligne violette=1er janvier)") + ylab(title.ylab)
       myplot[[p]]=d
      print(myplot[[p]])
     }
