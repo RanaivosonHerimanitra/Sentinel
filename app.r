@@ -414,7 +414,7 @@ server<-function(input, output,session) {
     madagascar_map=leaflet()
     madagascar_map=leaflet(sentinel_latlong) 
     madagascar_map=madagascar_map %>% setView(lng = 47.051532 , 
-                                              lat =-19.503781 , zoom = 5) 
+                                              lat =-19.503781 , zoom = 6) 
     madagascar_map=madagascar_map %>% addTiles() 
     #change color to red when alert is triggered:
     #navy
@@ -546,13 +546,7 @@ ui = dashboardPage(skin = "blue",
       menuItem(text="Forecasting",
                tabName="myforecast", 
                icon = icon("line-chart"))
-#       ,
-#       menuItem(text="Diseases reporting",
-#               
-#               downloadButton(outputId="dreport", label = "Download report"),
-#                icon = icon("dashboard")
-#       )
-     
+
   )),
   dashboardBody(tabItems(tabbox_item,
                          disease_item,

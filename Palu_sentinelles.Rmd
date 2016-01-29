@@ -7,10 +7,11 @@ output: pdf_document
 
 
 
-```{r,echo=F,out.width = '100%', out.extra='',comment='', message=FALSE , warning=FALSE}
+```{r,echo=F, fig.width=10, out.extra='',comment='', message=FALSE , warning=FALSE}
 #load source code:
 source("import1.r");source("tdrplus.R");require(ggplot2); require(gridExtra)
 mydata= tdr_malaria()
+
 source("reporting_plot.R",local = T)
 generate_plot(htc="all",
               mydata=mydata,
@@ -41,18 +42,19 @@ for ( k in 2:6 )
 malaria=mydata[as.Date(deb_sem) %in% semaine,list(deb_sem,sites,malaria_cases)]
 #transform NA into XX
 malaria$malaria_cases=as.character(malaria$malaria_cases)
-malaria[,malaria_cases:=ifelse(is.na(malaria_cases)==T,"XX",malaria_cases)]
+malaria[,malaria_cases:=ifelse(is.na(malaria_cases)==T,"xx",malaria_cases)]
 malaria[,malaria_cases:=ifelse(nchar(malaria_cases)<2,paste0("0",malaria_cases),malaria_cases)]
 #inline historical occurence:
 malaria[,vals:=paste(malaria_cases,collapse = "-"),by="sites"]
 #append latest week per site:
 malaria[,malaria_cases:=NULL]
 malaria= merge(unique(malaria[,list(sites,vals)]), 
-               unique(mydata[as.Date(deb_sem)==max_deb_sem-7,list(sites,malaria_cases)]),
-               by.x="sites", by.y="sites")
+               unique(mydata[as.Date(deb_sem)==max_deb_sem-7,list(sites,malaria_cases)]),by.x="sites", by.y="sites")
+               
 malaria= merge(malaria,sentinel_latlong[,list(name,sites)],by.x="sites",by.y="sites")
-malaria[,sites:=NULL]; setnames(malaria,c("name","vals","malaria_cases"),
-                                c("Sites","6 semaines précédentes","Semaine dernière"))
+malaria[,sites:=NULL]; 
+setnames(malaria,c("name","vals","malaria_cases"),
+                 c("Sites","6 semaines précédentes","Semaine dernière"))
 
 
 
@@ -60,21 +62,22 @@ malaria[,sites:=NULL]; setnames(malaria,c("name","vals","malaria_cases"),
 fievre=mydata[as.Date(deb_sem) %in% semaine,list(deb_sem,sites,SyndF)]
 #transform NA into XX
 fievre$SyndF=as.character(fievre$SyndF)
-fievre[,SyndF:=ifelse(is.na(SyndF)==T,"XX",SyndF)]
+fievre[,SyndF:=ifelse(is.na(SyndF)==T,"xx",SyndF)]
 fievre[,SyndF:=ifelse(nchar(SyndF)<2,paste0("0",SyndF),SyndF)]
 #inline historical occurence:
 fievre[,vals:=paste(SyndF,collapse = "-"),by="sites"]
 #append latest week per site:
 fievre[,SyndF:=NULL]
 fievre= merge(unique(fievre[,list(sites,vals)]), 
-               unique(mydata[as.Date(deb_sem)==max_deb_sem-7,list(sites,SyndF)]),
+              unique(mydata[as.Date(deb_sem)==max_deb_sem-7,list(sites,SyndF)]),
               by.x="sites", by.y="sites")
                
 #merge with sentinel_latlong:
 fievre= merge(fievre,sentinel_latlong[,list(name,sites)],
               by.x="sites",by.y="sites")
-fievre[,sites:=NULL]; setnames(fievre,c("name","vals","SyndF"),
-                               c("Sites","6 semaines précédentes","Semaine dernière"))
+fievre[,sites:=NULL]; 
+setnames(fievre,c("name","vals","SyndF"),
+                c("Sites","6 semaines précédentes","Semaine dernière"))
 
 
 
@@ -103,4 +106,5 @@ generate_plot(htc="dsd",
               legend.disease2="Fièvres",
               title.label="Fièvres et Paludisme dans le réseau sentinel",
               title.ylab="Cas de Fièvres et Paludisme")
+
 ```

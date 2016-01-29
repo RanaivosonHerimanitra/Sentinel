@@ -7,7 +7,7 @@ output: pdf_document
 
 
 
-```{r,echo=F,out.width = '100%', out.extra='',comment='', message=FALSE , warning=FALSE}
+```{r,echo=F,fig.width=10, out.extra='',comment='', message=FALSE , warning=FALSE}
 #load source code:
 source("import1.r");source("preprocessing.R");require(ggplot2); require(gridExtra)
 mydata= preprocessing_disease()[["Diarrhée"]] #Diarrhée
@@ -45,21 +45,22 @@ for ( k in 2:6 )
 #Diarrhée fébrile selection for last 6 weeks before current week:
 Diarrh_feb=mydata[as.Date(deb_sem) %in% semaine,list(deb_sem,sites,diarh_feb)]
 #transform NA into XX
-Diarrh_feb$malaria_cases=as.character(Diarrh_feb$diarh_feb)
-Diarrh_feb[,malaria_cases:=ifelse(is.na(malaria_cases)==T,"XX",diarh_feb)]
+Diarrh_feb$diarh_feb=as.character(Diarrh_feb$diarh_feb)
+Diarrh_feb[,diarh_feb:=ifelse(is.na(diarh_feb)==T,"xx",diarh_feb)]
 Diarrh_feb[,diarh_feb:=ifelse(nchar(diarh_feb)<2,paste0("0",diarh_feb),diarh_feb)]
 
 #inline historical occurence:
 Diarrh_feb[,vals:=paste(diarh_feb,collapse = "-"),by="sites"]
 #append latest week per site:
-Diarrh_feb[,malaria_cases:=NULL]
+Diarrh_feb[,diarh_feb:=NULL]
 Diarrh_feb= merge(unique(Diarrh_feb[,list(sites,vals)]), 
                unique(mydata[as.Date(deb_sem)==max_deb_sem-7,list(sites,diarh_feb)]),
                by.x="sites", by.y="sites")
 Diarrh_feb= merge(Diarrh_feb,sentinel_latlong[,list(name,sites)],
                   by.x="sites",by.y="sites")
-Diarrh_feb[,sites:=NULL]; setnames(Diarrh_feb,c("name","vals","diarh_feb"),
-                                c("Sites","6 semaines précédentes","Semaine dernière"))
+Diarrh_feb[,sites:=NULL]; 
+setnames(Diarrh_feb,c("name","vals","diarh_feb"),
+                    c("Sites","6 semaines précédentes","Semaine dernière"))
 
 
 
@@ -67,7 +68,7 @@ Diarrh_feb[,sites:=NULL]; setnames(Diarrh_feb,c("name","vals","diarh_feb"),
 Diarrh=mydata[as.Date(deb_sem) %in% semaine,list(deb_sem,sites,diarh)]
 #transform NA into XX
 Diarrh$diarh=as.character(Diarrh$diarh)
-Diarrh[,diarh:=ifelse(is.na(diarh)==T,"XX",diarh)]
+Diarrh[,diarh:=ifelse(is.na(diarh)==T,"xx",diarh)]
 Diarrh[,diarh:=ifelse(nchar(diarh)<2,paste0("0",diarh),diarh)]
 #inline historical occurence:
 Diarrh[,vals:=paste(diarh,collapse = "-"),by="sites"]
@@ -79,8 +80,9 @@ Diarrh= merge(unique(Diarrh[,list(sites,vals)]),
 #merge with sentinel_latlong:
 Diarrh= merge(Diarrh,sentinel_latlong[,list(name,sites)],
               by.x="sites",by.y="sites")
-Diarrh[,sites:=NULL]; setnames(Diarrh,c("name","vals","diarh"),
-                               c("Sites","6 semaines précédentes","Semaine dernière"))
+Diarrh[,sites:=NULL]; 
+setnames(Diarrh,c("name","vals","diarh"),
+                c("Sites","6 semaines précédentes","Semaine dernière"))
 
 
 
@@ -89,8 +91,8 @@ Diarrh[,sites:=NULL]; setnames(Diarrh,c("name","vals","diarh"),
 knitr::kable(Diarrh[,c("Sites","6 semaines précédentes","Semaine dernière"),with=F],
              caption="Diarrhées dans le réseau sentinelle HTC")
 
-knitr::kable(Diarrh_feb[,c("Sites","6 semaines précédentes","Semaine dernière"),with=F],
-             caption="Diarrhées fébriles dans le réseau sentinelle HTC")
+knitr::kable(Diarrh_feb[,c("Sites","6 semaines précédentes","Semaine dernière"),with=F],caption="Diarrhées fébriles dans le réseau sentinelle HTC")
+             
 ```
 
 ```{r,echo=F, fig.show = "hold" ,out.width = '50%', out.extra='',comment='', message=FALSE , warning=FALSE}

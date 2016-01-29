@@ -1,6 +1,6 @@
 #whether to run on local for debugging and development purpose
 #or to pull data directly from the server:
-remote_server=T;writing_to_disk=T
+remote_server=F;writing_to_disk=F
 #load required packages:
 source("libraries.R")
 if ( exists("PaluConf")==F ) #to speed up things
@@ -32,6 +32,9 @@ if ( exists("PaluConf")==F ) #to speed up things
     #définir taille de cercle f(Nb total diarrhée) dans map
     ili=tbl(sentinel,
         build_sql('SELECT * FROM "crosstab_grippsusp_autrvirresp_format"'))
+    #Paralysie flasque aigue
+    pfa= tbl(sentinel,
+             build_sql('SELECT * FROM "crosstab_pfa_format"'))
     #palu autochtone:
     palu_autoch=tbl(sentinel,
             build_sql('SELECT * FROM "crosstab_autoch_format"'))
@@ -71,6 +74,7 @@ if ( exists("PaluConf")==F ) #to speed up things
       write.table(caid,"caid.csv",sep=";",row.names=F)
       write.table(tdr_eff,"tdr_eff.csv",sep=";",row.names=F)
       write.table(ili,"ili.csv",sep=";",row.names=F)
+      rite.table(pfa,"pfa.csv",sep=";",row.names=F)
       write.table(palu_autoch,"palu_autoch.csv",sep=";",row.names=F)
       #cat('DONE\n')
     }
@@ -91,6 +95,8 @@ if ( exists("PaluConf")==F ) #to speed up things
     pmm=fread("pmm.csv")
     caid=fread("caid.csv")
     mild=fread("mild_export.csv")
+    ili=fread("ili.csv")
+    palu_autoch=fread("palu_autoch.csv")
     tdr_eff=fread("tdr_eff.csv");
     setnames(tdr_eff,"Centre2","sites")
     tdr_eff[,code:=paste0(Annee,"_",Semaine)]

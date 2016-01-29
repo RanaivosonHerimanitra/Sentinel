@@ -15,4 +15,9 @@ select_disease = function(disease="Malaria")
     #cat("You have chosen to display",disease,"\n")
     return(Diarrh_feb)
   }
+  if ( disease=="ILI")
+  {
+    #cat("You have chosen to display",disease,"\n")
+    return(ili)
+  }
 }

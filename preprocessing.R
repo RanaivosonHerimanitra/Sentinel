@@ -1,17 +1,26 @@
 ##################################Preprocessing for reporting purpose ###################
 
-preprocessing_disease = function ()
+preprocessing_disease = function (select_htc=FALSE)
 {
   #initialize a list:
   data_list=list()
   source("diseases_control.R")
   
-  for ( j in c("Malaria","Diarrhée","Diarrhée fébrile") )
+  for ( j in c("Malaria","Diarrhée","Diarrhée fébrile","ILI") )
   {
     data=select_disease(disease=j)
+    #sites for the display
     include<-c("deb_sem","code","abv","abz","ahh","ajb","atb","bel","bhk","boe","bos",
                "cda","die","dri","ejd","far","fns","iho","mae","mdv","mhj","mia","mjr",
                "mnj","mrb","mrg","mrt","mtn","nsb","sbv","stm","tdd","tgr","tlr","toa","tsl")
+    #HTC: Hautes Terres Centrales:
+    htc= c("deb_sem","code","abon","ambl","ants","bela","diri","dona","fito","mand","miad","mnld",
+           "mora","samp","snam","tanb","tomp","tsar","tsim","velo","vink","vola")
+    htc.name =c("abon","Ambatolahy","Antsampandrano",
+                "Belanitra","diri","dona","fito","Manandona",
+                "miad","mnld","Morarano","samp","Sabotsy Namehana",
+                "Antanambao","tomp","tsar","tsim","velo","Vinanikarena","vola")
+    #sites by faciès:
     East<-c("far","sbv","mnj","mrt","stm","toa","tgr")
     South<-c("abv","ejd")
     High_land<-c("cda","atb","bos","tsl","mjr","bhk","fns","ajb")
@@ -30,7 +39,13 @@ preprocessing_disease = function ()
     data=as.data.table(as.data.frame(data))
     #cat('DONE\n')
     #cat("keep only sites that already have historical values...\n")
-    data=data[,include,with=F]
+    if (select_htc==FALSE)
+    {
+      data=data[,include,with=F]
+    } else {
+      data=data[,htc,with=F]
+    }
+    
     #cat('reshape data...')
     data=as.data.table(gather(data,key=sites,value=occurence,-c(code,deb_sem)))
     #cat('DONE\n')
