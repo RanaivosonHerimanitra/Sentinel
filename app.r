@@ -435,23 +435,58 @@ server<-function(input, output,session) {
     event <- input$madagascar_map_marker_click
     return(sentinel_latlong[Long==event$lng & Lat==event$lat,get("name")])
   })
+  selected_site_ontheleft = eventReactive(input$mysites, {
+    #if the user has click on the params on the left of the map:
+    event = input$mysites
+    if ( event=="" )
+    {
+      return (NULL)
+    } else {
+      #search the name to match with sentinel_latlong:
+      return(sentinel_latlong[name %in% grep(event,name,value=T),get("sites") ])
+    }
+    
+  })
+  selected_sitename_ontheleft = eventReactive(input$mysites, {
+    #if the user has click on the params on the left of the map:
+    event = input$mysites
+    if ( event=="" )
+    {
+      return (NULL)
+    } else {
+      #search the name to match with sentinel_latlong:
+      return(sentinel_latlong[name %in% grep(event,name,value=T),get("name") ])
+    }
+  })
   #render weekly malaria cases for a clicked site
   output$weekly_disease_cases_persite = renderPlotly({
     mydata=preprocessing()
     setkey(mydata,sites)
-    mydata=mydata[sites==selected_site() ,
-                     list(occurence=sum(occurence,na.rm=T)),by="deb_sem"]
-     
+    sites_list=c(selected_site(),selected_site_ontheleft())
+    #if the user has clicked on the map:
+    mydata=mydata[sites %in% sites_list ,
+                    list(occurence=sum(occurence,na.rm=T)),by="deb_sem"]
     #reorder time series
     mydata[,deb_sem:=as.Date(deb_sem)]
     mydata=mydata[order(deb_sem),]
     setnames(mydata,"deb_sem","Semaine")
+    #
+  if (is.null(selected_sitename_ontheleft()) )
+    {
+    mytitle=paste("Historical", 
+                  input$diseases ,"cases in",selected_sitename() )
+  } else {
+    mytitle=paste("Historical", 
+                  input$diseases ,"cases in",selected_sitename()," and",
+                  selected_sitename_ontheleft() )
+    }
+    #
     p=plot_ly(data=mydata,
               y=occurence,
               x=Semaine)
-    p %>% layout(title=paste("Historical", input$diseases ,"cases in",selected_sitename()))
+    p %>% layout(title=mytitle)
     
-      })
+  })
   #Health heatmap plot with plotly and using percentile algorithm:
   output$heatmap_percentile = renderD3heatmap({
     mydata=preprocessing()

@@ -16,6 +16,12 @@ if ( exists("PaluConf")==F ) #to speed up things
                                port=5432,
                                user="cnx_florian",
                                password="sigflorianipm")
+    #Missing sent:
+#     X=tbl(sentinel,
+#           build_sql('SELECT * FROM "vue_csb_sms_centre_format"'))
+#     head(X)
+    #semaine,sites,date envoi,...
+    
     
     PaluConf= tbl(sentinel,
                   build_sql('SELECT * FROM "crosstab_paluconf_format"'))
@@ -54,7 +60,8 @@ if ( exists("PaluConf")==F ) #to speed up things
     caid=tbl(sentinel,"caid")
     
     #cat('query of mild\n')
-    mild<-fread("mild_export.csv")
+    mild<-fread("mild_export.csv") #TODO; proportion et non nb sites ayant recu
+    #divise par nb de sites actifs (!NA)
     
     #cat('query of TDR effectif\n')
      tdr_eff= tbl(sentinel,
@@ -74,7 +81,7 @@ if ( exists("PaluConf")==F ) #to speed up things
       write.table(caid,"caid.csv",sep=";",row.names=F)
       write.table(tdr_eff,"tdr_eff.csv",sep=";",row.names=F)
       write.table(ili,"ili.csv",sep=";",row.names=F)
-      rite.table(pfa,"pfa.csv",sep=";",row.names=F)
+      write.table(pfa,"pfa.csv",sep=";",row.names=F)
       write.table(palu_autoch,"palu_autoch.csv",sep=";",row.names=F)
       #cat('DONE\n')
     }
@@ -96,6 +103,7 @@ if ( exists("PaluConf")==F ) #to speed up things
     caid=fread("caid.csv")
     mild=fread("mild_export.csv")
     ili=fread("ili.csv")
+    pfa=fread("pfa.csv")
     palu_autoch=fread("palu_autoch.csv")
     tdr_eff=fread("tdr_eff.csv");
     setnames(tdr_eff,"Centre2","sites")

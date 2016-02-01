@@ -8,11 +8,22 @@ mild=create_facies(mild)
 
 if ( input$Cluster_algo=="Total")
 {
-  cat('calculating number of intervention in mild by code (date)...')
-  mild=mild[,sum(mild_value,na.rm = T),by="code"];setnames(mild,"V1","mild_value")
+  cat('calculating proportion of sites that had received intervention in mild by code (date)...')
+  Nbsites_received=mild[,sum(mild_value,na.rm = T),by="code"]
+  setnames(Nbsites_received,"V1","numerateur")
+  Nbsites_actif=mild[is.na(mild_value)==F,length(unique(sites)),by="code"]
+  setnames(Nbsites_actif,"V1","denominateur")
+  mild= merge(Nbsites_received,Nbsites_actif,by.x="code",by.y="code",all.x=T)
+  mild[,mild_value:=numerateur/denominateur]
   cat('DONE\n')
 } else {
-  cat('calculating number of intervention in mild by code (date) and by facies...')
-  mild=mild[,sum(mild_value,na.rm = T),by="code,facies"];setnames(mild,"V1","mild_value")
+  cat('calculating proportion of sites that had received intervention in mild by code (date) and by facies...')
+  Nbsites_received=mild[,sum(mild_value,na.rm = T),by="code,facies"]
+  setnames(Nbsites_received,"V1","numerateur")
+  Nbsites_actif=mild[is.na(mild_value)==F,length(unique(sites)),by="code,facies"]
+  setnames(Nbsites_actif,"V1","denominateur")
+  mild= merge(Nbsites_received,Nbsites_actif,by.x=c("code","facies"),
+              by.y=c("code","facies"),all.x=T)
+  mild[,mild_value:=numerateur/denominateur]
   cat('DONE\n')
 }
