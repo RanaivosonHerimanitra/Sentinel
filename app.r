@@ -374,7 +374,7 @@ server<-function(input, output,session) {
 
   })
   #display sites in alert for the current week into the map
-  output$madagascar_map <- renderLeaflet({
+  output$madagascar_map <- renderPlot({
     if (input$Algorithmes_eval=="Percentile") 
     {
       cat("display alert status into the map using percentile algorithm...\n")
@@ -409,60 +409,72 @@ server<-function(input, output,session) {
                             ,by.x="sites",by.y = "sites")
       cat("display alert status into the map using a simple indicator...\n")
     }
-    
-    #feeding leaflet with our data:
-    madagascar_map=leaflet()
-    madagascar_map=leaflet(sentinel_latlong) 
-    madagascar_map=madagascar_map %>% setView(lng = 47.051532 , 
-                                              lat =-19.503781 , zoom = 6) 
-    madagascar_map=madagascar_map %>% addTiles() 
+    print(names(sentinel_latlong))
+    #load the map
+    madagascar_layer=get_map(location="Madagascar",zoom=6, source="google")
+    madagascar_map=ggmap(madagascar_layer,base_layer = ggplot(data = sentinel_latlong,aes(x=Long,y=Lat)))
+          
+    madagascar_map = madagascar_map + geom_point(data = sentinel_latlong,
+                                                 alpha=0.4,
+                                                 aes(color=alert_status,size=myradius))
+                               #size=sentinel_latlong$myradius)
+    return(madagascar_map)
     #change color to red when alert is triggered:
     #navy
-    pal <- colorFactor(c("red", "green"), domain = c("normal", "alert"))
-    madagascar_map=madagascar_map %>% addCircleMarkers(lng = ~Long, 
-                                                       lat = ~Lat, 
-                                                       weight = 1,
-                                                       radius = ~myradius, 
-                                                       color = ~pal(alert_status),
-                                                       popup = ~name)
+    
+#     pal <- colorFactor(c("red", "green"), domain = c("normal", "alert"))
+#     madagascar_map=madagascar_map %>% addCircleMarkers(lng = ~Long, 
+#                                                        lat = ~Lat, 
+#                                                        weight = 1,
+#                                                        radius = ~myradius, 
+#                                                        color = ~pal(alert_status),
+#                                                        popup = ~name)
+  })
+  #click event handler (news since shiny 0.13)
+ selected_site=eventReactive(input$madagascar_map_brush, {
+    #require(data.table); sentinel_latlong=fread("/media/herimanitra/DONNEES/IPM_sentinelle/sentinel_hrmntr 291115/Sentinel/sentinel.csv")
+    Z <- brushedPoints(sentinel_latlong, input$madagascar_map_brush, 
+                       xvar="Long",yvar="Lat",allRows = TRUE)
+    return(sentinel_latlong[Z$selected_,get("sites")])
+     
   })
   #click event handler on leaflet map:
-  selected_site=eventReactive(input$madagascar_map_marker_click,{
-      event <- input$madagascar_map_marker_click
-      return(sentinel_latlong[Long==event$lng & Lat==event$lat,get("sites")])
-    })
-  selected_sitename=eventReactive(input$madagascar_map_marker_click,{
-    event <- input$madagascar_map_marker_click
-    return(sentinel_latlong[Long==event$lng & Lat==event$lat,get("name")])
-  })
-  selected_site_ontheleft = eventReactive(input$mysites, {
-    #if the user has click on the params on the left of the map:
-    event = input$mysites
-    if ( event=="" )
-    {
-      return (NULL)
-    } else {
-      #search the name to match with sentinel_latlong:
-      return(sentinel_latlong[name %in% grep(event,name,value=T),get("sites") ])
-    }
-    
-  })
-  selected_sitename_ontheleft = eventReactive(input$mysites, {
-    #if the user has click on the params on the left of the map:
-    event = input$mysites
-    if ( event=="" )
-    {
-      return (NULL)
-    } else {
-      #search the name to match with sentinel_latlong:
-      return(sentinel_latlong[name %in% grep(event,name,value=T),get("name") ])
-    }
-  })
+#   selected_site=eventReactive(input$madagascar_map_marker_click,{
+#       event <- input$madagascar_map_marker_click
+#       return(sentinel_latlong[Long==event$lng & Lat==event$lat,get("sites")])
+#     })
+#   selected_sitename=eventReactive(input$madagascar_map_marker_click,{
+#     event <- input$madagascar_map_marker_click
+#     return(sentinel_latlong[Long==event$lng & Lat==event$lat,get("name")])
+#   })
+#   selected_site_ontheleft = eventReactive(input$mysites, {
+#     #if the user has click on the params on the left of the map:
+#     event = input$mysites
+#     if ( event=="" )
+#     {
+#       return (NULL)
+#     } else {
+#       #search the name to match with sentinel_latlong:
+#       return(sentinel_latlong[name %in% grep(event,name,value=T),get("sites") ])
+#     }
+#     
+#   })
+#   selected_sitename_ontheleft = eventReactive(input$mysites, {
+#     #if the user has click on the params on the left of the map:
+#     event = input$mysites
+#     if ( event=="" )
+#     {
+#       return (NULL)
+#     } else {
+#       #search the name to match with sentinel_latlong:
+#       return(sentinel_latlong[name %in% grep(event,name,value=T),get("name") ])
+#     }
+#   })
   #render weekly malaria cases for a clicked site
   output$weekly_disease_cases_persite = renderPlotly({
     mydata=preprocessing()
     setkey(mydata,sites)
-    sites_list=c(selected_site(),selected_site_ontheleft())
+    sites_list=selected_site()
     #if the user has clicked on the map:
     mydata=mydata[sites %in% sites_list ,
                     list(occurence=sum(occurence,na.rm=T)),by="deb_sem"]
@@ -471,15 +483,7 @@ server<-function(input, output,session) {
     mydata=mydata[order(deb_sem),]
     setnames(mydata,"deb_sem","Semaine")
     #
-  if (is.null(selected_sitename_ontheleft()) )
-    {
-    mytitle=paste("Historical", 
-                  input$diseases ,"cases in",selected_sitename() )
-  } else {
-    mytitle=paste("Historical", 
-                  input$diseases ,"cases in",selected_sitename()," and",
-                  selected_sitename_ontheleft() )
-    }
+    mytitle=paste("Historical", input$diseases ,"cases in selected sites" )
     #
     p=plot_ly(data=mydata,
               y=occurence,
@@ -555,7 +559,6 @@ server<-function(input, output,session) {
   })
   #download report handler (for Malaria and Diarrhée):
   output$downloadReport <- downloadHandler(
-    #source("generate_report.R")
     filename = "report.pdf",
     content = function(file) {
       file.copy('report.pdf', file)
