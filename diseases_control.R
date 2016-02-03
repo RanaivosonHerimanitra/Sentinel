@@ -20,4 +20,9 @@ select_disease = function(disease="Malaria")
     #cat("You have chosen to display",disease,"\n")
     return(ili)
   }
+  if ( disease=="PFA")
+  {
+    #cat("You have chosen to display",disease,"\n")
+    return(pfa)
+  }
 }

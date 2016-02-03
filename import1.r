@@ -17,9 +17,13 @@ if ( exists("PaluConf")==F ) #to speed up things
                                user="cnx_florian",
                                password="sigflorianipm")
     #Missing sent:
-#     X=tbl(sentinel,
-#           build_sql('SELECT * FROM "vue_csb_sms_centre_format"'))
-#     head(X)
+#      X=tbl(sentinel,
+#            build_sql('SELECT * FROM "vue_csb_sms_centre_format"'))
+#      x=as.data.frame(X)
+#      X[,code:=paste0(Annee,"_",Semaine)]
+#      X=as.data.table(table(X$code,X$Centre2))
+#      write.table(X,"missing_sent.csv",sep=";",row.names = F)
+     #<3 orange (ou rouge 0)
     #semaine,sites,date envoi,...
     
     
@@ -60,8 +64,7 @@ if ( exists("PaluConf")==F ) #to speed up things
     caid=tbl(sentinel,"caid")
     
     #cat('query of mild\n')
-    mild<-fread("mild_export.csv") #TODO; proportion et non nb sites ayant recu
-    #divise par nb de sites actifs (!NA)
+    mild<-fread("mild_export.csv") 
     
     #cat('query of TDR effectif\n')
      tdr_eff= tbl(sentinel,

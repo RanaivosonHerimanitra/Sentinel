@@ -10,7 +10,7 @@ output: pdf_document
 ```{r,echo=F, fig.width=10, out.extra='',comment='', message=FALSE , warning=FALSE}
 #load source code:
 source("import1.r");source("tdrplus.R");require(ggplot2); require(gridExtra)
-mydata= tdr_malaria()
+mydata= tdr_malaria(htc=F)
 
 source("reporting_plot.R",local = T)
 generate_plot(htc="all",
@@ -26,7 +26,8 @@ generate_plot(htc="all",
 
 
 ```{r,echo=F,out.extra='',comment='', message=FALSE , warning=FALSE}
-
+mydata= tdr_malaria(htc=T)
+print(unique(mydata$sites))
 semaine=array()
 max_deb_sem=max(as.Date(mydata$deb_sem))
 semaine[6]= max_deb_sem-2*7 
@@ -40,6 +41,7 @@ for ( k in 2:6 )
 
 #Malaria selection for last 6 weeks before current week:
 malaria=mydata[as.Date(deb_sem) %in% semaine,list(deb_sem,sites,malaria_cases)]
+
 #transform NA into XX
 malaria$malaria_cases=as.character(malaria$malaria_cases)
 malaria[,malaria_cases:=ifelse(is.na(malaria_cases)==T,"xx",malaria_cases)]
@@ -48,18 +50,18 @@ malaria[,malaria_cases:=ifelse(nchar(malaria_cases)<2,paste0("0",malaria_cases),
 malaria[,vals:=paste(malaria_cases,collapse = "-"),by="sites"]
 #append latest week per site:
 malaria[,malaria_cases:=NULL]
-malaria= merge(unique(malaria[,list(sites,vals)]), 
-               unique(mydata[as.Date(deb_sem)==max_deb_sem-7,list(sites,malaria_cases)]),by.x="sites", by.y="sites")
-               
-malaria= merge(malaria,sentinel_latlong[,list(name,sites)],by.x="sites",by.y="sites")
-malaria[,sites:=NULL]; 
-setnames(malaria,c("name","vals","malaria_cases"),
+malaria= merge(unique(malaria[,list(sites,vals)]),                 unique(mydata[as.Date(deb_sem)==max_deb_sem-7,list(sites,malaria_cases)]),
+                by.x="sites", by.y="sites")
+#malaria= merge(malaria,sentinel_latlong[,list(name,sites)],by.x="sites",by.y="sites")
+#malaria[,sites:=NULL]; 
+setnames(malaria,c("sites","vals","malaria_cases"),
                  c("Sites","6 semaines précédentes","Semaine dernière"))
 
 
 
 #Fiever selection for last 6 weeks before current week:
 fievre=mydata[as.Date(deb_sem) %in% semaine,list(deb_sem,sites,SyndF)]
+
 #transform NA into XX
 fievre$SyndF=as.character(fievre$SyndF)
 fievre[,SyndF:=ifelse(is.na(SyndF)==T,"xx",SyndF)]
@@ -69,14 +71,15 @@ fievre[,vals:=paste(SyndF,collapse = "-"),by="sites"]
 #append latest week per site:
 fievre[,SyndF:=NULL]
 fievre= merge(unique(fievre[,list(sites,vals)]), 
-              unique(mydata[as.Date(deb_sem)==max_deb_sem-7,list(sites,SyndF)]),
+              unique(mydata[as.Date(deb_sem)==max_deb_sem-7,
+                            list(sites,SyndF)]),
               by.x="sites", by.y="sites")
-               
-#merge with sentinel_latlong:
-fievre= merge(fievre,sentinel_latlong[,list(name,sites)],
-              by.x="sites",by.y="sites")
-fievre[,sites:=NULL]; 
-setnames(fievre,c("name","vals","SyndF"),
+#                
+# #merge with sentinel_latlong:
+# fievre= merge(fievre,sentinel_latlong[,list(name,sites)],
+#               by.x="sites",by.y="sites")
+# fievre[,sites:=NULL]; 
+setnames(fievre,c("sites","vals","SyndF"),
                 c("Sites","6 semaines précédentes","Semaine dernière"))
 
 
@@ -94,6 +97,7 @@ knitr::kable(malaria[,c("Sites","6 semaines précédentes","Semaine dernière"),
 
 
 #merge with sentinel_latlong:
+mydata= tdr_malaria(htc=F)
 mydata=merge(mydata,sentinel_latlong, by.x="sites",by.y="sites")
                     
 generate_plot(htc="dsd",

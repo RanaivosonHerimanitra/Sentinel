@@ -9,7 +9,7 @@ output: pdf_document
 
 ```{r,echo=F, fig.width=10, out.extra='',comment='', message=FALSE , warning=FALSE}
 source("import1.r");source("preprocessing.R");require(ggplot2); require(gridExtra)
-#Retrieve Malaria (TDR+ ~~PaluConf) for HTC sites
+#Retrieve ILI
 mydata= preprocessing_disease()[["ILI"]]
 
 #aggregate occurence by week:

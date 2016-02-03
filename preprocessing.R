@@ -6,7 +6,7 @@ preprocessing_disease = function (select_htc=FALSE)
   data_list=list()
   source("diseases_control.R")
   
-  for ( j in c("Malaria","Diarrhée","Diarrhée fébrile","ILI") )
+  for ( j in c("Malaria","Diarrhée","Diarrhée fébrile","ILI","PFA") )
   {
     data=select_disease(disease=j)
     #sites for the display

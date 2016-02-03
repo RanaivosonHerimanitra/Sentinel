@@ -1,7 +1,7 @@
 ############################Main parameters UI ############################
 sentinel_sites=selectInput(inputId="mysites", 
                            label="Choose a site:", 
-                           choices = c("Farafangana","Ambovombe",
+                           choices = c("","Farafangana","Ambovombe",
                                        "Ambatondrazaka","Antsohihy",
                                        "Anjozorobe","Antsirabe",
                                        "Belo sur Tsiribihina","Behoririka",
@@ -16,7 +16,8 @@ sentinel_sites=selectInput(inputId="mysites",
                                        "Nosy Be","Sambava","Sainte-Marie",
                                        "Tsiroanomandidy","Tolagnaro","Toliary",
                                        "Toamasina","Tsaralalana"),
-                           selected="Farafangana")
+                           #selected="Farafangana")
+                           selected="")
 myfacies_algo=selectInput(inputId ="Cluster_algo", 
                           label="Data aggregation level (facies)",
                           list("National" = "Total",
