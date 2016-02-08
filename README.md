@@ -9,3 +9,7 @@ A toolkit for early detection of disease outbreaks (Malaria, Diarrhea, etc.)
 
 * Have a look at `libraries.R`
 
+## Algorithms used:
+
+<img src="app_snap.png" >
+
