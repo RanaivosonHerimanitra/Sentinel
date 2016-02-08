@@ -374,110 +374,157 @@ server<-function(input, output,session) {
 
   })
   #display sites in alert for the current week into the map
-  output$madagascar_map <- renderPlot({
-    if (input$Algorithmes_eval=="Percentile") 
-    {
-      cat("display alert status into the map using percentile algorithm...\n")
-      #setkey for fast merging
-      setkey(sentinel_latlong,sites)
-      setkey(percentile_algorithm()$percentile_alerte_currentweek,sites)
-      sentinel_latlong=merge(sentinel_latlong,percentile_algorithm()$percentile_alerte_currentweek
-                             ,by.x="sites",by.y = "sites")
-      
-    }
-    if (input$Algorithmes_eval=="MinSan") 
-    {
-      cat("display alert status into the map using MinSan algorithm...\n")
-      setkey(sentinel_latlong,sites);
-      setkey(minsan_algorithm()$minsan_alerte_currentweek,sites)
-      sentinel_latlong=merge(sentinel_latlong,minsan_algorithm()$minsan_alerte_currentweek
-                             ,by.x="sites",by.y = "sites")
-    }
-    if (input$Algorithmes_eval=="Csum") 
-    {
-      cat("display alert status into the map using Csum algorithm...\n")
-      setkey(sentinel_latlong,sites);
-      setkey(csum_algorithm()$csum_alerte,sites)
-      sentinel_latlong=merge(sentinel_latlong,csum_algorithm()$csum_alerte_currentweek
-                             ,by.x="sites",by.y = "sites")
-    }
-    if (input$Algorithmes_eval=="Ind") 
-    {
-      setkey(sentinel_latlong,sites);
-      setkey(tdrplus_fever_ind()$tdrplus_ind_currentweek,sites)
-      sentinel_latlong=merge(sentinel_latlong,tdrplus_fever_ind()$tdrplus_ind_currentweek
-                            ,by.x="sites",by.y = "sites")
-      cat("display alert status into the map using a simple indicator...\n")
-    }
-    print(names(sentinel_latlong))
-    #load the map
-    madagascar_layer=get_map(location="Madagascar",zoom=6, source="google")
-    madagascar_map=ggmap(madagascar_layer,base_layer = ggplot(data = sentinel_latlong,aes(x=Long,y=Lat)))
-          
-    madagascar_map = madagascar_map + geom_point(data = sentinel_latlong,
-                                                 alpha=0.4,
-                                                 aes(color=alert_status,size=myradius))
-                               #size=sentinel_latlong$myradius)
-    return(madagascar_map)
+ 
+    output$madagascar_map <- renderLeaflet({
+      if (input$Algorithmes_eval=="Percentile") 
+      {
+        cat("display alert status into the map using percentile algorithm...\n")
+        #setkey for fast merging
+        setkey(sentinel_latlong,sites)
+        setkey(percentile_algorithm()$percentile_alerte_currentweek,sites)
+        sentinel_latlong=merge(sentinel_latlong,percentile_algorithm()$percentile_alerte_currentweek
+                               ,by.x="sites",by.y = "sites")
+        
+      }
+      if (input$Algorithmes_eval=="MinSan") 
+      {
+        cat("display alert status into the map using MinSan algorithm...\n")
+        setkey(sentinel_latlong,sites);
+        setkey(minsan_algorithm()$minsan_alerte_currentweek,sites)
+        sentinel_latlong=merge(sentinel_latlong,minsan_algorithm()$minsan_alerte_currentweek
+                               ,by.x="sites",by.y = "sites")
+      }
+      if (input$Algorithmes_eval=="Csum") 
+      {
+        cat("display alert status into the map using Csum algorithm...\n")
+        setkey(sentinel_latlong,sites);
+        setkey(csum_algorithm()$csum_alerte,sites)
+        sentinel_latlong=merge(sentinel_latlong,csum_algorithm()$csum_alerte_currentweek
+                               ,by.x="sites",by.y = "sites")
+      }
+      if (input$Algorithmes_eval=="Ind") 
+      {
+        setkey(sentinel_latlong,sites);
+        setkey(tdrplus_fever_ind()$tdrplus_ind_currentweek,sites)
+        sentinel_latlong=merge(sentinel_latlong,tdrplus_fever_ind()$tdrplus_ind_currentweek
+                               ,by.x="sites",by.y = "sites")
+        cat("display alert status into the map using a simple indicator...\n")
+      }
+    #feeding leaflet with our data:
+    madagascar_map=leaflet()
+    madagascar_map=leaflet(sentinel_latlong) 
+    madagascar_map=madagascar_map %>% setView(lng = 47.051532 , 
+                                              lat =-19.503781 , zoom = 6) 
+    madagascar_map=madagascar_map %>% addTiles() 
+#     tmp=as.data.frame(sentinel_latlong[1:4,])
+#     madagascar_map=madagascar_map %>% addPolygons(data = tmp, 
+#                                                   fill = FALSE, 
+#                                                   color = '#FFFF00', 
+#                                                   opacity = 1, 
+#                                                   layerId = 'sel_cty')
+#     madagascar_map=madagascar_map %>% fitBounds(lng1 = bbox(tmp)[1], 
+#               lat1 = bbox(tmp)[2], 
+#               lng2 = bbox(tmp)[3], 
+#               lat2 = bbox(tmp)[4])
     #change color to red when alert is triggered:
     #navy
+    pal <- colorFactor(c("red", "green"), domain = c("normal", "alert"))
+    madagascar_map=madagascar_map %>% addCircleMarkers(lng = ~Long, 
+                                                       lat = ~Lat, 
+                                                       weight = 1,
+                                                       radius = ~myradius, 
+                                                       color = ~pal(alert_status),
+                                                       popup = ~name)
+    return(madagascar_map)
+    })
+ 
+    output$madagascar_map2 <- renderPlot({
+      if (input$Algorithmes_eval=="Percentile") 
+      {
+        cat("display alert status into the map using percentile algorithm...\n")
+        #setkey for fast merging
+        setkey(sentinel_latlong,sites)
+        setkey(percentile_algorithm()$percentile_alerte_currentweek,sites)
+        sentinel_latlong=merge(sentinel_latlong,percentile_algorithm()$percentile_alerte_currentweek
+                               ,by.x="sites",by.y = "sites")
+        
+      }
+      if (input$Algorithmes_eval=="MinSan") 
+      {
+        cat("display alert status into the map using MinSan algorithm...\n")
+        setkey(sentinel_latlong,sites);
+        setkey(minsan_algorithm()$minsan_alerte_currentweek,sites)
+        sentinel_latlong=merge(sentinel_latlong,minsan_algorithm()$minsan_alerte_currentweek
+                               ,by.x="sites",by.y = "sites")
+      }
+      if (input$Algorithmes_eval=="Csum") 
+      {
+        cat("display alert status into the map using Csum algorithm...\n")
+        setkey(sentinel_latlong,sites);
+        setkey(csum_algorithm()$csum_alerte,sites)
+        sentinel_latlong=merge(sentinel_latlong,csum_algorithm()$csum_alerte_currentweek
+                               ,by.x="sites",by.y = "sites")
+      }
+      if (input$Algorithmes_eval=="Ind") 
+      {
+        setkey(sentinel_latlong,sites);
+        setkey(tdrplus_fever_ind()$tdrplus_ind_currentweek,sites)
+        sentinel_latlong=merge(sentinel_latlong,tdrplus_fever_ind()$tdrplus_ind_currentweek
+                               ,by.x="sites",by.y = "sites")
+        cat("display alert status into the map using a simple indicator...\n")
+      }
     
-#     pal <- colorFactor(c("red", "green"), domain = c("normal", "alert"))
-#     madagascar_map=madagascar_map %>% addCircleMarkers(lng = ~Long, 
-#                                                        lat = ~Lat, 
-#                                                        weight = 1,
-#                                                        radius = ~myradius, 
-#                                                        color = ~pal(alert_status),
-#                                                        popup = ~name)
+      #latest verification fo radius and alert status (handle NA's)
+      sentinel_latlong[is.na(alert_status)==T,alert_status:="No data"]
+      sentinel_latlong[is.na(myradius)==T,myradius:=5.0]
+      
+      #load the map
+      madagascar_layer=readRDS("madagascar.rds")
+      madagascar_map2=ggmap(madagascar_layer,base_layer = ggplot(data = sentinel_latlong,aes(x=Long,y=Lat)))
+      madagascar_map2 = madagascar_map2 + geom_point(data = sentinel_latlong,
+                                                     alpha=0.4,
+                                                     aes(color=alert_status,
+                                                       size=myradius))
+      madagascar_map2 = madagascar_map2 + scale_size_continuous(range=range(sentinel_latlong$myradius))
+      return(madagascar_map2)  
+      
+    },height = 640)
+  
+  #click event handler for leaflet:
+  selected_site_leaflet=eventReactive(input$madagascar_map_marker_click,{
+      event <- input$madagascar_map_marker_click
+      return(sentinel_latlong[Long==event$lng & Lat==event$lat,get("sites")])
   })
   #click event handler (news since shiny 0.13)
- selected_site=eventReactive(input$madagascar_map_brush, {
-    #require(data.table); sentinel_latlong=fread("/media/herimanitra/DONNEES/IPM_sentinelle/sentinel_hrmntr 291115/Sentinel/sentinel.csv")
-    Z <- brushedPoints(sentinel_latlong, input$madagascar_map_brush, 
+ selected_site=eventReactive(input$madagascar_map2_brush, {
+    Z <- brushedPoints(sentinel_latlong, 
+                       input$madagascar_map2_brush, 
                        xvar="Long",yvar="Lat",allRows = TRUE)
     return(sentinel_latlong[Z$selected_,get("sites")])
-     
   })
-  #click event handler on leaflet map:
-#   selected_site=eventReactive(input$madagascar_map_marker_click,{
-#       event <- input$madagascar_map_marker_click
-#       return(sentinel_latlong[Long==event$lng & Lat==event$lat,get("sites")])
-#     })
-#   selected_sitename=eventReactive(input$madagascar_map_marker_click,{
-#     event <- input$madagascar_map_marker_click
-#     return(sentinel_latlong[Long==event$lng & Lat==event$lat,get("name")])
-#   })
-#   selected_site_ontheleft = eventReactive(input$mysites, {
-#     #if the user has click on the params on the left of the map:
-#     event = input$mysites
-#     if ( event=="" )
-#     {
-#       return (NULL)
-#     } else {
-#       #search the name to match with sentinel_latlong:
-#       return(sentinel_latlong[name %in% grep(event,name,value=T),get("sites") ])
-#     }
-#     
-#   })
-#   selected_sitename_ontheleft = eventReactive(input$mysites, {
-#     #if the user has click on the params on the left of the map:
-#     event = input$mysites
-#     if ( event=="" )
-#     {
-#       return (NULL)
-#     } else {
-#       #search the name to match with sentinel_latlong:
-#       return(sentinel_latlong[name %in% grep(event,name,value=T),get("name") ])
-#     }
-#   })
+ clicked_site=eventReactive(input$madagascar_map2_click, {
+   Z <- nearPoints(sentinel_latlong, 
+                   input$madagascar_map2_click,
+                   xvar="Long",yvar="Lat",allRows = TRUE)
+   return(sentinel_latlong[Z$selected_,get("sites")])
+ })
+  mymapchoice = reactive({
+    return(input$mapchoice)
+  })
   #render weekly malaria cases for a clicked site
   output$weekly_disease_cases_persite = renderPlotly({
     mydata=preprocessing()
     setkey(mydata,sites)
-    sites_list=selected_site()
-    #if the user has clicked on the map:
-    mydata=mydata[sites %in% sites_list ,
+    if ( mymapchoice()=="other" )
+    {
+      sites_list=unique(c(selected_site(),clicked_site()))
+      #if the user has clicked on the map:
+      mydata=mydata[sites %in% sites_list ,
                     list(occurence=sum(occurence,na.rm=T)),by="deb_sem"]
+    } else {
+      mydata=mydata[sites %in% selected_site_leaflet()]
+    }
+    
     #reorder time series
     mydata[,deb_sem:=as.Date(deb_sem)]
     mydata=mydata[order(deb_sem),]
@@ -497,12 +544,9 @@ server<-function(input, output,session) {
     cat('Calculation of percentile and proportion of sites in alert begin...\n')
     source("percentile.R")
     propsite_alerte_percentile=calculate_percentile(data=mydata,
-                                                   # week_choice=input$week_choice,
-                                                   # year_choice=input$year_choice
                                                     week_length=input$comet_map,
                                                     percentile_value=input$Centile_map)$propsite_alerte_percentile
-                                                   
-   #selection by facies:
+    #selection by facies:
     if (input$Cluster_algo !="Total")
     {
       cat("you choose:",input$Cluster_algo,"\n")
@@ -516,21 +560,20 @@ server<-function(input, output,session) {
     propsite_alerte_percentile[alert_status=="normal",alert_status2:=1]
     propsite_alerte_percentile[alert_status=="alert",alert_status2:=2]
     cat('DONE\n')
-    
-    
     cat('spreading data...')
+    propsite_alerte_percentile[,years:=year(deb_sem)]
+    propsite_alerte_percentile=propsite_alerte_percentile[years %in% (2016-as.numeric(input$nbyear)):2016,]
+    
     #try selection using dplyr so then avoid data.frame conversion!
     myz= as.data.frame(spread(unique(propsite_alerte_percentile[,list(sites,deb_sem,alert_status2)]),
                               deb_sem,alert_status2))
+    
+    #
     cat("DONE\n")
     row.names(myz) <- myz$sites
     d3heatmap(myz[,-1], dendrogram = "none",scale = "none",
               xaxis_font_size="9px",
               color=c("grey","blue","red"))
-
-
-    
-    
   })
   #Bubble chart to display past alert:
   output$mybubble = renderPlotly({
@@ -538,8 +581,6 @@ server<-function(input, output,session) {
     cat('Calculation of percentile and proportion of sites in alert begin...\n')
     source("percentile.R")
     X=calculate_percentile(data=mydata,
-                          # week_choice=input$week_choice,
-                          #year_choice=input$year_choice
                            week_length=input$comet_map,
                            percentile_value=input$Centile_map)$mydata
                            
@@ -576,15 +617,14 @@ ui = dashboardPage(skin = "blue",
       menuItem(text="Main",tabName="mytabbox", 
                icon = icon("database")),
       diseases_choices,
+      map_choices,
       myfacies_algo,
-      
       menuItem(text="Download diseases report",
                tabName="diparam", 
                icon = icon("building")),
       menuItem(text="Forecasting",
                tabName="myforecast", 
                icon = icon("line-chart"))
-
   )),
   dashboardBody(tabItems(tabbox_item,
                          disease_item,
