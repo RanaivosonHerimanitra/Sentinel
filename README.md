@@ -13,6 +13,14 @@ A toolkit for early detection of disease outbreaks (Malaria, Diarrhea, etc.)
 
 <img src="app_snap.png" >
 
+## Percentile algorithm:
+
 `Percentile` algorithm is used to trigger alert in sentinel network. An alert is triggered when during `n` (consecutive or not) week(s) , diseases occurrence exceeds `90th percentile` calculated using the entire historical time series. This calculation of `90th percentile` excludes the current week.
+
+### Default values for percentile algorithm are:
+
+* `n` number of consecutive weeks we observe = 3
+* value of the percentile = 90th 
+
 
 
