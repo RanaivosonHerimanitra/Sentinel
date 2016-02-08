@@ -41,9 +41,9 @@ generate_plot=function(htc="all",
       d= d + scale_color_manual(values=c("#CC6666", "#9999CC"))
       debut_annee=as.numeric(unique(X[weeks==1,Date]))
       d= d + geom_vline(xintercept = debut_annee,
-                        linetype=4,colour="purple")
+                        linetype=4,colour="orange")
       d=d + ggtitle(label=title.label)
-      d=d + xlab("Date(ligne violette=1er janvier)") + ylab(title.ylab)
+      d=d + xlab("Date(ligne orange=1er janvier)") + ylab(title.ylab)
       return(d)
   } else {
     
@@ -69,9 +69,9 @@ generate_plot=function(htc="all",
       d= d + scale_color_manual(values=c("#CC6666", "#9999CC"))
       debut_annee=as.numeric(unique(X[weeks==1,Date]))
       d= d + geom_vline(xintercept = debut_annee,
-                        linetype=4,colour="purple")
+                        linetype=4,colour="orange")
       d=d + ggtitle(label=paste(title.label.list, myname[p]))
-      d=d + xlab("Date (ligne violette=1er janvier)") + ylab(title.ylab)
+      d=d + xlab("Date (ligne orange=1er janvier)") + ylab(title.ylab)
       myplot[[p]]=d
      print(myplot[[p]])
     }

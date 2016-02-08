@@ -77,15 +77,18 @@ last6_palu_autoch=palu_autoch[as.Date(deb_sem) %in% semaine,list(deb_sem,sites,a
 
 #transform NA into XX
 last6_palu_autoch$autoch=as.character(last6_palu_autoch$autoch)
-last6_palu_autoch[,autoch:=ifelse(is.na(autoch)==T,"xx",autoch)]
+last6_palu_autoch[,autoch:=ifelse(is.na(autoch)==T,"na",autoch)]
 last6_palu_autoch[,autoch:=ifelse(nchar(autoch)<2,paste0("0",autoch),autoch)]
 
 
 #inline historical occurence:
 last6_palu_autoch[,vals:=paste(autoch,collapse = "-"),by="sites"]
 last6_palu_autoch[,autoch:=NULL]
-last6_palu_autoch= merge(unique(last6_palu_autoch[,list(sites,vals)]), 
-               unique(palu_autoch[as.Date(deb_sem)==max_deb_sem-7, list(sites,autoch)]), by.x="sites", by.y="sites")
+lastweek =  unique(palu_autoch[as.Date(deb_sem)==max_deb_sem-7, list(sites,autoch)])
+lastweek[,autoch:=as.character(autoch)]
+lastweek[is.na(autoch)==T,autoch:="na"]
+last6_palu_autoch= merge(unique(last6_palu_autoch[,list(sites,vals)]),lastweek, by.x="sites", by.y="sites")
+             
                                  
 setnames(last6_palu_autoch,c("sites","vals","autoch"),
                 c("Sites","6 semaines précédentes","Semaine dernière"))
@@ -136,6 +139,11 @@ for ( p in myname )
       d= d + scale_color_manual(values=c("#CC6666", "#9999CC"))
       d=d + ggtitle(label=p)
       d=d + xlab("Date") + ylab("Nb. Cas")
+      #set ylim to 10 if <10
+      mymax=range(as.numeric(X$value)[is.na(as.numeric(X$value))==F])
+      mymax[2]=ifelse(mymax[2]<10,10,mymax[2])
+      #
+      d= d + ylim (mymax)
       print(d)
 }
 

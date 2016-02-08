@@ -6,4 +6,6 @@ if ( input$Algorithmes_eval=="Ind") {
   } else {
     myprop=tdrplus_fever_ind()$propsite_alerte_fever_byfacies
   }
+  #choose to display >2010
+  myprop=myprop[year(deb_sem)>2009]
 }

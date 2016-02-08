@@ -22,7 +22,7 @@ en_gras = function ( fontsize=11,fontweight='bold',fontfamily='Courier New')
                  font.weight = fontweight, 
                  font.family = fontfamily))
 }
-en_gras_green = textProperties(color='#4bc725',
+en_gras_green = textProperties(color='#1d6b3e',
                                font.size = 11, 
                                font.weight = 'bold', 
                                font.family = 'Courier New')
@@ -121,5 +121,7 @@ for ( j in mycode )
 
 cat("Writing document to a word document...")
 writeDoc(doc, file = "report.docx")
+#sudo apt-get install unoconv
+system("doc2pdf report.docx") #write in pdf using cli command
 cat('DONE\n')
 

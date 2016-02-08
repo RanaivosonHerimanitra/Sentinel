@@ -34,7 +34,8 @@ if (mylength_NA>0)
  
   cat('DONE','\n')
 } else {
-  msg_NA=NA
+ # msg_NA=NA
+  msg_NA=pot("")
 }
 if (L_palu | L_diar | L_tdr )
 {
@@ -54,7 +55,8 @@ if (L_palu | L_diar | L_tdr )
         #mydocument[[paste0(j,"for",k)]]$palu=msg_palu
         cat('DONE\n')
       } else {
-        msg_palu=NA
+        #msg_palu=NA
+        msg_palu=pot("")
       }
       
     } else {
@@ -67,7 +69,8 @@ if (L_palu | L_diar | L_tdr )
         cat('DONE\n')
     }
   } else {
-    msg_palu=NA
+    #msg_palu=NA
+    msg_palu=pot("")
   } 
   if (L_diar)
   {
@@ -79,7 +82,8 @@ if (L_palu | L_diar | L_tdr )
     #mydocument[[paste0(j,"for",k)]]$diar=msg_diar
     cat("DONE\n")
   } else {
-    msg_diar=NA
+    #msg_diar=NA
+    msg_diar=pot("")
   }
   if (L_tdr)
   {
@@ -99,24 +103,48 @@ if (L_palu | L_diar | L_tdr )
       #mydocument[[paste0(j,"for",k)]]$tdr=tdr_manquant
       cat("DONE\n")
     } else {
-      tdr_manquant=NA
+      #tdr_manquant=NA
+      tdr_manquant=pot("")
     }
   } else {
-    tdr_manquant=NA
+    #tdr_manquant=NA
+    tdr_manquant=pot("")
   }
   
 } else {
   #DO nothing there is no disease for the week j
-  msg_palu=NA
-  msg_diar=NA
-  tdr_manquant=NA
+  #msg_palu=NA
+  #msg_diar=NA
+  #tdr_manquant=NA
+  msg_palu=pot("");msg_diar=pot("");tdr_manquant=pot("")
 }
 #####################################################################################
 cat("Append all reports...")
-if ( class(msg_palu)=="pot" ) { rm(myranks_palu);rm(mylength_palu); doc <- addParagraph(doc,msg_palu) }
-if ( class(msg_diar)=="pot" ) { rm(myranks_diar);rm(mylength_diar); doc <- addParagraph(doc,msg_diar) }
-if ( class(tdr_manquant)=="pot" ) { rm(mylength_NA); doc <- addParagraph(doc,tdr_manquant) }
-if ( class(msg_NA)=="pot" ) { doc <- addParagraph(doc, msg_NA) }
+
+if ( class(msg_palu)=="pot" ) 
+  { 
+  #rm(myranks_palu);rm(mylength_palu);
+  #doc <- addParagraph(doc,msg_palu) 
+ 
+  }
+if ( class(msg_diar)=="pot" ) 
+ { 
+  #rm(myranks_diar);rm(mylength_diar); 
+  #doc <- addParagraph(doc,msg_diar) 
+ 
+  }
+if ( class(tdr_manquant)=="pot" ) 
+ { 
+  #rm(mylength_NA); 
+  #doc <- addParagraph(doc,tdr_manquant) 
+  
+  }
+if ( class(msg_NA)=="pot" ) 
+  { 
+  #doc <- addParagraph(doc, msg_NA) 
+  
+}
+doc = addParagraph(doc, msg_palu + msg_diar + tdr_manquant + msg_NA )
 cat("DONE\n")
 
 rm(msg_palu);rm(msg_diar);rm(tdr_manquant);rm(msg_NA);gc()

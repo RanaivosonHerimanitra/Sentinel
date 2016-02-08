@@ -274,35 +274,36 @@ server<-function(input, output,session) {
       cat('merging ndvi data with proportion of sites in alert...')
       myprop=merge(myprop,ndvi[,list(code,ndvi_value,facies)],
                    by.x=c("code","facies"),
-                   by.y=c("code","facies"))
+                   by.y=c("code","facies"), all.x=T)
       cat('DONE\n')
       cat('nrow of myprop  after merge with ndvi are:',nrow(myprop),"\n")
       
       cat('merging temperature data with proportion of sites in alert...')
       myprop=merge(myprop,lst[,list(code,temperature,facies)],
                    by.x=c("code","facies"),
-                   by.y=c("code","facies"))
+                   by.y=c("code","facies"), all.x=T)
       cat('DONE\n')
       
       cat('nrow of myprop  after merge with lst are:',nrow(myprop),"\n")
       
       cat('merging rainFall data with proportion of sites in alert...')
-      myprop=merge(myprop,pmm[,list(code,pmm_value,facies)],by.x=c("code","facies"),
-                   by.y=c("code","facies"))
+      myprop=merge(myprop,pmm[,list(code,pmm_value,facies)],
+                   by.x=c("code","facies"),
+                   by.y=c("code","facies"), all.x=T)
       cat('DONE\n')
       
     } else {
       cat('merging ndvi data with proportion of sites in alert...')
       myprop=merge(myprop,ndvi[,list(code,ndvi_value)],
                    by.x=c("code"),
-                   by.y=c("code") )
+                   by.y=c("code"), all.x=T )
       cat('DONE\n')
       cat('nrow of myprop  after merge with ndvi are:',nrow(myprop),"\n")
       
       cat('merging temperature data with proportion of sites in alert...')
       myprop=merge(myprop,lst[,list(code,temperature)],
                    by.x=c("code"),
-                   by.y=c("code") )
+                   by.y=c("code"), all.x=T )
       cat('DONE\n')
       
       cat('nrow of myprop  after merge with lst are:',nrow(myprop),"\n")
@@ -310,7 +311,7 @@ server<-function(input, output,session) {
       cat('merging rainFall data with proportion of sites in alert...')
       myprop=merge(myprop,pmm[,list(code,pmm_value)],
                    by.x=c("code"),
-                   by.y=c("code") )
+                   by.y=c("code"), all.x=T )
       cat('DONE\n')
       
       
@@ -326,7 +327,8 @@ server<-function(input, output,session) {
         cat('nrow of myprop  after merge with llin are:',nrow(myprop),"\n")
         
         cat('merging CAID/IRS data with proportion of sites in alert...')
-        myprop=merge(myprop,caid[,list(code,caid_value)],by.x=c("code"),
+        myprop=merge(myprop,caid[,list(code,caid_value)],
+                     by.x=c("code"),
                      by.y=c("code"),all.x=T)
         cat('DONE\n')
         cat('nrow of myprop  after merge with caid are:',nrow(myprop),"\n")
@@ -335,14 +337,14 @@ server<-function(input, output,session) {
         cat('merging LLIN data with proportion of sites in alert...')
         myprop=merge(myprop,mild[,list(code,mild_value,facies)],
                      by.x=c("code","facies"),
-                     by.y=c("code","facies"))
+                     by.y=c("code","facies"), all.x=T)
         cat('DONE\n')
         cat('nrow of myprop  after merge with llin are:',nrow(myprop),"\n")
         
         cat('merging CAID/IRS data with proportion of sites in alert...')
         myprop=merge(myprop,caid[,list(code,caid_value,facies)],
                      by.x=c("code","facies"),
-                     by.y=c("code","facies"))
+                     by.y=c("code","facies"), all.x=T)
         cat('DONE\n')
         cat('nrow of myprop  after merge with caid are:',nrow(myprop),"\n")
       }

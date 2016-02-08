@@ -1,6 +1,4 @@
 calculate_percentile=function(data=mydata,
-                              #week_choice=input$week_choice,
-                              #year_choice=input$year_choice,
                               week_length=input$comet_map,
                               percentile_value=input$Centile_map
                               )

@@ -1,11 +1,10 @@
 ##########################Map UI #############################
 map_display=list(
-  #leafletOutput("madagascar_map"), 
-  plotOutput("madagascar_map",
-             click = "madagascar_map_click",
-             brush = brushOpts(
-               id = "madagascar_map_brush"
-             )),
-  tags$br(),
+  conditionalPanel( condition = "input.mapchoice=='leaflet'", leafletOutput("madagascar_map")),
+  conditionalPanel( condition = "input.mapchoice=='other'", plotOutput("madagascar_map2",
+                                                                       click = "madagascar_map2_click",
+                                                                       brush = brushOpts(id = "madagascar_map2_brush"))
+    ),
+  tags$br(), tags$br(),
   plotlyOutput("weekly_disease_cases_persite"))
 

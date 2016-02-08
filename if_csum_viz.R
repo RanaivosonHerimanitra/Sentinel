@@ -14,4 +14,6 @@ if ( input$Algorithmes_eval=="Csum") {
                           week_Csum_map=input$week_Csum_map,
                           year_choice=input$year_choice,byvar="code")$propsite_alerte_csum_byfacies
   }
+  #choose to display >2010
+  myprop=myprop[year(deb_sem)>2009]
 }

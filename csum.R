@@ -133,7 +133,7 @@ calculate_csum = function (data=mydata,
                              by.x=c(byvar,"facies"),by.y=c(byvar,"facies"))
   rm(Nbsite_withdata);rm(Nbsite_beyond);gc()
   cat("DONE\n")
- 
+  
   return(list(
     csum_alerte_currentweek=csum_alerte[as.Date(deb_sem)==max_deb_sem-7,],
     csum_alerte=csum_alerte,

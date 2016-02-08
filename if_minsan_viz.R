@@ -11,4 +11,6 @@ if ( input$Algorithmes_eval=="MinSan") {
                             minsan_consecutive_week=input$minsan_consecutive_week,
                             byvar="code")$propsite_alerte_minsan_byfacies
   }
+  #choose to display >2010
+  myprop=myprop[year(deb_sem)>2009]
 }

@@ -32,6 +32,10 @@ diseases_choices=selectInput(inputId = "diseases", label="Select a disease to mo
                              choices=list("Malaria" = "Malaria",
                                           "Diarrhée"="Diarrhée"
                              ),selected = "Malaria")
+map_choices = radioButtons(inputId = "mapchoice",
+                           label = "Choose a map:",
+                           c("Leaflet"="leaflet","Other"="other")
+                           )
 myradio_map= radioButtons(inputId="Algorithmes_eval", label="Algorithms:",
                           list(  "Percentile" = "Percentile",
                                  "MinSan" = "MinSan",
@@ -131,9 +135,8 @@ mycondparam_map_ind=  conditionalPanel(
 )
 map_parameters=box(status = "primary", solidHeader = TRUE,
                    collapsible = TRUE,title="Parameters",width=4,
-                  
+                   
                    myradio_map,
-                  
                    mycondparam_map_percentile,
                    mycondparam_map_minsan,
                    mycondparam_map_cumsum,

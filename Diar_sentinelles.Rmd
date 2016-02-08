@@ -46,16 +46,19 @@ for ( k in 2:6 )
 Diarrh_feb=mydata[as.Date(deb_sem) %in% semaine,list(deb_sem,sites,diarh_feb)]
 #transform NA into XX
 Diarrh_feb$diarh_feb=as.character(Diarrh_feb$diarh_feb)
-Diarrh_feb[,diarh_feb:=ifelse(is.na(diarh_feb)==T,"xx",diarh_feb)]
+Diarrh_feb[,diarh_feb:=ifelse(is.na(diarh_feb)==T,"na",diarh_feb)]
 Diarrh_feb[,diarh_feb:=ifelse(nchar(diarh_feb)<2,paste0("0",diarh_feb),diarh_feb)]
 
 #inline historical occurence:
 Diarrh_feb[,vals:=paste(diarh_feb,collapse = "-"),by="sites"]
 #append latest week per site:
 Diarrh_feb[,diarh_feb:=NULL]
+lastweek=unique(mydata[as.Date(deb_sem)==max_deb_sem-7,list(sites,diarh_feb)])
+lastweek[,diarh_feb:=as.character(diarh_feb)]
+lastweek[is.na(diarh_feb)==T,diarh_feb:="na"]
 Diarrh_feb= merge(unique(Diarrh_feb[,list(sites,vals)]), 
-               unique(mydata[as.Date(deb_sem)==max_deb_sem-7,list(sites,diarh_feb)]),
-               by.x="sites", by.y="sites")
+                  lastweek, by.x="sites", by.y="sites")
+              
 Diarrh_feb= merge(Diarrh_feb,sentinel_latlong[,list(name,sites)],
                   by.x="sites",by.y="sites")
 Diarrh_feb[,sites:=NULL]; 
@@ -68,14 +71,17 @@ setnames(Diarrh_feb,c("name","vals","diarh_feb"),
 Diarrh=mydata[as.Date(deb_sem) %in% semaine,list(deb_sem,sites,diarh)]
 #transform NA into XX
 Diarrh$diarh=as.character(Diarrh$diarh)
-Diarrh[,diarh:=ifelse(is.na(diarh)==T,"xx",diarh)]
+Diarrh[,diarh:=ifelse(is.na(diarh)==T,"na",diarh)]
 Diarrh[,diarh:=ifelse(nchar(diarh)<2,paste0("0",diarh),diarh)]
 #inline historical occurence:
 Diarrh[,vals:=paste(diarh,collapse = "-"),by="sites"]
 #append latest week per site:
 Diarrh[,diarh:=NULL]
+lastweek=unique(mydata[as.Date(deb_sem)==max_deb_sem-7,list(sites,diarh)])
+lastweek$diarh= as.character(lastweek$diarh)
+lastweek[is.na(diarh)==T,diarh:="na"]
 Diarrh= merge(unique(Diarrh[,list(sites,vals)]), 
-               unique(mydata[as.Date(deb_sem)==max_deb_sem-7,list(sites,diarh)]),
+               lastweek,
                by.x="sites", by.y="sites")
 #merge with sentinel_latlong:
 Diarrh= merge(Diarrh,sentinel_latlong[,list(name,sites)],

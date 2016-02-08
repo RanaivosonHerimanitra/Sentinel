@@ -59,8 +59,6 @@ server<-function(input, output,session) {
     cat('Calculation of percentile and proportion of sites in alert begin...\n')
     source("percentile.R")
     mylist= calculate_percentile(data=mydata,
-                                 #week_choice=input$week_choice,
-                                 # year_choice=input$year_choice
                                  week_length=input$comet_map,
                                  percentile_value=input$Centile_map
                                 )
@@ -89,9 +87,7 @@ server<-function(input, output,session) {
                            Csum_year_map=input$Csum_year_map,
                            Csum_week_map=input$Csum_week_map,
                            Sd_csum_map=input$Sd_csum_map,
-                           #week_choice=input$week_choice,
                            week_Csum_map=input$week_Csum_map
-                          # year_choice=input$year_choice
                            ,byvar="code")
     return (mylist)
     ##############################Output all results in a list: ##################################

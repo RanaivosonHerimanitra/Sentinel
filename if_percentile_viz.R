@@ -13,4 +13,6 @@ if ( input$Algorithmes_eval=="Percentile") {
                                 year_choice=input$year_choice)$propsite_alerte_percentile_byfacies
     
   }
+  #choose to display >2010
+  myprop=myprop[year(deb_sem)>2009]
 }

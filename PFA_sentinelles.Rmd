@@ -10,7 +10,7 @@ source("import1.r");source("preprocessing.R");require(ggplot2); require(gridExtr
 #Retrieve PFA for HTC sites
 mydata= preprocessing_disease(select_htc=F)[["PFA"]]
 
-#aggregate occurence by week:
+#aggregate occurence by week: 100*because rare disease!
 mydata[,occurence:=sum(occurence,na.rm = T),by="code"]
 mydata$deb_sem=as.Date(mydata$deb_sem)
 mydata[,weeks:=week(deb_sem)]
@@ -24,8 +24,13 @@ d= d + ggtitle(label="PFA dans le réseau sentinelle")
 d= d + xlab("Date") + ylab("Nb. Cas")
  
 debut_annee=as.numeric(unique(mydata[weeks==1,deb_sem]))
-d= d + geom_vline(xintercept = debut_annee,linetype=4,colour="purple")
-                        
+d= d + geom_vline(xintercept = debut_annee,linetype=4,colour="green")
+#set ylim to 10 if <10
+mymax=range(as.numeric(mydata$occurence)[is.na(as.numeric(mydata$occurence))==F])
+mymax[2]=ifelse(mymax[2]<10,10,mymax[2])
+#
+d= d + ylim (mymax)
+#
 print(d)
 
 ```
@@ -47,15 +52,17 @@ for ( k in 2:6 )
 X=mydata[as.Date(deb_sem) %in% semaine,list(deb_sem,sites,occurence)]
 #transform NA into XX
 X$occurence=as.character(X$occurence)
-X[,occurence:=ifelse(is.na(occurence)==T,"xx",occurence)]
+X[,occurence:=ifelse(is.na(occurence)==T,"na",occurence)]
 X[,occurence:=ifelse(nchar(occurence)<2,paste0("0",occurence),occurence)]
 #inline historical occurence:
 X[,vals:=paste(occurence,collapse = "-"),by="sites"]
 #append latest week per site:
 X[,occurence:=NULL]
-X= merge(unique(X[,list(sites,vals)]), 
-               unique(mydata[as.Date(deb_sem)==max_deb_sem-7,
-                             list(sites,occurence)]),by.x="sites", by.y="sites")
+lastweek=unique(mydata[as.Date(deb_sem)==max_deb_sem-7,list(sites,occurence)])
+lastweek[,occurence:=as.character(occurence)]
+lastweek[is.na(occurence)==T,occurence:="na"]                             
+X= merge(unique(X[,list(sites,vals)]),lastweek,by.x="sites", by.y="sites")
+              
                
 X= merge(X,sentinel_latlong[,list(name,sites)],by.x="sites",by.y="sites")
 X[,sites:=NULL]; 
@@ -83,9 +90,14 @@ knitr::kable(X[,c("Sites","6 semaines précédentes","Semaine dernière"),with=F
       d=d + geom_bar(stat = "identity",fill='darkblue') 
       debut_annee=as.numeric(unique(X[weeks==1,Date]))
       d= d + geom_vline(xintercept = debut_annee,
-                        linetype=4,colour="purple")
+                        linetype=4,colour="green")
       d=d + ggtitle(label=paste(myname[p]))
-      d=d + xlab("Date (ligne violette=1er janvier)") + ylab("Nb. Cas")
+      d=d + xlab("Date (ligne verte=1er janvier)") + ylab("Nb. Cas")
+      #set ylim to 10 if <10
+mymax=range(as.numeric(X$occurence)[is.na(as.numeric(X$occurence))==F])
+mymax[2]=ifelse(mymax[2]<10,10,mymax[2])
+#
+      d= d + ylim (mymax)
       print(d)
     }
 ```

@@ -27,7 +27,6 @@ generate_plot(htc="all",
 
 ```{r,echo=F,out.extra='',comment='', message=FALSE , warning=FALSE}
 mydata= tdr_malaria(htc=T)
-print(unique(mydata$sites))
 semaine=array()
 max_deb_sem=max(as.Date(mydata$deb_sem))
 semaine[6]= max_deb_sem-2*7 
@@ -44,14 +43,17 @@ malaria=mydata[as.Date(deb_sem) %in% semaine,list(deb_sem,sites,malaria_cases)]
 
 #transform NA into XX
 malaria$malaria_cases=as.character(malaria$malaria_cases)
-malaria[,malaria_cases:=ifelse(is.na(malaria_cases)==T,"xx",malaria_cases)]
+malaria[,malaria_cases:=ifelse(is.na(malaria_cases)==T,"na",malaria_cases)]
 malaria[,malaria_cases:=ifelse(nchar(malaria_cases)<2,paste0("0",malaria_cases),malaria_cases)]
 #inline historical occurence:
 malaria[,vals:=paste(malaria_cases,collapse = "-"),by="sites"]
 #append latest week per site:
 malaria[,malaria_cases:=NULL]
-malaria= merge(unique(malaria[,list(sites,vals)]),                 unique(mydata[as.Date(deb_sem)==max_deb_sem-7,list(sites,malaria_cases)]),
-                by.x="sites", by.y="sites")
+lastweek = unique(mydata[as.Date(deb_sem)==max_deb_sem-7,list(sites,malaria_cases)])
+lastweek[,malaria_cases:=as.character(malaria_cases)]
+lastweek[is.na(malaria_cases)==T,malaria_cases:="na"]
+malaria= merge(unique(malaria[,list(sites,vals)]),lastweek, by.x="sites", by.y="sites")
+               
 #malaria= merge(malaria,sentinel_latlong[,list(name,sites)],by.x="sites",by.y="sites")
 #malaria[,sites:=NULL]; 
 setnames(malaria,c("sites","vals","malaria_cases"),
@@ -64,16 +66,17 @@ fievre=mydata[as.Date(deb_sem) %in% semaine,list(deb_sem,sites,SyndF)]
 
 #transform NA into XX
 fievre$SyndF=as.character(fievre$SyndF)
-fievre[,SyndF:=ifelse(is.na(SyndF)==T,"xx",SyndF)]
+fievre[,SyndF:=ifelse(is.na(SyndF)==T,"na",SyndF)]
 fievre[,SyndF:=ifelse(nchar(SyndF)<2,paste0("0",SyndF),SyndF)]
 #inline historical occurence:
 fievre[,vals:=paste(SyndF,collapse = "-"),by="sites"]
 #append latest week per site:
 fievre[,SyndF:=NULL]
-fievre= merge(unique(fievre[,list(sites,vals)]), 
-              unique(mydata[as.Date(deb_sem)==max_deb_sem-7,
-                            list(sites,SyndF)]),
-              by.x="sites", by.y="sites")
+lastweek= unique(mydata[as.Date(deb_sem)==max_deb_sem-7, list(sites,SyndF)])
+lastweek[,SyndF:=as.character(SyndF)]
+lastweek[is.na(SyndF)==T,SyndF:="na"]                           
+fievre= merge(unique(fievre[,list(sites,vals)]),lastweek , by.x="sites", by.y="sites")
+             
 #                
 # #merge with sentinel_latlong:
 # fievre= merge(fievre,sentinel_latlong[,list(name,sites)],
