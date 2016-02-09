@@ -12,12 +12,12 @@ output: pdf_document
 
 
 ```{r,echo=F,fig.width=10, out.extra='',comment='', message=FALSE , warning=FALSE}
-source("import1.r");source("preprocessing.R");require(ggplot2); require(gridExtra)
+source("import1.R");source("preprocessing.R");require(ggplot2); require(gridExtra)
 #Retrieve Malaria (TDR+ ~~PaluConf) for HTC sites
 mydata= preprocessing_disease(select_htc=TRUE)[["Malaria"]]
 setnames(mydata,"occurence","palu")
 #Retrieve Malaria autochtone for HTC sites:
-palu_autoch= fread("palu_autoch.csv")
+palu_autoch= fread("data/palu_autoch.csv")
 palu_autoch=palu_autoch[as.Date(deb_sem)>=as.Date("2015-06-01"),]
 htc= c("deb_sem","code","abon","ambl","ants","bela",
         "diri","dona","fito","mand","miad","mnld",
@@ -89,12 +89,17 @@ lastweek[,autoch:=as.character(autoch)]
 lastweek[is.na(autoch)==T,autoch:="na"]
 last6_palu_autoch= merge(unique(last6_palu_autoch[,list(sites,vals)]),lastweek, by.x="sites", by.y="sites")
              
-                                 
-setnames(last6_palu_autoch,c("sites","vals","autoch"),
+# merge with sentinel_code :
+sentinel_code=fread('data/sentinel_codes.csv')
+sentinel_code[,sites:=tolower(sites)]
+last6_palu_autoch=merge(last6_palu_autoch,
+                        sentinel_code,by.x="sites",by.y="sites")
+#
+setnames(last6_palu_autoch,c("name","vals","autoch"),
                 c("Sites","6 semaines précédentes","Semaine dernière"))
 
 # #generate tables:
-knitr::kable(last6_palu_autoch,
+knitr::kable(last6_palu_autoch[, c("Sites","6 semaines précédentes","Semaine dernière"),with=F],
               caption="Paludisme autochtone dans le réseau sentinelle HTC")
 ```
 
