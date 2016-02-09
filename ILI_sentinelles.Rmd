@@ -8,7 +8,7 @@ output: pdf_document
 
 
 ```{r,echo=F, fig.width=10, out.extra='',comment='', message=FALSE , warning=FALSE}
-source("import1.r");source("preprocessing.R");require(ggplot2); require(gridExtra)
+source("import1.R");source("preprocessing.R");require(ggplot2); require(gridExtra)
 #Retrieve ILI
 mydata= preprocessing_disease()[["ILI"]]
 
@@ -82,10 +82,12 @@ knitr::kable(X[,c("Sites","6 semaines précédentes","Semaine dernière"),with=F
       X$deb_sem=as.Date(X$deb_sem)
       X[,weeks:=week(deb_sem)]
       setnames(X,"deb_sem","Date")
-      d= ggplot(data=X,
-                aes(x=Date,y=occurence)) 
+      d= ggplot(data=X,aes(x=Date,y=occurence)) 
       d=d + geom_line(color='darkblue') 
+      
       debut_annee=as.numeric(unique(X[weeks==1,Date]))
+      debut_annee=c(min(debut_annee)-365, debut_annee)
+      
       d= d + geom_vline(xintercept = debut_annee,
                         linetype=4,colour="orange")
       d=d + ggtitle(label=paste(myname[p]))
