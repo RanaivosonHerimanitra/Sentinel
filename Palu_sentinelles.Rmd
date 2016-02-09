@@ -9,7 +9,7 @@ output: pdf_document
 
 ```{r,echo=F, fig.width=10, out.extra='',comment='', message=FALSE , warning=FALSE}
 #load source code:
-source("import1.r");source("tdrplus.R");require(ggplot2); require(gridExtra)
+source("import1.R");source("tdrplus.R");require(ggplot2); require(gridExtra)
 mydata= tdr_malaria(htc=F)
 
 source("reporting_plot.R",local = T)
@@ -26,7 +26,7 @@ generate_plot(htc="all",
 
 
 ```{r,echo=F,out.extra='',comment='', message=FALSE , warning=FALSE}
-mydata= tdr_malaria(htc=T)
+mydata= tdr_malaria(htc=F)
 semaine=array()
 max_deb_sem=max(as.Date(mydata$deb_sem))
 semaine[6]= max_deb_sem-2*7 
@@ -41,10 +41,37 @@ for ( k in 2:6 )
 #Malaria selection for last 6 weeks before current week:
 malaria=mydata[as.Date(deb_sem) %in% semaine,list(deb_sem,sites,malaria_cases)]
 
-#transform NA into XX
+#transform NA
 malaria$malaria_cases=as.character(malaria$malaria_cases)
-malaria[,malaria_cases:=ifelse(is.na(malaria_cases)==T,"na",malaria_cases)]
-malaria[,malaria_cases:=ifelse(nchar(malaria_cases)<2,paste0("0",malaria_cases),malaria_cases)]
+malaria[is.na(malaria_cases)==T,malaria_cases:="na"]
+malaria[,malaria_cases:=ifelse(nchar(malaria_cases)<2,paste0("0",malaria_cases),
+                               malaria_cases)]
+#looking for missing sites for each semaine:
+tmp=malaria[,.N,by="deb_sem"]
+#max_eff_site= max(tmp$N)
+#max_semaine = tmp[N==max(N),get("deb_sem")] #maka semaine arbitraire
+#get unique sites for max
+liste_sites= unique(malaria$sites)
+for ( s in unique(malaria$deb_sem) ) #foreach unique semaine
+{ 
+   #if not all sites in the current week in the total liste
+    currentsiteweek= malaria[deb_sem == s,get('sites')]
+    if (  all (liste_sites %in% currentsiteweek   )==F )
+    {
+      missing_site=liste_sites[which(!(liste_sites %in%  currentsiteweek))]
+    for ( p in missing_site)
+      {
+      #cat(p," is missing for semaine:",s,"\n")
+      tmp1 = data.table(deb_sem=s,sites=p,malaria_cases="na")
+      malaria=rbind(malaria,tmp1)
+      rm(tmp1)
+      }
+    }
+    
+    
+}
+setorder(malaria,deb_sem,sites)
+#
 #inline historical occurence:
 malaria[,vals:=paste(malaria_cases,collapse = "-"),by="sites"]
 #append latest week per site:
@@ -52,10 +79,9 @@ malaria[,malaria_cases:=NULL]
 lastweek = unique(mydata[as.Date(deb_sem)==max_deb_sem-7,list(sites,malaria_cases)])
 lastweek[,malaria_cases:=as.character(malaria_cases)]
 lastweek[is.na(malaria_cases)==T,malaria_cases:="na"]
-malaria= merge(unique(malaria[,list(sites,vals)]),lastweek, by.x="sites", by.y="sites")
+malaria= merge(unique(malaria[,list(sites,vals)]),lastweek, 
+               by.x="sites", by.y="sites")
                
-#malaria= merge(malaria,sentinel_latlong[,list(name,sites)],by.x="sites",by.y="sites")
-#malaria[,sites:=NULL]; 
 setnames(malaria,c("sites","vals","malaria_cases"),
                  c("Sites","6 semaines précédentes","Semaine dernière"))
 
@@ -66,8 +92,32 @@ fievre=mydata[as.Date(deb_sem) %in% semaine,list(deb_sem,sites,SyndF)]
 
 #transform NA into XX
 fievre$SyndF=as.character(fievre$SyndF)
-fievre[,SyndF:=ifelse(is.na(SyndF)==T,"na",SyndF)]
+fievre[is.na(SyndF)==T,SyndF:="na"]
 fievre[,SyndF:=ifelse(nchar(SyndF)<2,paste0("0",SyndF),SyndF)]
+#looking for missing sites for each semaine:
+#tmp=fievre[,.N,by="deb_sem"]
+#max_eff_site= max(tmp$N)
+#max_semaine = tmp[N==max(N),get("deb_sem")] #maka semaine arbitraire
+#get unique sites for max
+liste_sites= unique(fievre$sites)
+for ( s in unique(fievre$deb_sem) ) #foreach unique semaine
+{ 
+  currentsiteweek= fievre[deb_sem == s,get('sites')]
+    if (  all ( liste_sites %in% currentsiteweek   )==F )
+    {
+      missing_site=liste_sites[which(!(liste_sites %in%  currentsiteweek))]
+    for ( p in missing_site)
+      {
+      #cat(p," is missing for semaine:",s,"\n")
+      tmp1 = data.table(deb_sem=s,sites=p,SyndF="na")
+      fievre=rbind(fievre,tmp1)
+      rm(tmp1)
+      }
+    }
+}
+setorder(fievre,deb_sem,sites)
+#
+
 #inline historical occurence:
 fievre[,vals:=paste(SyndF,collapse = "-"),by="sites"]
 #append latest week per site:
@@ -75,25 +125,18 @@ fievre[,SyndF:=NULL]
 lastweek= unique(mydata[as.Date(deb_sem)==max_deb_sem-7, list(sites,SyndF)])
 lastweek[,SyndF:=as.character(SyndF)]
 lastweek[is.na(SyndF)==T,SyndF:="na"]                           
-fievre= merge(unique(fievre[,list(sites,vals)]),lastweek , by.x="sites", by.y="sites")
-             
+fievre= merge(unique(fievre[,list(sites,vals)]),
+              lastweek , by.x="sites", by.y="sites")
 #                
-# #merge with sentinel_latlong:
-# fievre= merge(fievre,sentinel_latlong[,list(name,sites)],
-#               by.x="sites",by.y="sites")
-# fievre[,sites:=NULL]; 
 setnames(fievre,c("sites","vals","SyndF"),
                 c("Sites","6 semaines précédentes","Semaine dernière"))
 
-
-
-
 #generate tables:
 knitr::kable(fievre[,c("Sites","6 semaines précédentes","Semaine dernière"),with=F],
-             caption="Fièvres dans le réseau sentinel HTC")
+             caption="Fièvres dans le réseau sentinel")
 
 knitr::kable(malaria[,c("Sites","6 semaines précédentes","Semaine dernière"),with=F],
-             caption="Paludisme dans le réseau sentinel HTC")
+             caption="Paludisme dans le réseau sentinel")
 ```
 
 ```{r,echo=F, fig.show = "hold" ,out.width = '50%', out.extra='',comment='', message=FALSE , warning=FALSE}
