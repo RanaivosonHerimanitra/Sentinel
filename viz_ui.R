@@ -11,6 +11,8 @@ algoviz_display=tabItem(tabName="myalgoviz",
                            box(status = "primary",title = "Check boxes to display time series:",
                                solidHeader = TRUE,myhfi,width = 12)
                             ),
+                     
+                     sentinel_sites,
                      fluidRow( box(status = "primary", solidHeader = TRUE,
                                    collapsible = TRUE, plotlyOutput("malariacases"),width = 12)
 #                                ,

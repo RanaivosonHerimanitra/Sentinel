@@ -64,7 +64,7 @@ if ( exists("PaluConf")==F ) #to speed up things
     caid=tbl(sentinel,"caid")
     
     #cat('query of mild\n')
-    mild<-fread("mild_export.csv") 
+    mild<-fread("data/mild_export.csv") 
     
     #cat('query of TDR effectif\n')
      tdr_eff= tbl(sentinel,
