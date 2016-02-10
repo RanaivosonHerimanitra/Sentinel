@@ -35,8 +35,7 @@ calculate_csum = function (data=mydata,
   
   #Csum algo begins:
   csum_alerte= data[as.Date(deb_sem) %in% last52weeks,]  #init
-  print(last52weeks)
-  Sys.sleep(100)
+  
   csum_alerte[,alert_status:="normal"] #init
   for ( w in mydebsem )
   {
