@@ -10,6 +10,7 @@ calculate_csum = function (data=mydata,
 {
   #take most recent week in the data:
   max_deb_sem= max(as.Date(data$deb_sem))
+  last52weeks= unique(as.Date(data$deb_sem))[order(unique(as.Date(data$deb_sem)),decreasing = T)[1:52]]
   
   cat('year range during which moving average will be calculated are: ')
   year_range= (as.numeric(year_choice)-Csum_year_map):(as.numeric(year_choice)-1)
@@ -28,12 +29,14 @@ calculate_csum = function (data=mydata,
       Lleft= (Csum_week_map - 1)/2
     }
   
-  #sites and weeks of the current year
-  mysites= unique(data[years %in% year(Sys.Date()),get("sites")])
-  mydebsem =unique(data[years %in% year(Sys.Date()) ,get("deb_sem")])
+  #sites and weeks for the last 52 weeks:
+  mysites= unique(data[ as.Date(deb_sem) %in% last52weeks,get("sites")])
+  mydebsem =unique(data[ as.Date(deb_sem) %in% last52weeks ,get("deb_sem")])
   
   #Csum algo begins:
-  csum_alerte= data[years == year(Sys.Date()),]  #init
+  csum_alerte= data[as.Date(deb_sem) %in% last52weeks,]  #init
+  print(last52weeks)
+  Sys.sleep(100)
   csum_alerte[,alert_status:="normal"] #init
   for ( w in mydebsem )
   {
@@ -43,7 +46,7 @@ calculate_csum = function (data=mydata,
     #loop thru all weeks of this year
     for ( p in 2:length(year_range) )
     {
-      #(Sys.Date()-7) because latest finished week:
+      
       past_date_range= c(past_date_range,
                          ( as.Date(w) -p*365 - Lleft*7 ):( as.Date(w)- p*365  + Lright*7 ))
     }

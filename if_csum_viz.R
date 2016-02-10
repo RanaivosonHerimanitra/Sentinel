@@ -1,3 +1,4 @@
+source("csum.R")
 if ( input$Algorithmes_eval=="Csum") {
   cat('You choose',input$Algorithmes_eval,'algorithm for data visualization...\n')
   if ( input$Cluster_algo=="Total" )

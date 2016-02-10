@@ -81,8 +81,11 @@ lastweek[,malaria_cases:=as.character(malaria_cases)]
 lastweek[is.na(malaria_cases)==T,malaria_cases:="na"]
 malaria= merge(unique(malaria[,list(sites,vals)]),lastweek, 
                by.x="sites", by.y="sites")
-               
-setnames(malaria,c("sites","vals","malaria_cases"),
+#merge with sentinel_latlong to display name
+malaria=merge(malaria,sentinel_latlong[,list(sites,name)],
+             by.x="sites",by.y="sites")
+#
+setnames(malaria,c("name","vals","malaria_cases"),
                  c("Sites","6 semaines précédentes","Semaine dernière"))
 
 
@@ -127,8 +130,11 @@ lastweek[,SyndF:=as.character(SyndF)]
 lastweek[is.na(SyndF)==T,SyndF:="na"]                           
 fievre= merge(unique(fievre[,list(sites,vals)]),
               lastweek , by.x="sites", by.y="sites")
+#merge with sentinel_latlong to display name
+fievre=merge(fievre,sentinel_latlong[,list(sites,name)],
+             by.x="sites",by.y="sites")
 #                
-setnames(fievre,c("sites","vals","SyndF"),
+setnames(fievre,c("name","vals","SyndF"),
                 c("Sites","6 semaines précédentes","Semaine dernière"))
 
 #generate tables:

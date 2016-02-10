@@ -109,12 +109,7 @@ for ( j in mycode )
                    alerte_manque_tdr$name,palu_NA,diar_NA))
   #mysites[mysites %in% tana_centre]="Antananarivo"
   mysites=unique(mysites)
- 
-#   for ( k in mysites )
-#   {
-#       source("generate_narration.R",local = T)
-#   }
-  
+  # k in mysites ---
   unlist(lapply(mysites, function(k) source("generate_narration.R",local = T)));
 }
 

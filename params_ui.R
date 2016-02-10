@@ -141,7 +141,8 @@ map_parameters=box(status = "primary", solidHeader = TRUE,
                    mycondparam_map_minsan,
                    mycondparam_map_cumsum,
                    mycondparam_map_mcases,
-                   mycondparam_map_ind,
-                   sentinel_sites
+                   mycondparam_map_ind
+                    ,
+                    sentinel_sites
                   
 )

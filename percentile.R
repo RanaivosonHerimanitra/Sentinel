@@ -45,14 +45,7 @@ calculate_percentile=function(data=mydata,
                           quantile(occurence,probs=percentile_value/100,na.rm=T),by="sites"]
     setnames(mypercentile,old="V1",new="n_percentile")
     cat("DONE\n")
-#     if (any(mypercentile$n_percentile==0.0)==T)
-#     {
-#       cat("handle case where n_percentile == 0,...")
-#       mypercentile[n_percentile==0.0,n_percentile:=1.0]
-#       cat("DONE\n")
-#     }
-    
-    
+
     cat("merge",percentile_value,"-percentile with all the data(selected disease)...")
     setkey(data,sites);setkey(mypercentile,sites)
     data=merge(data,mypercentile,by.x="sites",by.y="sites")
@@ -71,8 +64,6 @@ calculate_percentile=function(data=mydata,
     cat("DONE\n")
     
     #NEW ALGORITHM TO OUTPUT ALERT:
-    
-    #lg = function(x) c(x[-1],-1)
     lg = function (x) c( NA, x[-length(x)])
       data[,mylag1:=lg(occurence),by="sites"]
       data[,mylag2:=lg(mylag1),by="sites"]
@@ -83,7 +74,7 @@ calculate_percentile=function(data=mydata,
       data[,alert_status2:=ifelse(occurence>=n_percentile &  mylag1>=n_percentile ,"alert","normal")]
       data[,alert_status1:=ifelse(occurence>=n_percentile,"alert","normal")]
    
-      #chosen week length to be renamed:
+    #chosen week length to be renamed:
     setnames(data,paste0("alert_status",week_length),"alert_status")
     #END OF NEW ALGORITHM
     cat('recode alert_status into NA for those without data...')
@@ -138,7 +129,8 @@ calculate_percentile=function(data=mydata,
   setnames(Nbsite_withdata,"V1","eff_total")
   propsite_alerte_percentile_byfacies=merge(x=Nbsite_withdata,
                                    y=Nbsite_beyond,
-                                   by.x=c("code","facies"),by.y=c("code","facies"),all.x=T)
+                                   by.x=c("code","facies"),
+                                   by.y=c("code","facies"),all.x=T)
   propsite_alerte_percentile_byfacies[,prop:=ifelse(is.na(eff_beyond/eff_total)==T,0.0,eff_beyond/eff_total)]
   
   cat("DONE\n")

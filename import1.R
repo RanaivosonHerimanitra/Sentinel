@@ -73,19 +73,19 @@ if ( exists("PaluConf")==F ) #to speed up things
     if (writing_to_disk==T )
     {
       #cat('writing data locally...')
-      write.table(PaluConf,"PaluConf.csv",sep=";",row.names=F)
-      write.table(Consultations,"Consultations.csv",sep=";",row.names=F)
-      write.table(SyndF,"SyndF.csv",sep=";",row.names=F)
-      write.table(Diarrh,"Diarrh.csv",sep=";",row.names=F)
+      write.table(PaluConf,"data/PaluConf.csv",sep=";",row.names=F)
+      write.table(Consultations,"data/Consultations.csv",sep=";",row.names=F)
+      write.table(SyndF,"data/SyndF.csv",sep=";",row.names=F)
+      write.table(Diarrh,"data/Diarrh.csv",sep=";",row.names=F)
       write.table(Diarrh_feb,"Diarrh_feb.csv",sep=";",row.names=F)
-      write.table(lst,"lst.csv",sep=";",row.names=F)
-      write.table(ndvi,"ndvi.csv",sep=";",row.names=F)
-      write.table(pmm,"pmm.csv",sep=";",row.names=F)
-      write.table(caid,"caid.csv",sep=";",row.names=F)
-      write.table(tdr_eff,"tdr_eff.csv",sep=";",row.names=F)
-      write.table(ili,"ili.csv",sep=";",row.names=F)
-      write.table(pfa,"pfa.csv",sep=";",row.names=F)
-      write.table(palu_autoch,"palu_autoch.csv",sep=";",row.names=F)
+      write.table(lst,"data/lst.csv",sep=";",row.names=F)
+      write.table(ndvi,"data/ndvi.csv",sep=";",row.names=F)
+      write.table(pmm,"data/pmm.csv",sep=";",row.names=F)
+      write.table(caid,"data/caid.csv",sep=";",row.names=F)
+      write.table(tdr_eff,"data/tdr_eff.csv",sep=";",row.names=F)
+      write.table(ili,"data/ili.csv",sep=";",row.names=F)
+      write.table(pfa,"data/pfa.csv",sep=";",row.names=F)
+      write.table(palu_autoch,"data/palu_autoch.csv",sep=";",row.names=F)
       #cat('DONE\n')
     }
     
@@ -95,20 +95,20 @@ if ( exists("PaluConf")==F ) #to speed up things
     
   } else {
     setwd('/media/herimanitra/DONNEES/IPM_sentinelle/sentinel_hrmntr 291115/Sentinel')
-    PaluConf=fread("PaluConf.csv")
-    Consultations=fread("Consultations.csv")
-    SyndF=fread("SyndF.csv")
-    Diarrh=fread("Diarrh.csv")
-    Diarrh_feb=fread("Diarrh_feb.csv")
-    lst=fread("lst.csv")
-    ndvi=fread("ndvi.csv")
-    pmm=fread("pmm.csv")
-    caid=fread("caid.csv")
-    mild=fread("mild_export.csv")
-    ili=fread("ili.csv")
-    pfa=fread("pfa.csv")
-    palu_autoch=fread("palu_autoch.csv")
-    tdr_eff=fread("tdr_eff.csv");
+    PaluConf=fread("data/PaluConf.csv")
+    Consultations=fread("data/Consultations.csv")
+    SyndF=fread("data/SyndF.csv")
+    Diarrh=fread("data/Diarrh.csv")
+    Diarrh_feb=fread("data/Diarrh_feb.csv")
+    lst=fread("data/lst.csv")
+    ndvi=fread("data/ndvi.csv")
+    pmm=fread("data/pmm.csv")
+    caid=fread("data/caid.csv")
+    mild=fread("data/mild_export.csv")
+    ili=fread("data/ili.csv")
+    pfa=fread("data/pfa.csv")
+    palu_autoch=fread("data/palu_autoch.csv")
+    tdr_eff=fread("data/tdr_eff.csv");
     setnames(tdr_eff,"Centre2","sites")
     tdr_eff[,code:=paste0(Annee,"_",Semaine)]
     tdr_eff=tdr_eff[,list(sum(SyndF,na.rm = T),sum(TestPalu,na.rm = T)),by="sites,code"]
@@ -119,7 +119,7 @@ if ( exists("PaluConf")==F ) #to speed up things
   
   
   #cat('query of lat/long of sites...')
-  sentinel_latlong=fread("sentinel.csv");
+  sentinel_latlong=fread("data/sentinel.csv");
   setnames(sentinel_latlong,"CODE","sites")
   sentinel_latlong[,sites:=tolower(sites)]
  

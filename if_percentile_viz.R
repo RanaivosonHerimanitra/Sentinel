@@ -1,5 +1,5 @@
 if ( input$Algorithmes_eval=="Percentile") {
-  cat('You choose',input$Algorithmes_eval,'algorithm for data visualization...\n')
+    cat('You choose',input$Algorithmes_eval,'algorithm for data visualization...\n')
   if ( input$Cluster_algo=="Total" )
   {
     myprop=percentile_algorithm()$propsite_alerte_percentile
@@ -7,10 +7,8 @@ if ( input$Algorithmes_eval=="Percentile") {
     cat('You choose to display by:',input$Cluster_algo,"\n")
     mydata=preprocessing()
     myprop=calculate_percentile(data=mydata,
-                                week_choice=input$week_choice,
                                 week_length=input$comet_map,
-                                percentile_value=input$Centile_map,
-                                year_choice=input$year_choice)$propsite_alerte_percentile_byfacies
+                                percentile_value=input$Centile_map)$propsite_alerte_percentile_byfacies
     
   }
   #choose to display >2010

@@ -26,6 +26,8 @@ d= d + ggtitle(label="ILI dans le réseau sentinelle")
 d= d + xlab("Date") + ylab("Nb. Cas")
  
 debut_annee=as.numeric(unique(mydata[weeks==1,deb_sem]))
+debut_annee=c(min(debut_annee)-365, debut_annee)
+      
 d= d + geom_vline(xintercept = debut_annee,linetype=4,colour="orange")
                         
 print(d)

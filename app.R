@@ -12,7 +12,7 @@ if ( getwd()!="/srv/shiny-server/sentinel_hrmntr")
 ##############################################server ######################
 source("facies_class.R")
 server<-function(input, output,session) {
-  source("import1.r")
+  source("import1.R")
   #reactive computation of detection algorithms 
   #(centile,MinSan,C-sum,TDR+/fiever==>case of Malaria) 
   #depending on different parameters:
@@ -59,8 +59,6 @@ server<-function(input, output,session) {
     cat('Calculation of percentile and proportion of sites in alert begin...\n')
     source("percentile.R")
     mylist= calculate_percentile(data=mydata,
-                                 #week_choice=input$week_choice,
-                                 # year_choice=input$year_choice
                                  week_length=input$comet_map,
                                  percentile_value=input$Centile_map
                                 )
@@ -72,8 +70,6 @@ server<-function(input, output,session) {
     cat('Calculation of minsan and proportion of sites in alert begin...\n')
     source("minsan.R")
     mylist=calculate_minsan(data=mydata,slope_minsan=input$slope_minsan,
-                            #week_choice=input$week_choice,
-                            #year_choice=input$year_choice,
                             minsan_weekrange=input$minsan_weekrange,
                             minsan_consecutive_week=input$minsan_consecutive_week,
                             byvar="code")
@@ -89,9 +85,7 @@ server<-function(input, output,session) {
                            Csum_year_map=input$Csum_year_map,
                            Csum_week_map=input$Csum_week_map,
                            Sd_csum_map=input$Sd_csum_map,
-                           #week_choice=input$week_choice,
                            week_Csum_map=input$week_Csum_map
-                          # year_choice=input$year_choice
                            ,byvar="code")
     return (mylist)
     ##############################Output all results in a list: ##################################
@@ -299,7 +293,6 @@ server<-function(input, output,session) {
                    by.y=c("code"), all.x=T )
       cat('DONE\n')
       cat('nrow of myprop  after merge with ndvi are:',nrow(myprop),"\n")
-      
       cat('merging temperature data with proportion of sites in alert...')
       myprop=merge(myprop,lst[,list(code,temperature)],
                    by.x=c("code"),
@@ -361,7 +354,8 @@ server<-function(input, output,session) {
       cat('DONE\n')
       #Initialization of the data:
       a= dygraph( data= myprop0  ,main =  mytitle)  
-      a= a %>% dySeries("prop", label = "%sites in alert") 
+    
+      a= a %>% dySeries("prop", label = "%sites in alert", color = "red") 
       
       cat("display High Frequency Indicators depending on check box choices...\n")
       source("temp_choice.R",local = T)
@@ -372,6 +366,7 @@ server<-function(input, output,session) {
       cat("DONE\n")
       #final output:
       a= a %>%   dyAxis("y", label = "Values") %>% dyRangeSelector() 
+      a = a %>%  dyOptions(fillGraph = F)
       return(a)
 
   })
@@ -416,7 +411,7 @@ server<-function(input, output,session) {
     madagascar_map=leaflet()
     madagascar_map=leaflet(sentinel_latlong) 
     madagascar_map=madagascar_map %>% setView(lng = 47.051532 , 
-                                              lat =-19.503781 , zoom = 6) 
+                                              lat =-19.503781 , zoom = 5) 
     madagascar_map=madagascar_map %>% addTiles() 
 #     tmp=as.data.frame(sentinel_latlong[1:4,])
 #     madagascar_map=madagascar_map %>% addPolygons(data = tmp, 
@@ -611,7 +606,7 @@ server<-function(input, output,session) {
 
 ##############################################User interface ##############
 #skeleton of the user interface:
-source('initialize_ui.r')
+source('initialize_ui.R')
 ui = dashboardPage(skin = "blue",
   dashboardHeader(title="Surveillance sentinelle",titleWidth="233"),
   dashboardSidebar(
