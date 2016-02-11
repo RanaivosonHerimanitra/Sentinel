@@ -366,7 +366,12 @@ server<-function(input, output,session) {
       cat("DONE\n")
       #final output:
       a= a %>%   dyAxis("y", label = "Values") %>% dyRangeSelector() 
-      a = a %>%  dyOptions(fillGraph = F)
+      a = a %>%  dyOptions(useDataTimezone =T,
+                           retainDateWindow=T,
+                           digitsAfterDecimal = 0,
+                           fillGraph = FALSE,
+                           fillAlpha=0.0 )
+                          
       return(a)
 
   })
