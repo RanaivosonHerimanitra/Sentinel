@@ -5,15 +5,14 @@ create_facies = function (data=PaluConf)
   South<-c("abv","ejd")
   High_land<-c("cda","atb","bos","tsl","mjr","bhk","fns","ajb")
   Fringe<-c("ajb","iho","tdd","abz","mrg")
-  excepted_East<- c("abv","abz","ahh","ajb","atb","bel","bhk","boe","bos",
-                    "cda","die",
-                    "dri","ejd","fns","iho","mae","mdv","mhj","mia","mjr",
-                    "mrb","mrg","mtn",
-                    "nsb","tdd","tlr","tsl")
+  excepted_East<- c("abv","abz","ahh","ajb","atb","bel","bhk","boe","bos","cda",
+                    "die","dri","ejd","fns","iho","mae","mdv","mhj","mia","mjr",
+                    "mrb","mrg","mtn","nsb","tdd","tlr","tsl")
+                    
   excepted_High_land<-c("abv","abz","ahh","bel","boe","die","dri","ejd","far","iho",
-                        "mae","mdv","mhj","mia","mnj","mrb","mrg","mrt","mtn","nsb","sbv",
-                        "stm","tdd",
-                        "tgr","tlr","toa")
+                        "mae","mdv","mhj","mia","mnj","mrb","mrg","mrt","mtn","nsb",
+                        "sbv","stm","tdd","tgr","tlr","toa")
+                        
   
   #cat('create a facies variable...')
   setkey(data,"sites")
