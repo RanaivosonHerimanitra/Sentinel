@@ -16,17 +16,6 @@ if ( exists("PaluConf")==F ) #to speed up things
                                port=5432,
                                user="cnx_florian",
                                password="sigflorianipm")
-    #Missing sent:
-#      X=tbl(sentinel,
-#            build_sql('SELECT * FROM "vue_csb_sms_centre_format"'))
-#      x=as.data.frame(X)
-#      X[,code:=paste0(Annee,"_",Semaine)]
-#      X=as.data.table(table(X$code,X$Centre2))
-#      write.table(X,"missing_sent.csv",sep=";",row.names = F)
-     #<3 orange (ou rouge 0)
-    #semaine,sites,date envoi,...
-    
-    
     PaluConf= tbl(sentinel,
                   build_sql('SELECT * FROM "crosstab_paluconf_format"'))
     
@@ -77,7 +66,7 @@ if ( exists("PaluConf")==F ) #to speed up things
       write.table(Consultations,"data/Consultations.csv",sep=";",row.names=F)
       write.table(SyndF,"data/SyndF.csv",sep=";",row.names=F)
       write.table(Diarrh,"data/Diarrh.csv",sep=";",row.names=F)
-      write.table(Diarrh_feb,"Diarrh_feb.csv",sep=";",row.names=F)
+      write.table(Diarrh_feb,"data/Diarrh_feb.csv",sep=";",row.names=F)
       write.table(lst,"data/lst.csv",sep=";",row.names=F)
       write.table(ndvi,"data/ndvi.csv",sep=";",row.names=F)
       write.table(pmm,"data/pmm.csv",sep=";",row.names=F)
