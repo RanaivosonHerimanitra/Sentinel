@@ -478,10 +478,19 @@ server<-function(input, output,session) {
       #load the map
       madagascar_layer=readRDS("madagascar.rds")
       madagascar_map2=ggmap(madagascar_layer,base_layer = ggplot(data = sentinel_latlong,aes(x=Long,y=Lat)))
-      madagascar_map2 = madagascar_map2 + geom_point(data = sentinel_latlong,
-                                                     alpha=0.4,
-                                                     aes(color=alert_status,
-                                                       size=myradius))
+      if ( length(unique(sentinel_latlong$alert_status))!=1) {
+        madagascar_map2 = madagascar_map2 + geom_point(data = sentinel_latlong,
+                                                       alpha=0.4,
+                                                       aes(color=alert_status,
+                                                           size=myradius))
+      } else {
+        madagascar_map2 = madagascar_map2 + geom_point(data = sentinel_latlong,
+                                                       alpha=0.4,
+                                                       aes(color=alert_status,
+                                                           size=myradius),
+                                                       color="blue")
+      }
+      
       madagascar_map2 = madagascar_map2 + scale_size_continuous(range=range(sentinel_latlong$myradius))
       return(madagascar_map2)  
       
