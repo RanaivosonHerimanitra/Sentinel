@@ -100,7 +100,7 @@ calculate_percentile=function(data=mydata,
     cat("prepare alert to be displayed on the map (latest finished week)...")
     percentile_alerte_currentweek=percentile_alerte[as.Date(deb_sem)==max_deb_sem-7,]
     cat("DONE\n")
-    print(percentile_alerte_currentweek)
+   
   cat("calculate weekly prop of sites in alert (all)...")
   
   Nbsite_beyond=data[is.na(occurence)==F & alert_status=="alert",length(unique(sites)),by="code"]
