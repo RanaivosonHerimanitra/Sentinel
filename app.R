@@ -25,7 +25,10 @@ server<-function(input, output,session) {
     mydata=as.data.table(as.data.frame(mydata))
     cat('DONE\n')
     cat("keep only sites that already have historical values...\n")
-    mydata=mydata[,include,with=F]
+    include_index= match(include,names(mydata)) #introduce dplyr
+    #mydata=mydata[,include,with=F]
+    mydata %>% select(include_index)
+    print(mydata)
     cat('reshape PaluConf...')
     mydata=as.data.table(gather(mydata,key=sites,value=occurence,-c(code,deb_sem)))
     cat('DONE\n')
@@ -633,7 +636,8 @@ ui = dashboardPage(skin = "blue",
       menuItem(text="Download diseases report",
                tabName="diparam", 
                icon = icon("building")),
-      menuItem(text="Forecasting",
+      menuItem(text=list("Forecasting", tags$small(class="media-heading",
+                                                   tags$span(class="label label-danger", "available soon"))),
                tabName="myforecast", 
                icon = icon("line-chart"))
   )),
