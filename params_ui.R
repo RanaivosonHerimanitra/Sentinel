@@ -30,7 +30,8 @@ myfacies_algo=selectInput(inputId ="Cluster_algo",
 
 diseases_choices=selectInput(inputId = "diseases", label="Select a disease to monitor",
                              choices=list("Malaria" = "Malaria",
-                                          "Diarrhée"="Diarrhée"
+                                          "Diarrhée"="Diarrhée",
+                                          "ILI"="ILI"
                              ),selected = "Malaria")
 map_choices = radioButtons(inputId = "mapchoice",
                            label = "Choose a map:",
