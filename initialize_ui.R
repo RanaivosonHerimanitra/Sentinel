@@ -185,9 +185,12 @@ tabbox_item= tabItem(tabName = "mytabbox",
                          width = 12,
                          id = "tabset1", 
                          tabPanel("Map", map_display ),
-                         tabPanel("Calendar diseases", heatmap_display),
+                         tabPanel("Diseases calendar", heatmap_display),
                          tabPanel("Visualize", algoviz_display),
-                         tabPanel("Explore past alerts",pastalert_display)
+                         tabPanel(list("Explore past alerts",  
+                                         tags$small(class="media-heading",
+                                                    tags$span(class="label label-danger", "beta"))),
+                                  pastalert_display)
                        ),width = 8)
                      ))
 forecast_item=tabItem(tabName="myforecast",fluidRow(box(title="SARIMA model")))

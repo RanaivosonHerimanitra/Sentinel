@@ -1,6 +1,6 @@
 #whether to run on local for debugging and development purpose
 #or to pull data directly from the server:
-remote_server=F;writing_to_disk=F
+remote_server=T;writing_to_disk=F
 #load required packages:
 source("libraries.R")
 if ( exists("PaluConf")==F ) #to speed up things
@@ -18,10 +18,8 @@ if ( exists("PaluConf")==F ) #to speed up things
                                password="sigflorianipm")
     PaluConf= tbl(sentinel,
                   build_sql('SELECT * FROM "crosstab_paluconf_format"'))
-    
     Consultations= tbl(sentinel,
                        build_sql('SELECT * FROM "crosstab_nxconslttotal_format"'))
-    
     SyndF=tbl(sentinel,
               build_sql('SELECT * FROM "crosstab_syndf_format"'))
     Diarrh=tbl(sentinel,
@@ -40,27 +38,29 @@ if ( exists("PaluConf")==F ) #to speed up things
     #cat('query of Land Surface Temperature(lst)\n')
     lst=tbl(data_iri_env,
             build_sql('SELECT * FROM "groupe_lst_day_format"'))
-    
+    # lst=as.data.table(as.data.frame(lst))
     #cat('query of NDVI\n')
     ndvi=tbl(data_iri_env,
              build_sql('SELECT * FROM "groupe_ndvi_format"'))
-    
+    # ndvi=as.data.table(as.data.frame(ndvi))
     #cat('query of Precipitation(pmm)\n')
     pmm=tbl(data_iri_env,
             build_sql('SELECT * FROM "groupe_precipitation_format"'))
-    
+    # pmm=as.data.table(as.data.frame(pmm))
     #cat('query of CAID\n')
     caid=tbl(sentinel,"caid")
+#    caid=as.data.table(as.data.frame(caid))
     
     #cat('query of mild\n')
     mild<-fread("data/mild_export.csv") 
-    
+    # mild=as.data.table(as.data.frame(mild))
     #cat('query of TDR effectif\n')
      tdr_eff= tbl(sentinel,
                      build_sql('SELECT * FROM "vue_csb_sms_centre_format"'))
     
     if (writing_to_disk==T )
     {
+      #need conversion here----
       #cat('writing data locally...')
       write.table(PaluConf,"data/PaluConf.csv",sep=";",row.names=F)
       write.table(Consultations,"data/Consultations.csv",sep=";",row.names=F)

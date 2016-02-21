@@ -1,10 +1,11 @@
 cat('reading mild and reshaping mild data...')
-mild=as.data.table(as.data.frame(mild))
+#include_index= match(include, names(mild) )
+#mild= mild %>% select(include_index) %>% as.data.frame()
+#mild = mild %>% mutate (code=paste0(year(as.Date(deb_sem)),"_",week(as.Date(deb_sem))))
 mild[,code:=paste0(year(as.Date(deb_sem)),"_",week(as.Date(deb_sem)))]
 mild=mild[,include,with=F]
 mild=as.data.table(gather(mild,key=sites,value=mild_value,-c(code,deb_sem)))
 cat('DONE\n')
-mild=create_facies(mild)
 
 if ( input$Cluster_algo=="Total")
 {
@@ -18,6 +19,8 @@ if ( input$Cluster_algo=="Total")
   mild[,mild_value:=100*numerateur/denominateur]
   cat('DONE\n')
 } else {
+  mild=create_facies(mild)
+  
   cat('calculating proportion of sites that had received intervention in mild by code (date) and by facies...')
   Nbsites_received=mild[mild_value==1,length(unique(sites)),by="code,facies"]
   setnames(Nbsites_received,"V1","numerateur")

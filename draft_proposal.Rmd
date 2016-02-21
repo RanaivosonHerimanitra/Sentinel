@@ -1,0 +1,14 @@
+---
+title: "Epidemiological Diseases surveillance and early detection system"
+author: "Herimanitra R., Biostatistician"
+date: "Institut Pasteur Madagascar"
+output: pdf_document
+---
+
+Introduction:
+
+We develop an early detection system for diseases surveillance in Madagascar
+to help detect and prevent epidemic outbreaks. Advantages of such system are huge. First of all, It is open source so could potentially benefits from contribution of others. Second, It's relevant for policy makers and planners as It is a mean to address issues related to public health which is one of determinants of economic growth in developing economies. Finally, It could be easily transported to other areas such as economic dahsboard, meteorological and weather predictions among many others. The entire system benefits from cutting-edge technology in data collection (sms via android devices) and dashboad design. We argue that its systematic implementation in risky and or developing countries are crucial.
+
+Litterature review:
+

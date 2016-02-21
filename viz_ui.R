@@ -7,7 +7,8 @@ myhfi=list(
                         checkboxInput(inputId="temp",label="Temperature",value = F))
 algoviz_display=tabItem(tabName="myalgoviz",
                      fluidRow( 
-                           dygraphOutput("propsite_alerte"),
+                            showOutput("propsite_alerte", "highcharts"),
+                          # dygraphOutput("propsite_alerte"),
                            box(status = "primary",title = "Check boxes to display time series:",
                                solidHeader = TRUE,myhfi,width = 12)
                             ),

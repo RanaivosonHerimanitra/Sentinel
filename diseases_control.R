@@ -1,5 +1,6 @@
 select_disease = function(disease="Malaria")
 {
+  
   if ( disease=="Malaria") 
   {
     #cat("You have chosen to display",disease,"\n")
