@@ -6,10 +6,7 @@ if ( input$Algorithmes_eval=="MinSan") {
   } else {
     cat('You choose to display by:',input$Cluster_algo,"\n")
     mydata=preprocessing()
-    myprop=calculate_minsan(data=mydata,slope_minsan=input$slope_minsan,
-                            minsan_weekrange=input$minsan_weekrange,
-                            minsan_consecutive_week=input$minsan_consecutive_week,
-                            byvar="code")$propsite_alerte_minsan_byfacies
+    myprop=minsan_algorithm()$propsite_alerte_minsan_byfacies
   }
   #choose to display >2010
   myprop=myprop[year(deb_sem)>2009]

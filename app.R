@@ -247,23 +247,30 @@ server<-function(input, output,session) {
       geom_bar(stat="identity") + scale_fill_manual(values=cols) + ggtitle(paste("Malaria cases in",input$mysites,"since 01/01/2015")) 
     ggplotly(h)
   })
-  #display proportion of sites in alert
-  output$propsite_alerte = renderChart2({
+  HFI = reactive({
     source("create_facies.R")
     #loading and transforming HF Indicators:
-   
-      source("introducing_caid.R",local = T)
-      source("introducing_mild.R",local = T)
-      source("introducing_pmm.R",local = T)
-      source("introducing_lst.R",local = T) 
-      source("introducing_ndvi.R",local = T)
-     
-    
+    source("introducing_caid.R",local = T)
+    source("introducing_mild.R",local = T)
+    source("introducing_pmm.R",local = T)
+    source("introducing_lst.R",local = T) 
+    source("introducing_ndvi.R",local = T)
     #append HFI depending on user choices:
     source("if_percentile_viz.R",local = T)
     source("if_minsan_viz.R",local = T)
     source("if_csum_viz.R",local = T)
-    source("if_tdrfiever_viz.R",local = T)
+    source("if_tdrfiever_viz.R",local = T)  
+    mylist=list(myprop=myprop,caid=caid,mild=mild,pmm=pmm,lst=lst,ndvi=ndvi)
+    return(mylist)
+  })
+  #display proportion of sites in alert
+  output$propsite_alerte = renderChart2({
+    myprop=HFI()$myprop
+    caid=HFI()$caid
+    mild=HFI()$mild
+    pmm=HFI()$pmm
+    lst=HFI()$lst
+    ndvi = HFI()$ndvi
   
         if ( input$Cluster_algo !="Total"  )
         {
@@ -328,15 +335,17 @@ server<-function(input, output,session) {
         }
      #print(myprop)
      h1 <- Highcharts$new()
+     h1$title(text = paste("Weekly prop. of sites in alert for",
+                           input$diseases ,"using",input$Algorithmes_eval))
      h1$chart(type = "spline")
-     h1$series(data = round(100*myprop$prop,1))
+     h1$series(name=paste("%",input$diseases),color='rgba(255,0,0,0.8)',data = round(100*myprop$prop,1))
      #, dashStyle = "longdash"
      h1$xAxis(title= list(text="Date") ,data=(myprop$deb_sem))
-     h1$series(data = round(ifelse(is.na(myprop$pmm_value),0,myprop$pmm_value),1))
-     h1$series(data = round(ifelse(is.na(myprop$caid_value),0,myprop$caid_value)))
-     h1$series(data = round(ifelse(is.na(myprop$temperature),0,myprop$temperature)))
-     h1$series(data = round(ifelse(is.na(myprop$mild_value),0,myprop$mild_value)))
-     h1$series(data = 100*round(ifelse(is.na(myprop$ndvi_value),0,myprop$ndvi_value)))
+     h1$series(name="pmm",data = round(ifelse(is.na(myprop$pmm_value),0,myprop$pmm_value),1))
+     h1$series(name="CAID",data = round(ifelse(is.na(myprop$caid_value),0,myprop$caid_value)))
+     h1$series(name="Temp.",data = round(ifelse(is.na(myprop$temperature),0,myprop$temperature)))
+     h1$series(name="Mild",data = round(ifelse(is.na(myprop$mild_value),0,myprop$mild_value)))
+     h1$series(name="Ndvi",data = 100*round(ifelse(is.na(myprop$ndvi_value),0,myprop$ndvi_value)))
      h1$legend(symbolWidth = 50)
      h1$addParams(height = 300, dom = 'propsite_alerte')
      return(h1)
