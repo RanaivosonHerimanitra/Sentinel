@@ -251,19 +251,23 @@ server<-function(input, output,session) {
   output$propsite_alerte = renderChart2({
     source("create_facies.R")
     #loading and transforming HF Indicators:
-    source("introducing_caid.R",local = T)
-    source("introducing_mild.R",local = T)
-    source("introducing_pmm.R",local = T)
-    source("introducing_lst.R",local = T) 
-    source("introducing_ndvi.R",local = T)
+   
+      source("introducing_caid.R",local = T)
+      source("introducing_mild.R",local = T)
+      source("introducing_pmm.R",local = T)
+      source("introducing_lst.R",local = T) 
+      source("introducing_ndvi.R",local = T)
+     
+    
     #append HFI depending on user choices:
     source("if_percentile_viz.R",local = T)
     source("if_minsan_viz.R",local = T)
     source("if_csum_viz.R",local = T)
     source("if_tdrfiever_viz.R",local = T)
-    require(rCharts)
+  
         if ( input$Cluster_algo !="Total"  )
         {
+          setkeyv( myprop , c("code","facies") );setkeyv( ndvi , c("code","facies") )
           cat('merging ndvi data with proportion of sites in alert...')
           myprop=merge(myprop,ndvi[,list(code,ndvi_value,facies)],
                        by.x=c("code","facies"),
@@ -272,6 +276,7 @@ server<-function(input, output,session) {
           cat('nrow of myprop  after merge with ndvi are:',nrow(myprop),"\n")
           
           cat('merging temperature data with proportion of sites in alert...')
+          setkeyv( lst , c("code","facies") )
           myprop=merge(myprop,lst[,list(code,temperature,facies)],
                        by.x=c("code","facies"),
                        by.y=c("code","facies"), all.x=T)
@@ -280,19 +285,34 @@ server<-function(input, output,session) {
           cat('nrow of myprop  after merge with lst are:',nrow(myprop),"\n")
           
           cat('merging rainFall data with proportion of sites in alert...')
+          setkeyv( pmm , c("code","facies") )
           myprop=merge(myprop,pmm[,list(code,pmm_value,facies)],
                        by.x=c("code","facies"),
                        by.y=c("code","facies"), all.x=T)
           cat('DONE\n')
           
         } else {
+          setkey(myprop,"code");setkey(caid,"code")
+          cat('merging caid data with proportion of sites in alert...')
+          myprop=merge(myprop,caid[,list(code,caid_value)],
+                       by.x=c("code"),
+                       by.y=c("code"), all.x=T )
+          cat('DONE\n')
+          setkey(mild,"code")
+          cat('merging mild data with proportion of sites in alert...')
+          myprop=merge(myprop,mild[,list(code,mild_value)],
+                       by.x=c("code"),
+                       by.y=c("code"), all.x=T )
+          cat('DONE\n')
           cat('merging ndvi data with proportion of sites in alert...')
+          setkey(ndvi,"code")
           myprop=merge(myprop,ndvi[,list(code,ndvi_value)],
                        by.x=c("code"),
                        by.y=c("code"), all.x=T )
           cat('DONE\n')
           cat('nrow of myprop  after merge with ndvi are:',nrow(myprop),"\n")
           cat('merging temperature data with proportion of sites in alert...')
+          setkey(lst,"code")
           myprop=merge(myprop,lst[,list(code,temperature)],
                        by.x=c("code"),
                        by.y=c("code"), all.x=T )
@@ -305,56 +325,21 @@ server<-function(input, output,session) {
                        by.x=c("code"),
                        by.y=c("code"), all.x=T )
           cat('DONE\n')
-          
-          
         }
-       ################################################################### 
-       if (input$Cluster_algo =="Total" )
-          {
-            cat('merging LLIN data with proportion of sites in alert...')
-            myprop=merge(myprop,mild[,list(code,mild_value)],
-                         by.x=c("code"),
-                         by.y=c("code"),all.x=T)
-            cat('DONE\n')
-            cat('nrow of myprop  after merge with llin are:',nrow(myprop),"\n")
-            
-            cat('merging CAID/IRS data with proportion of sites in alert...')
-            myprop=merge(myprop,caid[,list(code,caid_value)],
-                         by.x=c("code"),
-                         by.y=c("code"),all.x=T)
-            cat('DONE\n')
-            cat('nrow of myprop  after merge with caid are:',nrow(myprop),"\n")
-            
-          } else {
-            cat('merging LLIN data with proportion of sites in alert...')
-            myprop=merge(myprop,mild[,list(code,mild_value,facies)],
-                         by.x=c("code","facies"),
-                         by.y=c("code","facies"), all.x=T)
-            cat('DONE\n')
-            cat('nrow of myprop  after merge with llin are:',nrow(myprop),"\n")
-            
-            cat('merging CAID/IRS data with proportion of sites in alert...')
-            myprop=merge(myprop,caid[,list(code,caid_value,facies)],
-                         by.x=c("code","facies"),
-                         by.y=c("code","facies"), all.x=T)
-            cat('DONE\n')
-            cat('nrow of myprop  after merge with caid are:',nrow(myprop),"\n")
-          }
-    
-    h1 <- Highcharts$new()
-    h1$chart(type = "spline")
-    h1$series(data = myprop$prop)
-    #, dashStyle = "longdash"
-    h1$xAxis(title=list(text="Date") ,data=as.Date(myprop$deb_sem))
-    h1$series(data = myprop$pmm_value)
-    h1$series(data = myprop$caid_value)
-    h1$series(data = myprop$temperature)
-    h1$series(data = myprop$mild_value)
-    h1$series(data = myprop$ndvi_value)
-    h1$legend(symbolWidth = 50)
-    h1$addParams(height = 300, dom = 'propsite_alerte')
-    return(h1)
-    
+     #print(myprop)
+     h1 <- Highcharts$new()
+     h1$chart(type = "spline")
+     h1$series(data = round(100*myprop$prop,1))
+     #, dashStyle = "longdash"
+     h1$xAxis(title= list(text="Date") ,data=(myprop$deb_sem))
+     h1$series(data = round(ifelse(is.na(myprop$pmm_value),0,myprop$pmm_value),1))
+     h1$series(data = round(ifelse(is.na(myprop$caid_value),0,myprop$caid_value)))
+     h1$series(data = round(ifelse(is.na(myprop$temperature),0,myprop$temperature)))
+     h1$series(data = round(ifelse(is.na(myprop$mild_value),0,myprop$mild_value)))
+     h1$series(data = 100*round(ifelse(is.na(myprop$ndvi_value),0,myprop$ndvi_value)))
+     h1$legend(symbolWidth = 50)
+     h1$addParams(height = 300, dom = 'propsite_alerte')
+     return(h1)
   })
 #   output$propsite_alerte = renderDygraph ({
 #     mytitle=paste0("Weekly prop. of sites in alert using ",
