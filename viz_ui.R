@@ -7,18 +7,16 @@
 #                         checkboxInput(inputId="temp",label="Temperature",value = F))
 
 algoviz_display=tabItem(tabName="myalgoviz",
-                     fluidRow( 
-                            showOutput("propsite_alerte", "highcharts")
-                          # dygraphOutput("propsite_alerte"),
-#                            box(status = "primary",title = "Check boxes to display time series:",
-#                                solidHeader = TRUE,myhfi,width = 12)
-                            ),
-                     
-                     sentinel_sites,
-                     fluidRow( box(status = "primary", solidHeader = TRUE,
+                        conditionalPanel(condition = "input.diseases=='Grippe'",
+                        fluidRow(
+                         showOutput("ili_graph","highcharts"))
+                        ),
+                        conditionalPanel(condition = "input.diseases!='Grippe'",
+                        fluidRow(
+                            showOutput("propsite_alerte", "highcharts"))
+                        ),
+                        sentinel_sites,
+                        fluidRow( box(status = "primary", solidHeader = TRUE,
                                    collapsible = TRUE, plotlyOutput("malariacases"),width = 12)
-#                                ,
-#                                box(status = "primary", solidHeader = TRUE,
-#                                    collapsible = TRUE,sentinel_sites,width = 3)
                      )
 )

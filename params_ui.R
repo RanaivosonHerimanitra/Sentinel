@@ -28,16 +28,18 @@ myfacies_algo=selectInput(inputId ="Cluster_algo",
                                "National except East"="excepted_East",
                                "National except Central High Land"="excepted_High_land"))
 
-diseases_choices=selectInput(inputId = "diseases", label="Select a disease to monitor",
+diseases_choices=selectInput(inputId = "diseases", 
+                             label="Select a disease to monitor",
                              choices=list("Malaria" = "Malaria",
                                           "Diarrhée"="Diarrhée",
-                                          "ILI"="ILI"
+                                          "Grippe"="Grippe"
                              ),selected = "Malaria")
 map_choices = radioButtons(inputId = "mapchoice",
                            label = "Choose a map:",
                            c("Leaflet"="leaflet","Other"="other")
                            )
-myradio_map= radioButtons(inputId="Algorithmes_eval", label="Algorithms:",
+myradio_map= radioButtons(inputId="Algorithmes_eval", 
+                          label="Algorithms:",
                           list(  "Percentile" = "Percentile",
                                  "MinSan" = "MinSan",
                                  "C-SUM" = "Csum",

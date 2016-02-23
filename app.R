@@ -20,11 +20,7 @@ server<-function(input, output,session) {
     ##############selection of disease data depending on user input choice##
     source("diseases_control.R")
     mydata=select_disease(disease=input$diseases)
-    ####################################data preprocessing#############
-#     cat("convert PaluConf table to data.table format...")
-#     mydata=as.data.table(as.data.frame(mydata))
-#    mydata= as.tbl(mydata)
-#     cat('DONE\n')
+    ####################################data preprocessing############
     cat("keep only sites that already have historical values...\n")
     include_index= match(include,names(mydata)) #introduce dplyr
     #mydata=mydata[,include,with=F]
@@ -247,6 +243,7 @@ server<-function(input, output,session) {
       geom_bar(stat="identity") + scale_fill_manual(values=cols) + ggtitle(paste("Malaria cases in",input$mysites,"since 01/01/2015")) 
     ggplotly(h)
   })
+  #Load and transform High Frequency indicators
   HFI = reactive({
     source("create_facies.R")
     #loading and transforming HF Indicators:
@@ -263,7 +260,7 @@ server<-function(input, output,session) {
     mylist=list(myprop=myprop,caid=caid,mild=mild,pmm=pmm,lst=lst,ndvi=ndvi)
     return(mylist)
   })
-  #display proportion of sites in alert
+  #display proportion of sites in alert with these HFI
   output$propsite_alerte = renderChart2({
     myprop=HFI()$myprop
     caid=HFI()$caid
@@ -350,140 +347,7 @@ server<-function(input, output,session) {
      h1$addParams(height = 300, dom = 'propsite_alerte')
      return(h1)
   })
-#   output$propsite_alerte = renderDygraph ({
-#     mytitle=paste0("Weekly prop. of sites in alert using ",
-#                    input$Algorithmes_eval,
-#                    " and High Frequency indicators")
-#     
-#     source("create_facies.R"); 
-#     #loading and transforming HF Indicators:
-#     source("introducing_caid.R",local = T)
-#     source("introducing_mild.R",local = T)
-#     source("introducing_pmm.R",local = T)
-#     source("introducing_lst.R",local = T) 
-#     source("introducing_ndvi.R",local = T)
-#     #append HFI depending on user choices:
-#     source("if_percentile_viz.R",local = T)
-#     source("if_minsan_viz.R",local = T)
-#     source("if_csum_viz.R",local = T)
-#     source("if_tdrfiever_viz.R",local = T)
-#     ################################################################### 
-#     cat('nrow of myprop before merging are:',nrow(myprop),'\n')
-#     if ( input$Cluster_algo !="Total"  )
-#     {
-#       cat('merging ndvi data with proportion of sites in alert...')
-#       myprop=merge(myprop,ndvi[,list(code,ndvi_value,facies)],
-#                    by.x=c("code","facies"),
-#                    by.y=c("code","facies"), all.x=T)
-#       cat('DONE\n')
-#       cat('nrow of myprop  after merge with ndvi are:',nrow(myprop),"\n")
-#       
-#       cat('merging temperature data with proportion of sites in alert...')
-#       myprop=merge(myprop,lst[,list(code,temperature,facies)],
-#                    by.x=c("code","facies"),
-#                    by.y=c("code","facies"), all.x=T)
-#       cat('DONE\n')
-#       
-#       cat('nrow of myprop  after merge with lst are:',nrow(myprop),"\n")
-#       
-#       cat('merging rainFall data with proportion of sites in alert...')
-#       myprop=merge(myprop,pmm[,list(code,pmm_value,facies)],
-#                    by.x=c("code","facies"),
-#                    by.y=c("code","facies"), all.x=T)
-#       cat('DONE\n')
-#       
-#     } else {
-#       cat('merging ndvi data with proportion of sites in alert...')
-#       myprop=merge(myprop,ndvi[,list(code,ndvi_value)],
-#                    by.x=c("code"),
-#                    by.y=c("code"), all.x=T )
-#       cat('DONE\n')
-#       cat('nrow of myprop  after merge with ndvi are:',nrow(myprop),"\n")
-#       cat('merging temperature data with proportion of sites in alert...')
-#       myprop=merge(myprop,lst[,list(code,temperature)],
-#                    by.x=c("code"),
-#                    by.y=c("code"), all.x=T )
-#       cat('DONE\n')
-#       
-#       cat('nrow of myprop  after merge with lst are:',nrow(myprop),"\n")
-#       
-#       cat('merging rainFall data with proportion of sites in alert...')
-#       myprop=merge(myprop,pmm[,list(code,pmm_value)],
-#                    by.x=c("code"),
-#                    by.y=c("code"), all.x=T )
-#       cat('DONE\n')
-#       
-#       
-#     }
-#    ################################################################### 
-#    if (input$Cluster_algo =="Total" )
-#       {
-#         cat('merging LLIN data with proportion of sites in alert...')
-#         myprop=merge(myprop,mild[,list(code,mild_value)],
-#                      by.x=c("code"),
-#                      by.y=c("code"),all.x=T)
-#         cat('DONE\n')
-#         cat('nrow of myprop  after merge with llin are:',nrow(myprop),"\n")
-#         
-#         cat('merging CAID/IRS data with proportion of sites in alert...')
-#         myprop=merge(myprop,caid[,list(code,caid_value)],
-#                      by.x=c("code"),
-#                      by.y=c("code"),all.x=T)
-#         cat('DONE\n')
-#         cat('nrow of myprop  after merge with caid are:',nrow(myprop),"\n")
-#         
-#       } else {
-#         cat('merging LLIN data with proportion of sites in alert...')
-#         myprop=merge(myprop,mild[,list(code,mild_value,facies)],
-#                      by.x=c("code","facies"),
-#                      by.y=c("code","facies"), all.x=T)
-#         cat('DONE\n')
-#         cat('nrow of myprop  after merge with llin are:',nrow(myprop),"\n")
-#         
-#         cat('merging CAID/IRS data with proportion of sites in alert...')
-#         myprop=merge(myprop,caid[,list(code,caid_value,facies)],
-#                      by.x=c("code","facies"),
-#                      by.y=c("code","facies"), all.x=T)
-#         cat('DONE\n')
-#         cat('nrow of myprop  after merge with caid are:',nrow(myprop),"\n")
-#       }
-#       ####################################################################
-#       cat('cbind time series data for visualization...')
-#       semaine= as.Date(myprop$deb_sem )  
-#       myprop0=cbind(prop=xts(100*myprop$prop,order.by=semaine))
-#       #remove UTC date:
-# #       old_name=names(myprop0)
-# #       myprop0= to.weekly(myprop0)
-# #       myprop0 = myprop0[,1]
-# #       names(myprop0)=old_name
-#       #
-#       cat('DONE\n')
-#       #Initialization of the data:
-#       a= dygraph( data= myprop0  ,main =  mytitle)  
-#     
-#       a= a %>% dySeries("prop", label = "%sites in alert", color = "red") 
-#       
-#       cat("display High Frequency Indicators depending on check box choices...\n")
-#       source("temp_choice.R",local = T)
-#       source("llin_choice.R",local = T)
-#       source("irs_choice.R",local = T)
-#       source("ndvi_choice.R",local = T)
-#       source("pmm_choice.R",local = T)
-#       cat("DONE\n")
-#       #final output:
-#       a= a %>%   dyAxis("y", label = "Values") %>% dyRangeSelector() 
-#       a = a %>%  dyOptions(useDataTimezone =T,
-#                            retainDateWindow=T,
-#                            digitsAfterDecimal = 0,
-#                            fillGraph = FALSE,
-#                            fillAlpha=0.0 )
-#                           
-#       return(a)
-# 
-#   })
-#   
-  #display sites in alert for the current week into the map
- 
+  #display sites in alert for the current week into the map (02 map choices currently)
     output$madagascar_map <- renderLeaflet({
       if (input$Algorithmes_eval=="Percentile") 
       {
@@ -546,7 +410,6 @@ server<-function(input, output,session) {
                                                        popup = ~name)
     return(madagascar_map)
     })
- 
     output$madagascar_map2 <- renderPlot({
       if (input$Algorithmes_eval=="Percentile") 
       {
@@ -607,7 +470,6 @@ server<-function(input, output,session) {
       return(madagascar_map2)  
       
     },height = 640)
-  
   #click event handler for leaflet:
   selected_site_leaflet=eventReactive(input$madagascar_map_marker_click,{
       event <- input$madagascar_map_marker_click
@@ -628,6 +490,21 @@ server<-function(input, output,session) {
  })
   mymapchoice = reactive({
     return(input$mapchoice)
+  })
+  #render Syndrome Grippal, Syndrom Dengue-Like
+  output$ili_graph = renderChart2({
+    #data processing:
+    tdr_eff= tdr_eff %>% data.frame()
+    
+    #
+    myili <- Highcharts$new()
+    myili$title(text = paste("Weekly prop. of sites in alert for",
+                          input$diseases ,"using",input$Algorithmes_eval))
+    myili$chart(type = "spline")
+    myili$legend(symbolWidth = 50)
+    myili$addParams(height = 300, dom = 'ili_graph')
+    myili$series(name="example",data = 1:1000)
+    return(myili)
   })
   #render weekly malaria cases for a clicked site
   output$weekly_disease_cases_persite = renderPlotly({
@@ -716,7 +593,7 @@ server<-function(input, output,session) {
     #type="scatter3d"
   
   })
-  #download report handler (for Malaria and Diarrhée):
+  #download report handler (for Malaria and Diarrhea):
   output$downloadReport <- downloadHandler(
     filename = "report.pdf",
     content = function(file) {

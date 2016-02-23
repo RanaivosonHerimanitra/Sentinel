@@ -56,11 +56,11 @@ if ( exists("PaluConf")==F ) #to speed up things
     # mild=as.data.table(as.data.frame(mild))
     #cat('query of TDR effectif\n')
      tdr_eff= tbl(sentinel,
-                     build_sql('SELECT * FROM "vue_csb_sms_centre_format"'))
+                     build_sql('SELECT "Centre2" AS "sites","Annee","Semaine","GrippSusp","AutrVirResp","NxConsltTotal" FROM "vue_csb_sms_centre_format"'))
     
     if (writing_to_disk==T )
     {
-      #need conversion here----
+      #need conversion here---- NOT ACTUALLY
       #cat('writing data locally...')
       write.table(PaluConf,"data/PaluConf.csv",sep=";",row.names=F)
       write.table(Consultations,"data/Consultations.csv",sep=";",row.names=F)

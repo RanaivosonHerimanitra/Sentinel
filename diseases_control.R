@@ -16,9 +16,11 @@ select_disease = function(disease="Malaria")
     #cat("You have chosen to display",disease,"\n")
     return(Diarrh_feb)
   }
-  if ( disease=="ILI")
+  if ( disease=="Grippe")
   {
     #cat("You have chosen to display",disease,"\n")
+    #ILI = GrippSusp + AutrVirResp = Syndrome Grippal
+    #Dengue-like = ArboSusp
     return(ili)
   }
   if ( disease=="PFA")

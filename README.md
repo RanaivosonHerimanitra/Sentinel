@@ -28,5 +28,10 @@ A toolkit for early detection of disease outbreaks (Malaria, Diarrhea, etc.)
 
 <img src="minsan.png" >
 
+## CSum algorithm:
+
+`CSum` algorithm consists of comparing `52 lastest weeks` with smoothed mean of past years. Comparison is made week by week. For example,`week 02` of this month is compared with the smoothed mean of `week 02` for past years excluding the 52 latest. Parameters can be tuned such as number of past years from which mean will be calculated, `sd`, degree of smoothing (number of weeks for mean calculation) .It is only efficient when disease presents weekly strong seasonal pattern.
+
+<img src="csum.png" >
 
 
