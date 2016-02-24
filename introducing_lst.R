@@ -2,9 +2,9 @@ cat('reading temperature and reshaping temperature data...')
 
 #lst=lst[,include,with=F]
 include_index= match(include, names(lst) )
-lst= lst %>% select(include_index) %>% as.data.frame()
+lst= lst %>% select(include_index) %>% data.frame()
 
-lst=as.data.table(gather(lst,key=sites,value=temperature,-c(code,deb_sem)))
+lst=data.table(gather(lst,key=sites,value=temperature,-c(code,deb_sem)))
 cat('DONE\n')
 
 

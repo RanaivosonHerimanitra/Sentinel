@@ -245,6 +245,7 @@ server<-function(input, output,session) {
   })
   #Load and transform High Frequency indicators
   HFI = reactive({
+ 
     source("create_facies.R")
     #loading and transforming HF Indicators:
     source("introducing_caid.R",local = T)
@@ -259,9 +260,10 @@ server<-function(input, output,session) {
     source("if_tdrfiever_viz.R",local = T)  
     mylist=list(myprop=myprop,caid=caid,mild=mild,pmm=pmm,lst=lst,ndvi=ndvi)
     return(mylist)
+  
   })
   #display proportion of sites in alert with these HFI
-  output$propsite_alerte = renderChart2({
+  output$propsite_alerte = renderPlotly({
     myprop=HFI()$myprop
     caid=HFI()$caid
     mild=HFI()$mild
@@ -302,50 +304,85 @@ server<-function(input, output,session) {
                        by.x=c("code"),
                        by.y=c("code"), all.x=T )
           cat('DONE\n')
-          setkey(mild,"code")
+          setkey(myprop,"code");setkey(mild,"code")
           cat('merging mild data with proportion of sites in alert...')
           myprop=merge(myprop,mild[,list(code,mild_value)],
                        by.x=c("code"),
                        by.y=c("code"), all.x=T )
           cat('DONE\n')
           cat('merging ndvi data with proportion of sites in alert...')
-          setkey(ndvi,"code")
+          setkey(myprop,"code");setkey(ndvi,"code")
           myprop=merge(myprop,ndvi[,list(code,ndvi_value)],
                        by.x=c("code"),
                        by.y=c("code"), all.x=T )
           cat('DONE\n')
           cat('nrow of myprop  after merge with ndvi are:',nrow(myprop),"\n")
           cat('merging temperature data with proportion of sites in alert...')
-          setkey(lst,"code")
+          setkey(myprop,"code");setkey(lst,"code")
           myprop=merge(myprop,lst[,list(code,temperature)],
                        by.x=c("code"),
                        by.y=c("code"), all.x=T )
           cat('DONE\n')
           
           cat('nrow of myprop  after merge with lst are:',nrow(myprop),"\n")
-          
+          setkey(myprop,"code");setkey(pmm,code)
           cat('merging rainFall data with proportion of sites in alert...')
           myprop=merge(myprop,pmm[,list(code,pmm_value)],
                        by.x=c("code"),
                        by.y=c("code"), all.x=T )
           cat('DONE\n')
         }
-     #print(myprop)
-     h1 <- Highcharts$new()
-     h1$title(text = paste("Weekly prop. of sites in alert for",
-                           input$diseases ,"using",input$Algorithmes_eval))
-     h1$chart(type = "spline")
-     h1$series(name=paste("%",input$diseases),color='rgba(255,0,0,0.8)',data = round(100*myprop$prop,1))
-     #, dashStyle = "longdash"
-     h1$xAxis(title= list(text="Date") ,data=(myprop$deb_sem))
-     h1$series(name="pmm",data = round(ifelse(is.na(myprop$pmm_value),0,myprop$pmm_value),1))
-     h1$series(name="CAID",data = round(ifelse(is.na(myprop$caid_value),0,myprop$caid_value)))
-     h1$series(name="Temp.",data = round(ifelse(is.na(myprop$temperature),0,myprop$temperature)))
-     h1$series(name="Mild",data = round(ifelse(is.na(myprop$mild_value),0,myprop$mild_value)))
-     h1$series(name="Ndvi",data = 100*round(ifelse(is.na(myprop$ndvi_value),0,myprop$ndvi_value)))
-     h1$legend(symbolWidth = 50)
-     h1$addParams(height = 300, dom = 'propsite_alerte')
-     return(h1)
+    #using plotly:
+    p <- plot_ly(myprop, x = deb_sem, y = 100*prop,name=input$diseases)
+    p = add_trace(p, y = caid_value, name = "CAID")
+    p = add_trace(p, y = pmm_value, name = "pmm")
+    p = add_trace(p, y = mild_value, name = "mild")
+    p = add_trace(p, y = temperature, name = "Temp.")
+    p
+    
+   #using rbokeh
+#     p <- figure() %>% ly_lines(x=deb_sem,y=100*prop, data = myprop,color="red")
+#     p <- p %>% ly_lines(x=deb_sem,y=caid_value, data = myprop,color="blue")
+#     p <- p %>% ly_lines(x=deb_sem,y=pmm_value, data = myprop,color="green")
+#     p <- p %>% ly_lines(x=deb_sem,y=ndvi_value, data = myprop,color="orange")
+#     p <- p %>% ly_lines(x=deb_sem,y=mild_value, data = myprop,color="magenta")
+#     p <- p %>% ly_lines(x=deb_sem,y=temperature, data = myprop,color="black")
+#     p
+# using highcharts:    
+#     cat('part1')
+#      h1 <- Highcharts$new()
+#    
+#      h1$title(text = paste("Weekly prop. of sites in alert for",
+#                            input$diseases ,"using",input$Algorithmes_eval))
+#      h1$chart(type = "spline")
+#      h1$series(name=paste("%",input$diseases),color='rgba(255,0,0,0.8)',data = 100*myprop$prop)
+#      #, dashStyle = "longdash"
+#      cat('DONE\n')
+#      
+#      cat('part2')
+#      h1$xAxis(title= list(text="Date") )
+#      h1$series(name="pmm",data = myprop$pmm_value)
+#      cat('DONE\n')
+#      
+#      cat('part3')
+#      h1$series(name="CAID",data = myprop$caid_value)
+#      cat('DONE\n')
+#      
+#      cat('part4')
+#      h1$series(name="Temp.",data = myprop$temperature)
+#      cat('DONE\n')
+#      
+#      cat('part5')
+#      h1$series(name="Mild",data = myprop$mild_value)
+#      cat('DONE\n')
+#      
+#      cat('part6')
+#      h1$series(name="Ndvi",data = 100*myprop$ndvi_value)
+#      h1$legend(symbolWidth = 50)
+#      h1$addParams(height = 300, dom = 'propsite_alerte')
+#      cat('DONE\n')
+#      
+#      h1
   })
   #display sites in alert for the current week into the map (02 map choices currently)
     output$madagascar_map <- renderLeaflet({
@@ -492,19 +529,31 @@ server<-function(input, output,session) {
     return(input$mapchoice)
   })
   #render Syndrome Grippal, Syndrom Dengue-Like
-  output$ili_graph = renderChart2({
+  output$ili_graph = renderPlotly({
     #data processing:
-    tdr_eff= tdr_eff %>% data.frame()
+    #require(profvis)
     
+    tdr_eff= tdr_eff %>% data.frame() ; gc()
+    tdr_eff = tdr_eff %>% mutate( Synd_g = GrippSusp + AutrVirResp )
+    #34 sites we need:
+    sites34= toupper(include[-c(1:2)])
+    #filter rows:
+    tdr_eff= tdr_eff %>% filter(sites %in% sites34 )
     #
-    myili <- Highcharts$new()
-    myili$title(text = paste("Weekly prop. of sites in alert for",
-                          input$diseases ,"using",input$Algorithmes_eval))
-    myili$chart(type = "spline")
-    myili$legend(symbolWidth = 50)
-    myili$addParams(height = 300, dom = 'ili_graph')
-    myili$series(name="example",data = 1:1000)
-    return(myili)
+    p <- plot_ly(tdr_eff, x = deb_sem, y = Synd_g,name="Syndrome Grippal")
+    p = add_trace(tdr_eff, y = ArboSusp, name = "Dengue-Like")
+    p
+    # using highcharts (slow)
+#     myili <- Highcharts$new()
+#     myili$title(text = paste("ILI recensed (34 sites)",
+#                           input$diseases ,"using",input$Algorithmes_eval))
+#     myili$chart(type = "spline")
+#     myili$legend(symbolWidth = 50)
+#     myili$addParams(height = 300, dom = 'ili_graph')
+#     myili$series(name="Syndrome grippal",data =tdr_eff$Synd_g )
+#     myili$series(name="Dengue-Like",data =tdr_eff$ArboSusp )
+#     return(myili)
+    
   })
   #render weekly malaria cases for a clicked site
   output$weekly_disease_cases_persite = renderPlotly({

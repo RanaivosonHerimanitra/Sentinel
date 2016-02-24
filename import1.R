@@ -56,7 +56,7 @@ if ( exists("PaluConf")==F ) #to speed up things
     # mild=as.data.table(as.data.frame(mild))
     #cat('query of TDR effectif\n')
      tdr_eff= tbl(sentinel,
-                     build_sql('SELECT "Centre2" AS "sites","Annee","Semaine","GrippSusp","AutrVirResp","NxConsltTotal" FROM "vue_csb_sms_centre_format"'))
+                     build_sql('SELECT "Date" AS "deb_sem","Centre2" AS "sites","Annee","Semaine","ArboSusp","GrippSusp","AutrVirResp","NxConsltTotal" FROM "vue_csb_sms_centre_format"'))
     
     if (writing_to_disk==T )
     {
