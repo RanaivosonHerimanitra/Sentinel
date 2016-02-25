@@ -9,7 +9,7 @@ output: pdf_document
 
 ```{r,echo=F,fig.width=10, out.extra='',comment='', message=FALSE , warning=FALSE}
 #load source code:
-source("import1.r");source("preprocessing.R");require(ggplot2); require(gridExtra)
+source("import1.R");source("preprocessing.R");require(ggplot2); require(gridExtra)
 mydata= preprocessing_disease()[["Diarrhée"]] #Diarrhée
 setnames(mydata,"occurence","diarh")
 #put Diarrhée fébrile in a temp file before merging
@@ -17,7 +17,7 @@ tmp= preprocessing_disease()[["Diarrhée fébrile"]]
 setnames(tmp,"occurence","diarh_feb")
 mydata=merge(mydata,tmp[,list(sites,code,diarh_feb)],
              by.x=c("sites","code"),by.y=c("sites","code"))
-source("reporting_plot.R",local = T)
+source("reporting_plot.R",local = T) #for plotting nice graphics
 generate_plot(htc="all",
               mydata=mydata,
               disease1.targetvar="diarh_feb",
@@ -89,10 +89,6 @@ Diarrh= merge(Diarrh,sentinel_latlong[,list(name,sites)],
 Diarrh[,sites:=NULL]; 
 setnames(Diarrh,c("name","vals","diarh"),
                 c("Sites","6 semaines précédentes","Semaine dernière"))
-
-
-
-
 #generate tables:
 knitr::kable(Diarrh[,c("Sites","6 semaines précédentes","Semaine dernière"),with=F],
              caption="Diarrhées dans le réseau sentinelle HTC")
@@ -102,9 +98,6 @@ knitr::kable(Diarrh_feb[,c("Sites","6 semaines précédentes","Semaine dernière
 ```
 
 ```{r,echo=F, fig.show = "hold" ,out.width = '50%', out.extra='',comment='', message=FALSE , warning=FALSE}
-#source("import1.r");source("preprocessing.R");require(ggplot2); require(gridExtra)
-#generate plot per site:
-#source("reporting_plot.R",local = T)
 
 #merge with sentinel_latlong:
 mydata=merge(mydata,sentinel_latlong, by.x="sites",by.y="sites")
