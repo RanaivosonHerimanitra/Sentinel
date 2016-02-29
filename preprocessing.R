@@ -5,10 +5,14 @@ preprocessing_disease = function (select_htc=FALSE)
   #initialize a list:
   data_list=list()
   source("diseases_control.R")
-  
-  for ( j in c("Malaria","Diarrhée","Diarrhée fébrile","ILI","PFA") )
+  #--ensure that list here are the same as in source("diseases_control.R")
+  for ( j in c("Malaria","Diarrhée","Diarrhée fébrile","Grippe","PFA") )
   {
+    #cat("Disease:",j,"\n")
     data=select_disease(disease=j)
+    #cat("convert data table to data.table format...")
+    data=as.data.table(as.data.frame(data))
+    
     #sites for the display
     include<-c("deb_sem","code","abv","abz","ahh","ajb","atb","bel","bhk","boe","bos",
                "cda","die","dri","ejd","far","fns","iho","mae","mdv","mhj","mia","mjr",
@@ -35,13 +39,16 @@ preprocessing_disease = function (select_htc=FALSE)
                           "stm","tdd",
                           "tgr","tlr","toa")
     ####################################data preprocessing#############
-    #cat("convert data table to data.table format...")
-    data=as.data.table(as.data.frame(data))
+    
     #cat('DONE\n')
     #cat("keep only sites that already have historical values...\n")
     if (select_htc==FALSE)
     {
-      data=data[,include,with=F]
+      if ( j!="ILI")
+      {
+        data=data[,include,with=F]
+      }
+     
     } else {
       data=data[,htc,with=F]
     }

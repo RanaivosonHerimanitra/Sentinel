@@ -11,7 +11,10 @@ algoviz_display=tabItem(tabName="myalgoviz",
                         fluidRow(
                          #showOutput("ili_graph","highcharts"))
                          #rbokehOutput("ili_graph"))
-                       plotlyOutput("ili_graph"))
+                       plotlyOutput("ili_graph")),
+                       tags$br(),
+                       fluidRow(
+                         plotlyOutput("propili"))
                         ),
                         conditionalPanel(condition = "input.diseases!='Grippe'",
                         fluidRow(

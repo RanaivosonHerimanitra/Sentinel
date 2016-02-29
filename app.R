@@ -220,57 +220,96 @@ server<-function(input, output,session) {
     graph3=mydata[,quantile(occurence,na.rm = T,probs = input$Centile_map/100),by="sites"]
     setnames(graph3,old="V1",new="percentile90")
     cat('DONE\n')
+   
     cat("merging number of cases,mean cases and",input$Centile_map,"th percentile...")
     mygraph=merge(graph1,graph2,by.x=c("sites","weeks"),by.y=c("sites","weeks"))
     mygraph=merge(mygraph,graph3,by.x="sites",by.y="sites")
     rm(graph3);rm(graph2);rm(graph1);gc()
     cat('DONE\n')
+   
     
-    #additionnal transformation to produce stacked bar chart:
+    cat('additionnal transformation to produce stacked bar chart...')
     mygraph=mygraph[sites==mysite,]
     mygraph[,value1:=ifelse(cases>percentile90,cases-percentile90,0)]
     mygraph[,value2:=ifelse(cases>percentile90,percentile90,cases)]
+    cat('DONE\n')
     
-    tmp1=mygraph[,list(weeks,value1)];setnames(tmp1,"value1","cases")
-    tmp2=mygraph[,list(weeks,value2)];setnames(tmp2,"value2","cases")
+    cat('tmp1')
+     tmp1=mygraph[,list(weeks,value1)];setnames(tmp1,"value1","cases")
+    cat('DONE\n')
+    
+    cat('tmp2')
+     tmp2=mygraph[,list(weeks,value2)];setnames(tmp2,"value2","cases")
+    cat('DONE\n')
+    
     tmp1[,Status:=">threshold"]
     tmp2[,Status:="Normal"]
+    
+   
+    
+    cat("merge tmp1 and tmp2...")
     mygraph=rbind(tmp1,tmp2)
+    cat('DONE\n')
+   
+    cat("color and setkeyv")
     cols=c("Normal"="blue",">threshold"="red")
     setkeyv(mygraph,c("weeks","cases"))
-    #end 
+    cat("DONE\n")
+    
     h <- ggplot(mygraph, aes(x=weeks, y=cases,fill=Status)) +
       geom_bar(stat="identity") + scale_fill_manual(values=cols) + ggtitle(paste("Malaria cases in",input$mysites,"since 01/01/2015")) 
     ggplotly(h)
+    
+   
   })
   #Load and transform High Frequency indicators
-  HFI = reactive({
- 
+#   HFI = reactive({
+#  
+#     source("create_facies.R")
+#     #loading and transforming HF Indicators:
+#     source("introducing_caid.R",local = T)
+#     source("introducing_mild.R",local = T)
+#     source("introducing_pmm.R",local = T)
+#     source("introducing_lst.R",local = T) 
+#     source("introducing_ndvi.R",local = T)
+#     #append HFI depending on user choices:
+#     source("if_percentile_viz.R",local = T)
+#     source("if_minsan_viz.R",local = T)
+#     source("if_csum_viz.R",local = T)
+#     source("if_tdrfiever_viz.R",local = T)  
+#     mylist=list(myprop=myprop,caid=caid,mild=mild,pmm=pmm,lst=lst,ndvi=ndvi)
+#     print(str(mylist))
+#     Sys.sleep(250)
+#     return(mylist)
+#   
+#   })
+  #display proportion of sites in alert with these HFI
+  output$propsite_alerte = renderPlotly({
+   
     source("create_facies.R")
+    
     #loading and transforming HF Indicators:
+    
     source("introducing_caid.R",local = T)
+   
+   
     source("introducing_mild.R",local = T)
+   
     source("introducing_pmm.R",local = T)
+   
+    
     source("introducing_lst.R",local = T) 
+   
     source("introducing_ndvi.R",local = T)
-    #append HFI depending on user choices:
+    #Sys.sleep(250)
     source("if_percentile_viz.R",local = T)
     source("if_minsan_viz.R",local = T)
     source("if_csum_viz.R",local = T)
     source("if_tdrfiever_viz.R",local = T)  
-    mylist=list(myprop=myprop,caid=caid,mild=mild,pmm=pmm,lst=lst,ndvi=ndvi)
-    return(mylist)
-  
-  })
-  #display proportion of sites in alert with these HFI
-  output$propsite_alerte = renderPlotly({
-    myprop=HFI()$myprop
-    caid=HFI()$caid
-    mild=HFI()$mild
-    pmm=HFI()$pmm
-    lst=HFI()$lst
-    ndvi = HFI()$ndvi
-  
+    
+    
+   
+    
         if ( input$Cluster_algo !="Total"  )
         {
           setkeyv( myprop , c("code","facies") );setkeyv( ndvi , c("code","facies") )
@@ -528,11 +567,53 @@ server<-function(input, output,session) {
   mymapchoice = reactive({
     return(input$mapchoice)
   })
+  #render Proportion of ILI sur Nombre de consultant
+  output$propili = renderPlotly({
+    #preprocess data:
+    tdr_eff= tdr_eff %>% data.frame() ; gc()
+    tdr_eff = tdr_eff %>% mutate( Synd_g = GrippSusp + AutrVirResp )
+    #34 sites we need:
+    sites34= toupper(include[-c(1:2)])
+    propili_2015= tdr_eff %>% filter(sites %in% sites34 & Annee>2014)
+    propili_2015= as.data.table(propili_2015)
+    stat_ili=tdr_eff %>% filter(sites %in% sites34 & Annee<2015)
+    stat_ili = as.data.table(stat_ili)
+    #filter rows:
+    cat("calculating prop of ILI on Nb consultation...")
+    propili_2015[,prop := 100*sum(Synd_g,na.rm = T)/sum(NxConsltTotal,na.rm=T) ,by="deb_sem"]
+    propili_2015= unique(propili_2015[,list(deb_sem,prop)])
+    propili_2015[,weekOfday:=week(deb_sem)] #create a key to merge later 
+   # propili_2015[,weekOfday:=as.character(weekOfday)]
+    cat("DONE\n")
+    
+  
+    cat("calculating mean and max for historical ILI data...")
+     setnames(stat_ili,"Semaine","weekOfday")
+     stat_ili[,weekOfday:=as.numeric(weekOfday)]
+     stat_ili[,mymax:=max(Synd_g,na.rm = T),by="weekOfday"]
+     stat_ili[,mymean:=mean(Synd_g,na.rm = T),by="weekOfday"]
+     stat_ili= unique(stat_ili[,list(weekOfday,mymax,mymean)])
+     #create a key to merge later 
+    cat("DONE\n")
+    
+    
+    
+    
+    #merge:
+    propili_2015= merge(propili_2015,stat_ili,
+                        by.x="weekOfday",by.y="weekOfday", all.x=T)
+    
+    p <- plot_ly(propili_2015, x =weekOfday, y = prop,name="prop.")
+    p= p %>% layout(title="%ILI sur Nb.consultations",
+                    xaxis = list(title = "Date"),error_x=list(thickness = 0.5)  )
+    p = add_trace(p,y = mymean, name = "Mean<2015")
+    p = add_trace(p,y = mymax, name = "Max<2015")
+    p
+  })
   #render Syndrome Grippal, Syndrom Dengue-Like
   output$ili_graph = renderPlotly({
     #data processing:
     #require(profvis)
-    
     tdr_eff= tdr_eff %>% data.frame() ; gc()
     tdr_eff = tdr_eff %>% mutate( Synd_g = GrippSusp + AutrVirResp )
     #34 sites we need:
@@ -540,8 +621,12 @@ server<-function(input, output,session) {
     #filter rows:
     tdr_eff= tdr_eff %>% filter(sites %in% sites34 )
     #
+   
     p <- plot_ly(tdr_eff, x = deb_sem, y = Synd_g,name="Syndrome Grippal")
     p = add_trace(tdr_eff, y = ArboSusp, name = "Dengue-Like")
+    p= p %>% layout(title="ILI et Dengue-LIKE (34 sites)",
+                    xaxis = list(title = "Date"))
+    
     p
     # using highcharts (slow)
 #     myili <- Highcharts$new()
@@ -579,7 +664,7 @@ server<-function(input, output,session) {
     p=plot_ly(data=mydata,
               y=occurence,
               x=Semaine)
-    p %>% layout(title=mytitle)
+    p %>% layout(title=mytitle, yaxis = list(title = "Nb.Cas"))
     
   })
   #Health heatmap plot with plotly and using percentile algorithm:

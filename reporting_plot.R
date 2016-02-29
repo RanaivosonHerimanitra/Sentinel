@@ -39,7 +39,17 @@ generate_plot=function(htc="all",
                 aes(x=Date,y=value,fill=Légende,colour=Légende)) 
       d=d + geom_line()  #alpha=0.6
       d= d + scale_color_manual(values=c("#CC6666", "#9999CC"))
-      debut_annee=as.numeric(unique(X[weeks==1,Date]))
+#       debut_annee=c(as.numeric(as.Date("2013-01-01")),
+#                     as.numeric(unique(X[weeks==1,Date])))
+      debut_annee=c(as.numeric(as.Date("2008-01-01")),
+                    as.numeric(as.Date("2009-01-01")), 
+                    as.numeric(as.Date("2010-01-01")), 
+                    as.numeric(as.Date("2011-01-01")), 
+                    as.numeric(as.Date("2012-01-01")), 
+                    as.numeric(as.Date("2013-01-01")),
+                    as.numeric(as.Date("2014-01-01")), 
+                    as.numeric(as.Date("2015-01-01")),
+                    as.numeric(as.Date("2016-01-01")) )
       d= d + geom_vline(xintercept = debut_annee,
                         linetype=4,colour="orange")
       d=d + ggtitle(label=title.label)
@@ -67,7 +77,17 @@ generate_plot=function(htc="all",
                 aes(x=Date,y=value,fill=Légende,colour=Légende)) 
       d=d + geom_line() #alpha=0.6
       d= d + scale_color_manual(values=c("#CC6666", "#9999CC"))
-      debut_annee=as.numeric(unique(X[weeks==1,Date]))
+     
+      debut_annee=c(as.numeric(as.Date("2008-01-01")),
+                    as.numeric(as.Date("2009-01-01")), 
+                    as.numeric(as.Date("2010-01-01")), 
+                    as.numeric(as.Date("2011-01-01")), 
+                    as.numeric(as.Date("2012-01-01")), 
+                    as.numeric(as.Date("2013-01-01")),
+                    as.numeric(as.Date("2014-01-01")), 
+                    as.numeric(as.Date("2015-01-01")),
+                    as.numeric(as.Date("2016-01-01")) )
+      
       d= d + geom_vline(xintercept = debut_annee,
                         linetype=4,colour="orange")
       d=d + ggtitle(label=paste(title.label.list, myname[p]))

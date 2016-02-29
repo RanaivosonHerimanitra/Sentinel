@@ -48,7 +48,7 @@ alert_parameter= set_of_paragraphs(alert_parameter1,alert_parameter2)
 doc=addParagraph( doc, value = alert_parameter, stylename="BulletList")
 
 ######################### R code to generate the report ##########################
-require(tidyr);source("import1.r");source("percentile.R");
+require(tidyr);source("import1.R");source("percentile.R");
 source("tdrplus.R");source("preprocessing.R");
 mydata=preprocessing_disease()
 PaluConf_tdr= tdr_malaria()
@@ -69,7 +69,18 @@ percentile_diar_alerte=merge(percentile_diar_alerte,sentinel_latlong,
                              by.x=c("sites"),by.y=c("sites"))
 PaluConf_tdr=merge(PaluConf_tdr,sentinel_latlong,
                    by.x=c("sites"),by.y=c("sites"))
+
+PaluConf_tdr[,SyndF:=sum(SyndF,na.rm=T),by="sites,code"]
+PaluConf_tdr[,TestPalu:=sum(TestPalu,na.rm=T),by="sites,code"]
+PaluConf_tdr[,manque_tdr:=sum(manque_tdr,na.rm=T),by="sites,code"]
+PaluConf_tdr=unique(PaluConf_tdr[,list(sites,name,code,deb_sem,SyndF,TestPalu,manque_tdr)])
+
 setorder(PaluConf_tdr,sites,-deb_sem)
+
+
+#print(PaluConf_tdr)
+#Sys.sleep(1000)
+
 
 tana_centre = c("Manjakaray","Andohatapenaka","Tsaralalana","Behoririka")
 tana_haut_plateau= c("Fianarantsoa","Antsirabe","Anjozorobe")

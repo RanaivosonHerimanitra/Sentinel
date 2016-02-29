@@ -91,66 +91,68 @@ last6_palu_autoch= merge(unique(last6_palu_autoch[,list(sites,vals)]),lastweek, 
              
 # merge with sentinel_code :
 sentinel_code=fread('data/sentinel_codes.csv')
-sentinel_code[,sites:=tolower(sites)]
+sentinel_code[,Code:=tolower(Code)]
+setnames(sentinel_code,"Code","sites")
+
 last6_palu_autoch=merge(last6_palu_autoch,
                         sentinel_code,by.x="sites",by.y="sites")
-#
-setnames(last6_palu_autoch,c("name","vals","autoch"),
-                c("Sites","6 semaines précédentes","Semaine dernière"))
-
-# #generate tables:
-knitr::kable(last6_palu_autoch[, c("Sites","6 semaines précédentes","Semaine dernière"),with=F],
-              caption="Paludisme autochtone dans le réseau sentinelle HTC")
+#knitr::kable(last6_palu_autoch)
+ #
+ setnames(last6_palu_autoch,c("sites","vals","autoch"),
+                 c("Sites","6 semaines précédentes","Semaine dernière"))
+#tolower name of sites:
+last6_palu_autoch[,Centre:=tolower(Centre)]
+#generate tables:
+knitr::kable(last6_palu_autoch[, c("Centre","6 semaines précédentes","Semaine dernière"),with=F], caption="Paludisme autochtone dans le réseau sentinelle HTC")
 ```
 
 ```{r,echo=F, fig.show = "hold"  ,out.width ='50%',out.extra='',comment='',message=FALSE , warning=FALSE}
 
 #loop and plot:
-
-
 mydata= preprocessing_disease(select_htc=TRUE)[["Malaria"]]
 setnames(mydata,"occurence","palu")
 myname = as.character(unique(mydata$sites))
 mydata=mydata[as.Date(deb_sem)>=as.Date("2015-06-01"),]
-
+#code_label = fread('data/sentinel_codes.csv')
 for ( p in myname )
-     {
-      disease1=mydata[sites==p,list(sites,deb_sem,palu)]
-      disease1[is.na(palu)==T,palu:=0]
-      disease1[,Légende:="Importe"]
-      
-      disease2= palu_autoch[sites==p,list(sites,deb_sem,autoch)]
-      disease2[is.na(autoch)==T,autoch:=0] 
-      
-      #merge to calculate palu_importe
-      disease1=merge(disease1,disease2[,list(deb_sem,autoch)],
+       {
+  #cat(p)
+  #cat('\n')
+  #code_label[tolower(Code)==tolower(p),get("Centre")]
+        disease1=mydata[sites==p,list(sites,deb_sem,palu)]
+        disease1[is.na(palu)==T,palu:=0]
+        disease1[,Légende:="Importe"]
+        disease2= palu_autoch[sites==p,list(sites,deb_sem,autoch)]
+        disease2[is.na(autoch)==T,autoch:=0] 
+        #merge to calculate palu_importe
+        disease1[,deb_sem:=as.character(deb_sem)]
+        disease2[,deb_sem:=as.character(deb_sem)]
+        
+        disease1=merge(disease1,disease2[,list(deb_sem,autoch)],
                      by.x="deb_sem",by.y="deb_sem")
-      disease1[is.na(autoch)==T,autoch:=0] 
-      disease1[,palu_importe:=palu-autoch]
-      setnames(disease1,"palu_importe","value")
-      disease1=disease1[,list(sites,deb_sem,value,Légende)]
+        disease1[is.na(autoch)==T,autoch:=0] 
+        disease1[,palu_importe:=palu-autoch]
+        setnames(disease1,"palu_importe","value")
+        disease1=disease1[,list(sites,deb_sem,value,Légende)]
       
-      
-      setnames(disease2,"autoch","value")
-      disease2[,Légende:="autoch"]
-             
-      X=rbind(disease2, disease1)
-      X$deb_sem=as.Date(X$deb_sem)
-      setnames(X,"deb_sem","Date")
-   
-      d= ggplot(data=X,aes(x=Date,y=value,fill=Légende,colour=Légende))
-      d=d + geom_bar(stat = "identity") 
-      d= d + scale_fill_manual(values=c("#CC6666", "#9999CC"))
-      d= d + scale_color_manual(values=c("#CC6666", "#9999CC"))
-      d=d + ggtitle(label=p)
-      d=d + xlab("Date") + ylab("Nb. Cas")
-      #set ylim to 10 if <10
-      mymax=range(as.numeric(X$value)[is.na(as.numeric(X$value))==F])
-      mymax[2]=ifelse(mymax[2]<10,10,mymax[2])
+        setnames(disease2,"autoch","value")
+        disease2[,Légende:="autoch"]
+        X=rbind(disease2, disease1)
+        X$deb_sem=as.Date(X$deb_sem)
+        setnames(X,"deb_sem","Date")
+        d = ggplot(data=X,aes(x=Date,y=value,fill=Légende,colour=Légende))
+        d = d + geom_bar(stat = "identity") 
+        d = d + scale_fill_manual(values=c("#CC6666", "#9999CC"))
+        d = d + scale_color_manual(values=c("#CC6666", "#9999CC"))
+        d = d + ggtitle(label=last6_palu_autoch[Sites==p,get("Centre")])
+        d = d + xlab("Date") + ylab("Nb. Cas")
+        #set ylim to 10 if <10
+        mymax=range(as.numeric(X$value)[is.na(as.numeric(X$value))==F])
+        mymax[2]=ifelse(mymax[2]<10,10,mymax[2])
       #
       d= d + ylim (mymax)
       print(d)
-}
+  }
 
 ```
 

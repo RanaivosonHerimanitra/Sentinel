@@ -158,7 +158,7 @@ week_retrospective=sliderInput(inputId="week_choice",
             value = ifelse(Sys.Date()-as.Date(paste0(year(Sys.Date()),"-01-01"))<8
                            ,1,week(Sys.Date())) )
 
-
+#plot.new()
 source("params_ui.R",local = T)
 choose_disease_report= box(title="Reporting",
                            status = "primary", 

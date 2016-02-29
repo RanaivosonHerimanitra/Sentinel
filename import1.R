@@ -1,12 +1,12 @@
 #whether to run on local for debugging and development purpose
 #or to pull data directly from the server:
-remote_server=T;writing_to_disk=F
+remote_server=F;writing_to_disk=F
 #load required packages:
 source("libraries.R")
 if ( exists("PaluConf")==F ) #to speed up things
 {
   if ( remote_server==TRUE ) {
-    cat("connection to the server and read data using dplyr to select views and tables:\n")
+   # cat("connection to the server and read data using dplyr to select views and tables:\n")
     sentinel <- src_postgres(dbname="sentinel",
                              host = "172.16.0.230", 
                              user = "cnx_florian",
@@ -55,8 +55,8 @@ if ( exists("PaluConf")==F ) #to speed up things
     mild<-fread("data/mild_export.csv") 
     # mild=as.data.table(as.data.frame(mild))
     #cat('query of TDR effectif\n')
-     tdr_eff= tbl(sentinel,
-                     build_sql('SELECT "Date" AS "deb_sem","Centre2" AS "sites","Annee","Semaine","ArboSusp","GrippSusp","AutrVirResp","NxConsltTotal" FROM "vue_csb_sms_centre_format"'))
+    tdr_eff= tbl(sentinel,
+                     build_sql('SELECT "Date" AS "deb_sem","SyndF","TestPalu","Centre2" AS "sites","Annee","Semaine","ArboSusp","GrippSusp","AutrVirResp","NxConsltTotal" FROM "vue_csb_sms_centre_format"'))
     
     if (writing_to_disk==T )
     {
@@ -98,17 +98,17 @@ if ( exists("PaluConf")==F ) #to speed up things
     pfa=fread("data/pfa.csv")
     palu_autoch=fread("data/palu_autoch.csv")
     tdr_eff=fread("data/tdr_eff.csv");
-    setnames(tdr_eff,"Centre2","sites")
-    tdr_eff[,code:=paste0(Annee,"_",Semaine)]
-    tdr_eff=tdr_eff[,list(sum(SyndF,na.rm = T),sum(TestPalu,na.rm = T)),by="sites,code"]
-    setnames(tdr_eff,old=c("V1","V2"), new = c("SyndF","TestPalu"))
-    tdr_eff=tdr_eff[,list(sites,code,SyndF,TestPalu)]
-    tdr_eff[,sites:=tolower(sites)]
+    #setnames(tdr_eff,"Centre2","sites")
+    #tdr_eff[,code:=paste0(Annee,"_",Semaine)]
+    #tdr_eff=tdr_eff[,list(sum(SyndF,na.rm = T),sum(TestPalu,na.rm = T)),by="sites,code"]
+    #setnames(tdr_eff,old=c("V1","V2"), new = c("SyndF","TestPalu"))
+    #tdr_eff=tdr_eff[,list(sites,code,SyndF,TestPalu)]
+    #tdr_eff[,sites:=tolower(sites)]
   }
   
   
   #cat('query of lat/long of sites...')
-  sentinel_latlong=fread("data/sentinel.csv");
+  sentinel_latlong=fread("data/sentinel.csv")
   setnames(sentinel_latlong,"CODE","sites")
   sentinel_latlong[,sites:=tolower(sites)]
  

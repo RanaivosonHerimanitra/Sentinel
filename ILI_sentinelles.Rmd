@@ -10,7 +10,7 @@ output: pdf_document
 ```{r,echo=F, fig.width=10, out.extra='',comment='', message=FALSE , warning=FALSE}
 source("import1.R");source("preprocessing.R");require(ggplot2); require(gridExtra)
 #Retrieve ILI
-mydata= preprocessing_disease()[["ILI"]]
+mydata= preprocessing_disease()[["Grippe"]] #ensure this is the same as in #diseases_control.R
 
 #aggregate occurence by week:
 mydata$occurence=as.numeric(mydata$occurence)
@@ -23,10 +23,10 @@ d=ggplot(unique(mydata[,list(deb_sem,occurence)]),
 d= d + geom_bar(stat = "identity",fill="blue") 
 
 d= d + ggtitle(label="ILI dans le réseau sentinelle")
-d= d + xlab("Date") + ylab("Nb. Cas")
+d= d + xlab("Date(ligne orange=1er janvier)") + ylab("Nb. Cas")
  
 debut_annee=as.numeric(unique(mydata[weeks==1,deb_sem]))
-debut_annee=c(min(debut_annee)-365, debut_annee)
+debut_annee=c(min(debut_annee)-365, as.Date("2013-01-01"), debut_annee)
       
 d= d + geom_vline(xintercept = debut_annee,linetype=4,colour="orange")
                         
@@ -35,7 +35,7 @@ print(d)
 ```
 
 ```{r,echo=F,out.extra='',comment='', message=FALSE , warning=FALSE}
-mydata= preprocessing_disease()[["ILI"]]
+mydata= preprocessing_disease()[["Grippe"]]
 semaine=array()
 max_deb_sem=max(as.Date(mydata$deb_sem))
 semaine[6]= max_deb_sem-2*7 
@@ -87,13 +87,26 @@ knitr::kable(X[,c("Sites","6 semaines précédentes","Semaine dernière"),with=F
       d= ggplot(data=X,aes(x=Date,y=occurence)) 
       d=d + geom_line(color='darkblue') 
       
-      debut_annee=as.numeric(unique(X[weeks==1,Date]))
-      debut_annee=c(min(debut_annee)-365, debut_annee)
-      
+#       debut_annee=as.numeric(unique(X[weeks==1,Date]))
+#       missingyear= c(as.numeric(as.Date("2007-01-01"),
+#                      as.numeric(as.Date("2013-01-01"))))
+#       debut_annee=c(min(debut_annee)-365, missingyear,debut_annee)
+       debut_annee= c(as.numeric(as.Date("2007-01-01")),
+                      as.numeric(as.Date("2008-01-01")),
+                      as.numeric(as.Date("2009-01-01")),
+                      as.numeric(as.Date("2010-01-01")),
+                      as.numeric(as.Date("2011-01-01")),
+                      as.numeric(as.Date("2012-01-01")),
+                      as.numeric(as.Date("2013-01-01")),
+                      as.numeric(as.Date("2014-01-01")),
+                      as.numeric(as.Date("2015-01-01")),
+                      as.numeric(as.Date("2016-01-01")))
+                     
+       
       d= d + geom_vline(xintercept = debut_annee,
                         linetype=4,colour="orange")
       d=d + ggtitle(label=paste(myname[p]))
-      d=d + xlab("Date (ligne verte=1er janvier)") + ylab("Nb. Cas")
+      d=d + xlab("Date (ligne orange=1er janvier)") + ylab("Nb. Cas")
       print(d)
     }
 ```

@@ -88,7 +88,8 @@ knitr::kable(X[,c("Sites","6 semaines précédentes","Semaine dernière"),with=F
       setnames(X,"deb_sem","Date")
       d= ggplot(data=X,aes(x=Date,y=occurence)) 
       d=d + geom_bar(stat = "identity",fill='darkblue') 
-      debut_annee=as.numeric(unique(X[weeks==1,Date]))
+      debut_annee=c(#as.numeric(as.Date("2013-01-01")),
+                    as.numeric(unique(X[weeks==1,Date])))
       d= d + geom_vline(xintercept = debut_annee,
                         linetype=4,colour="green")
       d=d + ggtitle(label=paste(myname[p]))

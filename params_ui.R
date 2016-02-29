@@ -137,14 +137,10 @@ mycondparam_map_ind=  conditionalPanel(
   helpText("Malaria cases among fever cases. Indicator is considered, as high when ratio is greater than 40%, and malaria cases among consultants number is greater than 10%.")     
 )
 map_parameters=box(status = "primary", solidHeader = TRUE,
-                   collapsible = TRUE,title="Parameters",width=4,
-                   
-                   myradio_map,
+                   collapsible = TRUE,title="Parameters",
+                   width=4,myradio_map,
                    mycondparam_map_percentile,
                    mycondparam_map_minsan,
                    mycondparam_map_cumsum,
                    mycondparam_map_mcases,
-                   mycondparam_map_ind
-                  
-                  
-)
+                   mycondparam_map_ind)

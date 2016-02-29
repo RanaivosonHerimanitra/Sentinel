@@ -31,10 +31,20 @@ tdr_malaria = function (htc=FALSE)
   PaluConf=as.data.table(gather(PaluConf,
                                 key=sites,
                                 value=malaria_cases,-c(code,deb_sem)))
+  #preprocessing of tdr_eff
+ 
+  tdr_eff = tdr_eff %>% data.frame() %>% data.table() 
+  
+  tdr_eff[,code:=paste0(Annee,"_",Semaine)]
+  tdr_eff[,sites:=tolower(sites)]
+  tdr_eff[,deb_sem:=NULL]
+  #
+  
+  #
   PaluConf_tdr=merge(PaluConf,tdr_eff,
                      by.x=c("code","sites"),
                      by.y=c("code","sites") )
- PaluConf_tdr[,manque_tdr:=ifelse(SyndF-TestPalu>0,1,0)]
+ PaluConf_tdr[,manque_tdr:=ifelse(SyndF-TestPalu>0,1,0)] 
 
  return(PaluConf_tdr)
   
