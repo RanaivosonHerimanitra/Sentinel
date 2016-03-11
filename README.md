@@ -1,9 +1,14 @@
 # Sentinel
-A toolkit for early detection of disease outbreaks (Malaria, Diarrhea, etc.)
+A toolkit for visualization, early detection and prediction of disease outbreaks (Malaria, Diarrhea, etc.)
 
 ## Goals:
 * Build a package that could receive any kind of algorithms for epidemiologists to play with.
 * Automate data processing and conversion for any kind of format and backend.
+
+## Sentinel as a reporting tool (in `report` folder):
+* Produce pdf LateX documents to summarize situation of sentinel sites (plots, trends and tables).
+* Produce word docx documents to display historical alerts and summary report on SMS sent to our postgres database for each sentinel sites.
+
 
 ## Packages requirements:
 
