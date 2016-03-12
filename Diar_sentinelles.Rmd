@@ -10,6 +10,8 @@ output: pdf_document
 ```{r,echo=F,fig.width=10, out.extra='',comment='', message=FALSE , warning=FALSE}
 #load source code:
 source("import1.R");source("preprocessing.R");require(ggplot2); require(gridExtra)
+#source("var_conversion.R")
+
 mydata= preprocessing_disease()[["Diarrhée"]] #Diarrhée
 setnames(mydata,"occurence","diarh")
 #put Diarrhée fébrile in a temp file before merging

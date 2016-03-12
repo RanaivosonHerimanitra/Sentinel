@@ -1,5 +1,6 @@
 ##################Source code for plotting Malaria TDR + and Fiever######
 generate_plot=function(htc="all",
+                       add_trend=FALSE,
                        mydata=PaluConf_tdr,
                        disease1=NULL,
                        disease2=NULL,
@@ -37,10 +38,11 @@ generate_plot=function(htc="all",
    
       d= ggplot(data=X,
                 aes(x=Date,y=value,fill=Légende,colour=Légende)) 
+      
       d=d + geom_line()  #alpha=0.6
+      if (add_trend==T) {  d= d + geom_smooth(method='lm',formula=y~x) }
       d= d + scale_color_manual(values=c("#CC6666", "#9999CC"))
-#       debut_annee=c(as.numeric(as.Date("2013-01-01")),
-#                     as.numeric(unique(X[weeks==1,Date])))
+
       debut_annee=c(as.numeric(as.Date("2008-01-01")),
                     as.numeric(as.Date("2009-01-01")), 
                     as.numeric(as.Date("2010-01-01")), 

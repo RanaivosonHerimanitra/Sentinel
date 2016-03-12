@@ -2,7 +2,7 @@
 #or to pull data directly from the server:
 remote_server=F;writing_to_disk=F
 #load required packages:
-source("libraries.R")
+source("libraries.R");source("var_conversion.R")
 if ( exists("PaluConf")==F ) #to speed up things
 {
   if ( remote_server==TRUE ) {
@@ -16,48 +16,218 @@ if ( exists("PaluConf")==F ) #to speed up things
                                port=5432,
                                user="cnx_florian",
                                password="sigflorianipm")
-    PaluConf= tbl(sentinel,
-                  build_sql('SELECT * FROM "crosstab_paluconf_format"'))
-    Consultations= tbl(sentinel,
-                       build_sql('SELECT * FROM "crosstab_nxconslttotal_format"'))
-    SyndF=tbl(sentinel,
-              build_sql('SELECT * FROM "crosstab_syndf_format"'))
-    Diarrh=tbl(sentinel,
-               build_sql('SELECT * FROM "crosstab_diarrh_format"'))
-    Diarrh_feb=tbl(sentinel,
-               build_sql('SELECT * FROM "crosstab_diarrhfeb_format"'))
-    #définir taille de cercle f(Nb total diarrhée) dans map
-    ili=tbl(sentinel,
-        build_sql('SELECT * FROM "crosstab_grippsusp_autrvirresp_format"'))
-    #Paralysie flasque aigue
-    pfa= tbl(sentinel,
-             build_sql('SELECT * FROM "crosstab_pfa_format"'))
-    #palu autochtone:
-    palu_autoch=tbl(sentinel,
-            build_sql('SELECT * FROM "crosstab_autoch_format"'))
-    #cat('query of Land Surface Temperature(lst)\n')
-    lst=tbl(data_iri_env,
-            build_sql('SELECT * FROM "groupe_lst_day_format"'))
-    # lst=as.data.table(as.data.frame(lst))
-    #cat('query of NDVI\n')
-    ndvi=tbl(data_iri_env,
-             build_sql('SELECT * FROM "groupe_ndvi_format"'))
-    # ndvi=as.data.table(as.data.frame(ndvi))
-    #cat('query of Precipitation(pmm)\n')
-    pmm=tbl(data_iri_env,
-            build_sql('SELECT * FROM "groupe_precipitation_format"'))
-    # pmm=as.data.table(as.data.frame(pmm))
-    #cat('query of CAID\n')
-    caid=tbl(sentinel,"caid")
-#    caid=as.data.table(as.data.frame(caid))
+    #should accelerate extraction
+    PaluConf=fread("data/PaluConf.csv")
+    max_date=max(PaluConf$deb_sem)
+    PaluConf_tmp= tbl(sentinel,
+                  build_sql("SELECT * FROM ",
+                            "crosstab_paluconf_format"," WHERE deb_sem>=",
+                            max_date
+                            ))
+    #transform into data.table:
+    PaluConf_tmp= PaluConf_tmp  %>% data.frame() %>% data.table()
+    #conversion of variables:
+    var_conv(PaluConf,PaluConf_tmp)
+    #rbind 02 dataframe:
+    PaluConf=PaluConf[deb_sem<max_date,]
+    PaluConf=(rbind(PaluConf,PaluConf_tmp))
     
+    #should accelerate extraction:
+    Consultations=fread("data/Consultations.csv")
+    max_date=max(Consultations$deb_sem)
+    Consultations_tmp= tbl(sentinel,
+                       build_sql("SELECT * FROM ",
+                                 "crosstab_nxconslttotal_format",
+                            " WHERE deb_sem>=",max_date))
+    #transform into data.table:
+    Consultations_tmp= Consultations_tmp  %>% data.frame() %>% data.table()
+    #conversion of variables:
+    var_conv(Consultations,Consultations_tmp)
+    #rbind 02 dataframe:
+    Consultations=Consultations[deb_sem<max_date,]
+    Consultations=(rbind(Consultations,Consultations_tmp))
+    
+    
+    SyndF=fread("data/SyndF.csv")
+    max_date=max(SyndF$deb_sem)
+    SyndF_tmp=tbl(sentinel,
+              build_sql("SELECT * FROM ",
+                        "crosstab_syndf_format",
+                        " WHERE deb_sem>=",max_date))
+    #transform into data.table:
+    SyndF_tmp= SyndF_tmp  %>% data.frame() %>% data.table()
+    #conversion of variables:
+    var_conv(SyndF,SyndF_tmp)
+    #rbind 02 dataframe:
+    SyndF=SyndF[deb_sem<max_date,]
+    SyndF=(rbind(SyndF,SyndF_tmp))
+    
+    #
+    Diarrh=fread("data/Diarrh.csv")
+    max_date=max(Diarrh$deb_sem)
+    Diarrh_tmp=tbl(sentinel,
+               build_sql("SELECT * FROM ",
+                         "crosstab_diarrh_format",
+                         " WHERE deb_sem>=",max_date))
+    #transform into data.table:
+    Diarrh_tmp= Diarrh_tmp  %>% data.frame() %>% data.table()
+    #conversion of variables:
+    var_conv(Diarrh,Diarrh_tmp)
+    #rbind 02 dataframe:
+    Diarrh=Diarrh[deb_sem<max_date,]
+    Diarrh=(rbind(Diarrh,Diarrh_tmp))
+    
+    
+    #
+    Diarrh_feb=fread("data/Diarrh_feb.csv")
+    max_date= max(Diarrh_feb$deb_sem)
+    Diarrh_feb_tmp=tbl(sentinel,
+               build_sql("SELECT * FROM ",
+                         "crosstab_diarrhfeb_format",
+               " WHERE deb_sem>=",max_date))
+    #transform into data.table:
+    Diarrh_feb_tmp= Diarrh_feb_tmp  %>% data.frame() %>% data.table()
+    #conversion of variables:
+    var_conv(Diarrh_feb,Diarrh_feb_tmp)
+    #remove old obs. and rbind 02 dataframe:
+    Diarrh_feb=Diarrh_feb[deb_sem<max_date,]
+    Diarrh_feb=unique(rbind(Diarrh_feb,Diarrh_feb_tmp))
+    
+    
+    #palu autochtone:
+    palu_autoch=fread("data/palu_autoch.csv")
+    max_date=max(palu_autoch$deb_sem)
+    palu_autoch_tmp=tbl(sentinel,
+                    build_sql("SELECT * FROM ",
+                              "crosstab_autoch_format"," WHERE deb_sem>=",
+                              max_date))
+    #transform into data.table:
+    palu_autoch_tmp= palu_autoch_tmp  %>% data.frame() %>% data.table()
+    #conversion of variables:
+    var_conv(palu_autoch,palu_autoch_tmp)
+    #rbind 02 dataframe:
+    palu_autoch=unique(rbind(palu_autoch,palu_autoch_tmp))
+    
+    #Paralysie flasque aigue
+    pfa=fread("data/pfa.csv")
+    max_date=max(pfa$deb_sem)
+    pfa_tmp= tbl(sentinel,
+             build_sql("SELECT * FROM ",
+                       "crosstab_pfa_format",
+                       " WHERE deb_sem>=",max_date))
+    #conversion of dataframe:
+    pfa_tmp = pfa_tmp %>% data.frame() %>% data.table()
+    #conversion of variables
+    var_conv(pfa,pfa_tmp)
+    #rbind 02 dataframe:
+    pfa= pfa[deb_sem<max_date,]
+    pfa=(rbind(pfa,pfa_tmp))
+    
+    
+    
+    #cat('query of TDR effectif\n')
+    tdr_eff=fread("data/tdr_eff.csv")
+    max_date = max(tdr_eff$deb_sem)
+    tdr_eff_tmp= tbl(sentinel,
+                 build_sql('SELECT "Date" AS "deb_sem","SyndF","TestPalu","Centre2" AS "sites","Annee","Semaine","ArboSusp","GrippSusp","AutrVirResp","NxConsltTotal" FROM ',
+                          "vue_csb_sms_centre_format", " WHERE 'Date'>=",max_date))
+    #conversion of dataframe:
+    tdr_eff_tmp = tdr_eff_tmp %>% data.frame() %>% data.table()
+    #conversion of variables:
+    var_conv(tdr_eff,tdr_eff_tmp)
+    #rbind 02 dataframe:
+    tdr_eff=tdr_eff[deb_sem<max_date,]
+    tdr_eff=(rbind(tdr_eff,tdr_eff_tmp))
+    
+    
+    
+    #définir taille de cercle f(Nb total diarrhée) dans map
+    ili=fread("data/ili.csv")
+    max_date = max(ili$deb_sem)
+    ili_tmp=tbl(sentinel,
+        build_sql("SELECT * FROM ",
+                  "crosstab_grippsusp_autrvirresp_format",
+                  " WHERE deb_sem>=",max_date))
+    #conversion of dataframe:
+    ili_tmp = ili_tmp %>% data.frame() %>% data.table()
+    #conversion of variables:
+    var_conv(ili,ili_tmp)
+    #rbind 02 dataframe:
+    ili=ili[deb_sem<max_date]
+    ili=(rbind(ili,ili_tmp))
+    
+    #cat('query of Land Surface Temperature(lst)\n')
+#     lst=fread("data/lst.csv")
+#     max_date=max(lst$deb_sem)
+#     lst_tmp=tbl(data_iri_env,
+#             build_sql("SELECT * FROM ",
+#                       "groupe_lst_day_format",
+#                       " WHERE deb_sem>=",max_date))
+#     #conversion of dataframe:
+#     lst_tmp = lst_tmp %>% data.frame() %>% data.table()
+#     #conversion of variables:
+#     var_conv(lst,lst_tmp)
+#     #rbind 02 dataframe:
+#     lst= lst[deb_sem<max_date,]
+#     lst=(rbind(lst,lst_tmp))
+    
+    
+    #cat('query of NDVI\n')
+#     ndvi=fread("data/ndvi.csv")
+#     max_date= max(ndvi$deb_sem)
+#     ndvi_tmp=tbl(data_iri_env,
+#              build_sql("SELECT * FROM ",
+#                        "groupe_ndvi_format",
+#                        " WHERE deb_sem>=",max_date))
+#     #conversion of dataframe:
+#     ndvi_tmp = ndvi_tmp %>% data.frame() %>% data.table()
+#     #conversion of variables:
+#     var_conv(ndvi,ndvi_tmp)
+#     #rbind 02 dataframe:
+#     ndvi= ndvi[deb_sem<max_date,]
+#     ndvi=(rbind(ndvi,ndvi_tmp))
+    
+    #cat('query of Precipitation(pmm)\n')
+#     pmm=fread("data/pmm.csv")
+#     max_date= max(pmm$deb_sem)
+#     pmm_tmp=tbl(data_iri_env,
+#             build_sql('SELECT * FROM "groupe_precipitation_format"'))
+#     #conversion of dataframe:
+#     pmm_tmp = pmm_tmp %>% data.frame() %>% data.table()
+#     #conversion of variables:
+#     var_conv(pmm,pmm_tmp)
+#     #rbind 02 dataframe:
+#     pmm= pmm[deb_sem<max_date,]
+#     pmm=(rbind(pmm,pmm_tmp))
+    
+    #cat('query of CAID\n')
+    #caid=fread("data/caid.csv")
+    #caid_tmp=tbl(sentinel,"caid")
+
     #cat('query of mild\n')
     mild<-fread("data/mild_export.csv") 
     # mild=as.data.table(as.data.frame(mild))
-    #cat('query of TDR effectif\n')
-    tdr_eff= tbl(sentinel,
-                     build_sql('SELECT "Date" AS "deb_sem","SyndF","TestPalu","Centre2" AS "sites","Annee","Semaine","ArboSusp","GrippSusp","AutrVirResp","NxConsltTotal" FROM "vue_csb_sms_centre_format"'))
     
+    
+    
+    #empilement des HFi:
+    hfi=fread("data/hfi.csv")
+    max_date=max(hfi$deb_sem)
+    conn_hfi <- src_postgres(dbname="data_iri",
+                             host = "172.16.0.230", 
+                             user = "cnx_user",
+                             password = "sig0000ipm")
+     hfi_tmp= tbl(conn_hfi,
+              build_sql("SELECT * FROM ","crosstab_iri_caid", 
+                        " WHERE deb_sem>=",max_date))
+     #conversion of dataframe:
+     hfi_tmp = hfi_tmp %>% data.frame() %>% data.table()
+     #conversion of variables:
+     var_conv(hfi,hfi_tmp)
+     #rbind 02 dataframe:
+     hfi= hfi[deb_sem<max_date,]
+     hfi=(rbind(hfi,hfi_tmp))
+     
     if (writing_to_disk==T )
     {
       #need conversion here---- NOT ACTUALLY
@@ -75,6 +245,7 @@ if ( exists("PaluConf")==F ) #to speed up things
       write.table(ili,"data/ili.csv",sep=";",row.names=F)
       write.table(pfa,"data/pfa.csv",sep=";",row.names=F)
       write.table(palu_autoch,"data/palu_autoch.csv",sep=";",row.names=F)
+      write.table(hfi,"data/hfi.csv",sep=";",row.names=F)
       #cat('DONE\n')
     }
     
@@ -98,12 +269,7 @@ if ( exists("PaluConf")==F ) #to speed up things
     pfa=fread("data/pfa.csv")
     palu_autoch=fread("data/palu_autoch.csv")
     tdr_eff=fread("data/tdr_eff.csv");
-    #setnames(tdr_eff,"Centre2","sites")
-    #tdr_eff[,code:=paste0(Annee,"_",Semaine)]
-    #tdr_eff=tdr_eff[,list(sum(SyndF,na.rm = T),sum(TestPalu,na.rm = T)),by="sites,code"]
-    #setnames(tdr_eff,old=c("V1","V2"), new = c("SyndF","TestPalu"))
-    #tdr_eff=tdr_eff[,list(sites,code,SyndF,TestPalu)]
-    #tdr_eff[,sites:=tolower(sites)]
+    hfi=fread("data/hfi.csv")
   }
   
   

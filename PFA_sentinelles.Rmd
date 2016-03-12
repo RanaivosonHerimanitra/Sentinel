@@ -15,21 +15,18 @@ mydata[,occurence:=sum(occurence,na.rm = T),by="code"]
 mydata$deb_sem=as.Date(mydata$deb_sem)
 mydata[,weeks:=week(deb_sem)]
 mydata=mydata[as.Date(deb_sem)>=as.Date("2015-06-01"),]
-
 d=ggplot(unique(mydata[,list(deb_sem,occurence)]), aes(x=deb_sem, y=occurence),
          fill=occurence) 
 d= d + geom_bar(stat = "identity",fill="blue") 
-
 d= d + ggtitle(label="PFA dans le réseau sentinelle")
 d= d + xlab("Date") + ylab("Nb. Cas")
- 
 debut_annee=as.numeric(unique(mydata[weeks==1,deb_sem]))
-d= d + geom_vline(xintercept = debut_annee,linetype=4,colour="green")
+d= d + geom_vline(xintercept = debut_annee,linetype=4,colour="orange")
 #set ylim to 10 if <10
 mymax=range(as.numeric(mydata$occurence)[is.na(as.numeric(mydata$occurence))==F])
 mymax[2]=ifelse(mymax[2]<10,10,mymax[2])
 #
-d= d + ylim (mymax)
+       d = d + scale_y_continuous(breaks= seq.int(from=1,to=mymax[2],by=2) ) 
 #
 print(d)
 
@@ -87,18 +84,23 @@ knitr::kable(X[,c("Sites","6 semaines précédentes","Semaine dernière"),with=F
       X[,weeks:=week(deb_sem)]
       setnames(X,"deb_sem","Date")
       d= ggplot(data=X,aes(x=Date,y=occurence)) 
-      d=d + geom_bar(stat = "identity",fill='darkblue') 
-      debut_annee=c(#as.numeric(as.Date("2013-01-01")),
-                    as.numeric(unique(X[weeks==1,Date])))
+      d=d + geom_bar(stat = "identity",fill='darkblue')
+        
+       
+        
+      debut_annee=c(as.numeric(unique(X[weeks==1,Date])))
       d= d + geom_vline(xintercept = debut_annee,
-                        linetype=4,colour="green")
+                        linetype=4,colour="orange")
       d=d + ggtitle(label=paste(myname[p]))
       d=d + xlab("Date (ligne verte=1er janvier)") + ylab("Nb. Cas")
+      
+      
       #set ylim to 10 if <10
-mymax=range(as.numeric(X$occurence)[is.na(as.numeric(X$occurence))==F])
+mymax=range(as.integer(X$occurence)[is.na(as.integer(X$occurence))==F])
 mymax[2]=ifelse(mymax[2]<10,10,mymax[2])
 #
-      d= d + ylim (mymax)
+       d = d + scale_y_continuous(breaks= seq.int(from=0,to=mymax[2],by=1) ) 
+      #d= d + ylim (mymax)
       print(d)
     }
 ```

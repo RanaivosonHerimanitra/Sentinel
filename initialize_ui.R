@@ -53,7 +53,7 @@ mycondparam_ind=conditionalPanel(
               value = 40
   ),
   sliderInput("expC", 
-              "malaria cases among consultants number:", 
+              "malaria cases among total consultations:", 
               min = 0,
               max = 100, 
               value = 10

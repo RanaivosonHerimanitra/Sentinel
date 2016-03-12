@@ -1,10 +1,4 @@
 #########################Visualization UI ##################################
-# myhfi=list(
-#                         checkboxInput(inputId="llin",label="LLIN",value = F),
-#                         checkboxInput(inputId="irs",label="IRS",value = F),
-#                         checkboxInput(inputId="ndvi",label="NDVI",value = F),
-#                         checkboxInput(inputId="pmm",label="precipitation",value = F),
-#                         checkboxInput(inputId="temp",label="Temperature",value = F))
 
 algoviz_display=tabItem(tabName="myalgoviz",
                         conditionalPanel(condition = "input.diseases=='Grippe'",

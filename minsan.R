@@ -7,10 +7,13 @@ calculate_minsan=function(data=mydata,
                           minsan_consecutive_week=input$minsan_consecutive_week,
                           byvar="code") 
   {
+  
+  
   if ( as.numeric(week_choice)== 1 )
   {
     year_choice= as.numeric(year_choice)-1
   }
+ 
   max_deb_sem= max(as.Date(data$deb_sem))
 
   
@@ -38,6 +41,7 @@ calculate_minsan=function(data=mydata,
       data=merge(data,minsan[,list(sites,occurence_1,occurence_2,occurence_3)],
                  by.x="sites",by.y="sites")
       cat('DONE\n')
+     
       cat('detection of alerts per site using MinSan algorithm...\n')
       
       if ( minsan_consecutive_week==T) 
@@ -64,6 +68,7 @@ calculate_minsan=function(data=mydata,
       data=merge(data,minsan[,list(sites,occurence_1,occurence_2)],
                  by.x="sites",by.y="sites")
       cat('DONE\n')
+      
       cat('remove temporary files...')
       rm(S0);rm(S1);rm(S2)
       cat('DONE\n')
@@ -89,26 +94,44 @@ calculate_minsan=function(data=mydata,
   cat("Weekly number of sites in alert using MinSan (all)...\n")
   Nbsite_beyond=data[is.na(occurence)==F & alert_status=="alert",
                      length(unique(sites)),by=byvar]
+  
   setnames(Nbsite_beyond,"V1","eff_beyond")
   cat("Weekly number of sites that had given data (all)...\n")
   Nbsite_withdata=data[is.na(occurence)==F,length(unique(sites)),by=byvar]
   setnames(Nbsite_withdata,"V1","eff_total")
+  
+  
+  
   cat('MERGE to give proportion of sites beyond n_percentile per week...')
   propsite_alerte_minsan=merge(x=Nbsite_withdata,y=Nbsite_beyond,
                                    by.x=byvar,by.y=byvar,all.x=T)
   cat('DONE\n')
+  
+  
   cat('calculate prop and change NA to zero...')
   propsite_alerte_minsan[,prop:=ifelse(is.na(eff_beyond/eff_total)==T,0.0,
                                        eff_beyond/eff_total)]
   cat('DONE\n')
-#   cat('var in propsite_alerte_minsan are',names(propsite_alerte_minsan),"\n")
-#   cat('nrow of unique(propsite_alerte_minsan[,list(code,prop)])==>',
-#       nrow(unique(propsite_alerte_minsan[,list(code,prop)])),"\n")
+
+  
+  
   cat('merge with deb_sem to reorder time series...')
-  propsite_alerte_minsan=merge(unique(propsite_alerte_minsan[,list(code,prop)]),
-                               unique(data[,list(code,deb_sem)]),
-                                   by.x=byvar,by.y=byvar)
+  #BEfore 10h47 12mars2016
+#   propsite_alerte_minsan=merge(propsite_alerte_minsan[,list(code,prop)],
+#                                unique(data[,list(code,deb_sem,alert_status,sites)]),
+#                                    by.x=byvar,by.y=byvar)
+  #Now 10h47 12mars2016
+#      propsite_alerte_minsan=merge(propsite_alerte_minsan[,list(code,prop)],
+#                                   unique(data[code %in% unique(propsite_alerte_minsan$code),list(code,deb_sem)]),
+#                                       by.x=byvar,by.y=byvar)
+     propsite_alerte_minsan=merge(propsite_alerte_minsan,
+                                      data[,list(code,deb_sem,sites,alert_status,East,
+                                                 South,High_land,Fringe,excepted_East,
+                                                 excepted_High_land)],
+                                      by.x="code",by.y="code")
   cat('DONE\n')
+  
+  
   ###################################by facies ###############################
   cat("Weekly number of sites in alert using MinSan (by facies)...\n")
   Nbsite_beyond=data[is.na(occurence)==F & alert_status=="alert",
@@ -132,16 +155,13 @@ calculate_minsan=function(data=mydata,
   cat('DONE\n')
   rm(Nbsite_withdata);rm(Nbsite_beyond);gc()
   
-  
   cat('calculate radius for per site for percentile algorithm alert...')
-  data[,nbsite_alerte:=1.0]; data[,nbsite_normal:=1.0]
-  data[alert_status=="alert",nbsite_alerte:=sum(occurence,na.rm = T)*1.0,by="sites,code"]
-  data[alert_status=="normal",nbsite_normal:=sum(occurence,na.rm = T)*1.0,by="sites,code"]
-  
-  data[alert_status=="normal",myradius:=5*(nbsite_alerte+1)/sqrt(nbsite_normal+1)]
-  data[alert_status=="alert",myradius:=(nbsite_alerte+1)/sqrt(nbsite_normal+1)]
-  data[alert_status %in% NA, myradius:=10*myradius]
-  
+   data[,nbsite_alerte:=1.0]; data[,nbsite_normal:=1.0]
+   data[alert_status=="alert",nbsite_alerte:=sum(occurence,na.rm = T)*1.0,by="sites,code"]
+   data[alert_status=="normal",nbsite_normal:=sum(occurence,na.rm = T)*1.0,by="sites,code"]
+   data[alert_status=="normal",myradius:=5*(nbsite_alerte+1)/sqrt(nbsite_normal+1)]
+   data[alert_status=="alert",myradius:=(nbsite_alerte+1)/sqrt(nbsite_normal+1)]
+   data[alert_status %in% NA, myradius:=10*myradius]
   cat('DONE\n')
   
   

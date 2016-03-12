@@ -86,12 +86,7 @@ knitr::kable(X[,c("Sites","6 semaines précédentes","Semaine dernière"),with=F
       setnames(X,"deb_sem","Date")
       d= ggplot(data=X,aes(x=Date,y=occurence)) 
       d=d + geom_line(color='darkblue') 
-      
-#       debut_annee=as.numeric(unique(X[weeks==1,Date]))
-#       missingyear= c(as.numeric(as.Date("2007-01-01"),
-#                      as.numeric(as.Date("2013-01-01"))))
-#       debut_annee=c(min(debut_annee)-365, missingyear,debut_annee)
-       debut_annee= c(as.numeric(as.Date("2007-01-01")),
+      debut_annee= c(as.numeric(as.Date("2007-01-01")),
                       as.numeric(as.Date("2008-01-01")),
                       as.numeric(as.Date("2009-01-01")),
                       as.numeric(as.Date("2010-01-01")),

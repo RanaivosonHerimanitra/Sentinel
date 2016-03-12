@@ -113,14 +113,18 @@ calculate_percentile=function(data=mydata,
   propsite_alerte_percentile[,prop:=ifelse(is.na(eff_beyond/eff_total)==T,0.0,eff_beyond/eff_total)]
   cat("DONE\n")
   
+ 
+  
   cat("merge with deb_sem and sites to reorder time series (all)...\n")
   propsite_alerte_percentile=merge(propsite_alerte_percentile,
                                    data[,list(code,deb_sem,sites,alert_status,East,
                                               South,High_land,Fringe,excepted_East,
                                               excepted_High_land)],
                                    by.x="code",by.y="code")
+  
   rm(Nbsite_withdata);rm(Nbsite_beyond);gc()
   cat('DONE\n')
+  
   
   cat("calculate weekly prop of sites in alert using percentile algorithm (by facies)...")
   Nbsite_beyond=data[is.na(occurence)==F & alert_status=="alert",length(unique(sites)),by=c("code","facies")]

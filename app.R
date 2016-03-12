@@ -12,6 +12,7 @@ if ( getwd()!="/srv/shiny-server/sentinel_hrmntr")
 ##############################################server ######################
 source("facies_class.R")
 server<-function(input, output,session) {
+  
   source("import1.R")
   #reactive computation of detection algorithms 
   #(centile,MinSan,C-sum,TDR+/fiever==>case of Malaria) 
@@ -52,6 +53,8 @@ server<-function(input, output,session) {
     setkeyv(mydata,c('sites','weeks','years','code'))
     cat("DONE\n")
     
+   
+    
     return(mydata)
   })
   percentile_algorithm = reactive({
@@ -66,6 +69,7 @@ server<-function(input, output,session) {
   })
   minsan_algorithm = reactive({
     mydata=preprocessing()
+   
     #####################################Doublement du nb de cas (MinSan algo) ###################
     cat('Calculation of minsan and proportion of sites in alert begin...\n')
     source("minsan.R")
@@ -262,52 +266,35 @@ server<-function(input, output,session) {
     
    
   })
-  #Load and transform High Frequency indicators
-#   HFI = reactive({
-#  
-#     source("create_facies.R")
-#     #loading and transforming HF Indicators:
-#     source("introducing_caid.R",local = T)
-#     source("introducing_mild.R",local = T)
-#     source("introducing_pmm.R",local = T)
-#     source("introducing_lst.R",local = T) 
-#     source("introducing_ndvi.R",local = T)
-#     #append HFI depending on user choices:
-#     source("if_percentile_viz.R",local = T)
-#     source("if_minsan_viz.R",local = T)
-#     source("if_csum_viz.R",local = T)
-#     source("if_tdrfiever_viz.R",local = T)  
-#     mylist=list(myprop=myprop,caid=caid,mild=mild,pmm=pmm,lst=lst,ndvi=ndvi)
-#     print(str(mylist))
-#     Sys.sleep(250)
-#     return(mylist)
-#   
-#   })
   #display proportion of sites in alert with these HFI
   output$propsite_alerte = renderPlotly({
    
     source("create_facies.R")
     
-    #loading and transforming HF Indicators:
-    
-    source("introducing_caid.R",local = T)
-   
-   
+    cat("loading and transforming HF Indicators...")
+    hfi=data.table(gather(hfi,key=sites,
+                          value=myvalue,-c(code,deb_sem,type_val)))
+    cat("DONE\n")
+    cat("dispatch data from HFI...")
+    setkey(hfi,type_val)
+    caid = hfi[type_val=="CAID"];setnames(caid,old="myvalue",new="caid_value")
+    pmm = hfi[type_val=="PRECIPITATION"];setnames(pmm,old="myvalue",new="pmm_value")
+    lst = hfi[type_val=="LST_DAY"];setnames(lst,old="myvalue",new="temperature")
+    ndvi = hfi[type_val=="NDVI"];setnames(ndvi,old="myvalue",new="ndvi_value")
+    cat("DONE\n")
+    source("introducing_caid.R",local = T) #==>now in caid
     source("introducing_mild.R",local = T)
-   
-    source("introducing_pmm.R",local = T)
+    source("introducing_pmm.R",local = T) #==>now in hfi
+    source("introducing_lst.R",local = T) #==>now in hfi
+    source("introducing_ndvi.R",local = T) #==>now in hfi
    
     
-    source("introducing_lst.R",local = T) 
-   
-    source("introducing_ndvi.R",local = T)
-    #Sys.sleep(250)
     source("if_percentile_viz.R",local = T)
     source("if_minsan_viz.R",local = T)
     source("if_csum_viz.R",local = T)
     source("if_tdrfiever_viz.R",local = T)  
     
-    
+   
    
     
         if ( input$Cluster_algo !="Total"  )
@@ -424,7 +411,7 @@ server<-function(input, output,session) {
 #      h1
   })
   #display sites in alert for the current week into the map (02 map choices currently)
-    output$madagascar_map <- renderLeaflet({
+  output$madagascar_map <- renderLeaflet({
       if (input$Algorithmes_eval=="Percentile") 
       {
         cat("display alert status into the map using percentile algorithm...\n")
@@ -486,7 +473,7 @@ server<-function(input, output,session) {
                                                        popup = ~name)
     return(madagascar_map)
     })
-    output$madagascar_map2 <- renderPlot({
+  output$madagascar_map2 <- renderPlot({
       if (input$Algorithmes_eval=="Percentile") 
       {
         cat("display alert status into the map using percentile algorithm...\n")
@@ -670,35 +657,71 @@ server<-function(input, output,session) {
   #Health heatmap plot with plotly and using percentile algorithm:
   output$heatmap_percentile = renderD3heatmap({
     mydata=preprocessing()
-    cat('Calculation of percentile and proportion of sites in alert begin...\n')
-    source("percentile.R")
-    propsite_alerte_percentile=calculate_percentile(data=mydata,
-                                                    week_length=input$comet_map,
-                                                    percentile_value=input$Centile_map)$propsite_alerte_percentile
+    #depending on the algorithm chosen, display heatmap:
+    if ( input$Algorithmes_eval == 'Percentile' ) { 
+      #mydata=preprocessing()
+      source("percentile.R")
+      X=calculate_percentile(data=mydata,
+                             week_length=input$comet_map,
+                                         percentile_value=input$Centile_map)$propsite_alerte_percentile
+   
+      }
+    
+    if ( input$Algorithmes_eval == 'Csum' ) { 
+      source("csum.R") 
+      X=calculate_csum(data=mydata,
+                       Csum_year_map=input$Csum_year_map,
+                       Csum_week_map=input$Csum_week_map,
+                       Sd_csum_map=input$Sd_csum_map,
+                       week_choice=ifelse(Sys.Date()-as.Date(paste0(year(Sys.Date()),"-01-01"))<8
+                                          ,1,week(Sys.Date())),
+                       week_Csum_map=input$week_Csum_map,
+                       year_choice=year(Sys.Date()),byvar="code")$propsite_alerte_csum
+      }
+    if ( input$Algorithmes_eval == 'MinSan' ) { 
+      source("minsan.R") 
+      #mydata=preprocessing()
+      X=calculate_minsan(data=mydata,slope_minsan=input$slope_minsan,
+                         year_choice=year(Sys.Date()),
+                         week_choice=ifelse(Sys.Date()-as.Date(paste0(year(Sys.Date()),"-01-01"))<8
+                                            ,1,week(Sys.Date())),
+                         minsan_weekrange=input$minsan_weekrange,
+                         minsan_consecutive_week=input$minsan_consecutive_week,byvar="code")$propsite_alerte_minsan
+      #print(X);Sys.sleep(20)
+      }
+    #if ( input$Algorithmes == 'Ind') { source(".R") }
+    
+    
     #selection by facies:
     if (input$Cluster_algo !="Total")
     {
       cat("you choose:",input$Cluster_algo,"\n")
-      setkeyv(propsite_alerte_percentile,input$Cluster_algo)
-      propsite_alerte_percentile=propsite_alerte_percentile[get(input$Cluster_algo)==1,]
+      setkeyv(X,input$Cluster_algo)
+      X=X[get(input$Cluster_algo)==1,]
     }
     
     cat('recode alert status...')
-    setkey(propsite_alerte_percentile,alert_status)
-    propsite_alerte_percentile[is.na(alert_status)==T,alert_status2:=0]
-    propsite_alerte_percentile[alert_status=="normal",alert_status2:=1]
-    propsite_alerte_percentile[alert_status=="alert",alert_status2:=2]
+    setkey(X,alert_status)
+    X[is.na(alert_status)==T,alert_status2:=0]
+    X[alert_status=="normal",alert_status2:=1]
+    X[alert_status=="alert",alert_status2:=2]
     cat('DONE\n')
     cat('spreading data...')
-    propsite_alerte_percentile[,years:=year(deb_sem)]
-    propsite_alerte_percentile=propsite_alerte_percentile[years %in% (2016-as.numeric(input$nbyear)):2016,]
+    X[,years:=year(deb_sem)]
+    
+  
+   print(unique(X$sites))
+  
+    X=X[years %in% (2016-as.numeric(input$nbyear)):2016,]
     
     #try selection using dplyr so then avoid data.frame conversion!
-    myz= as.data.frame(spread(unique(propsite_alerte_percentile[,list(sites,deb_sem,alert_status2)]),
+    
+    myz= as.data.frame(spread(unique(X[,list(sites,deb_sem,alert_status2)]),
                               deb_sem,alert_status2))
     
     #
     cat("DONE\n")
+  
     row.names(myz) <- myz$sites
     d3heatmap(myz[,-1], dendrogram = "none",scale = "none",
               xaxis_font_size="9px",
@@ -739,7 +762,8 @@ server<-function(input, output,session) {
 ##############################################User interface ##############
 #skeleton of the user interface:
 source('initialize_ui.R')
-ui = dashboardPage(skin = "blue",
+ui = list(dashboardPage(skin = "blue",
+                   
   dashboardHeader(title="Surveillance sentinelle",titleWidth="233"),
   dashboardSidebar(
     sidebarMenu(
@@ -760,7 +784,7 @@ ui = dashboardPage(skin = "blue",
                          disease_item,
                          forecast_item
                          ))
-)
+),tags$head(HTML("<script type='text/javascript' src='js/myjs.js'></script>")))
 #assemble UI and SERVER:
 shinyApp(ui, server)
 

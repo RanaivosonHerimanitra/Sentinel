@@ -140,19 +140,20 @@ for ( p in myname )
         X=rbind(disease2, disease1)
         X$deb_sem=as.Date(X$deb_sem)
         setnames(X,"deb_sem","Date")
-        d = ggplot(data=X,aes(x=Date,y=value,fill=Légende,colour=Légende))
-        d = d + geom_bar(stat = "identity") 
-        d = d + scale_fill_manual(values=c("#CC6666", "#9999CC"))
-        d = d + scale_color_manual(values=c("#CC6666", "#9999CC"))
-        d = d + ggtitle(label=last6_palu_autoch[Sites==p,get("Centre")])
-        d = d + xlab("Date") + ylab("Nb. Cas")
+        d = ggplot(data=X,aes(x=Date,y=value,fill=Légende,colour=Légende)) 
         #set ylim to 10 if <10
         mymax=range(as.numeric(X$value)[is.na(as.numeric(X$value))==F])
         mymax[2]=ifelse(mymax[2]<10,10,mymax[2])
-      #
-      d= d + ylim (mymax)
+        d = d + scale_y_continuous(breaks= seq.int(from=1,to=mymax[2],by=2) ) 
+        d = d + geom_bar(stat = "identity") 
+        d = d + scale_fill_manual(values=c("#CC6666", "#9999CC"))
+        d = d + scale_color_manual(values=c("#CC6666", "#9999CC"))
+        
+        d = d + ggtitle(label=last6_palu_autoch[Sites==p,get("Centre")])
+        d = d + xlab("Date") + ylab("Nb. Cas")
+        
       print(d)
   }
-
+  
 ```
 

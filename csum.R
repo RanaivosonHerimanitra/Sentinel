@@ -9,6 +9,7 @@ calculate_csum = function (data=mydata,
                            year_choice=year(Sys.Date()),byvar="code")
 {
   #take most recent week in the data:
+  
   max_deb_sem= max(as.Date(data$deb_sem))
   last52weeks= unique(as.Date(data$deb_sem))[order(unique(as.Date(data$deb_sem)),decreasing = T)[1:52]]
   
@@ -104,10 +105,19 @@ calculate_csum = function (data=mydata,
   propsite_alerte_csum=merge(x=Nbsite_withdata,y=Nbsite_beyond,by.x=byvar,by.y=byvar,all.x=T)
   #calculate prop and change NA to zero:
   propsite_alerte_csum[,prop:=ifelse(is.na(eff_beyond/eff_total)==T,0.0,eff_beyond/eff_total)]
-  #merge with deb_sem to reorder time series:
-  propsite_alerte_csum=merge(propsite_alerte_csum,data[,list(code,deb_sem)],
-                             by.x=byvar,by.y=byvar)
   
+  
+  #merge with deb_sem to reorder time series:
+ #Before 11h37 12mars2016:
+#   propsite_alerte_csum=merge(propsite_alerte_csum,data[,list(code,deb_sem)],
+#                              by.x=byvar,by.y=byvar)
+ 
+   propsite_alerte_csum=merge(propsite_alerte_csum,
+                                csum_alerte[,list(code,deb_sem,sites,alert_status,East,
+                                           South,High_land,Fringe,excepted_East,
+                                           excepted_High_land)],
+                                by.x="code",by.y="code")
+   
   ##############################prop by facies#######################################
   cat("Weekly number of sites in alert using C-sum algorithm (by facies)...")
   Nbsite_beyond=csum_alerte[ is.na(occurence)==F & alert_status=="alert",
@@ -139,7 +149,7 @@ calculate_csum = function (data=mydata,
   return(list(
     csum_alerte_currentweek=csum_alerte[as.Date(deb_sem)==max_deb_sem-7,],
     csum_alerte=csum_alerte,
-    propsite_alerte_csum=unique(propsite_alerte_csum),
+    propsite_alerte_csum=(propsite_alerte_csum),
     propsite_alerte_csum_byfacies=unique(propsite_alerte_csum_byfacies )
     )) 
 }

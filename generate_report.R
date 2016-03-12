@@ -22,7 +22,7 @@ en_gras = function ( fontsize=11,fontweight='bold',fontfamily='Courier New')
                  font.weight = fontweight, 
                  font.family = fontfamily))
 }
-en_gras_green = textProperties(color='#1d6b3e',
+en_gras_green = textProperties(color='#006400',
                                font.size = 11, 
                                font.weight = 'bold', 
                                font.family = 'Courier New')
@@ -111,7 +111,6 @@ for ( j in mycode )
   doc <- addParagraph(doc, "          ")
   doc <- addParagraph(doc, mydate)
   doc <- addParagraph(doc, "          ")
-  
   #position of the current epidemiologic in j:
   pos_j=which(mycode %in% j)
   #generate narration per site, per week :

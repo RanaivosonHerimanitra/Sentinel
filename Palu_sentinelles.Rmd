@@ -10,11 +10,13 @@ output: pdf_document
 ```{r,echo=F, fig.width=10, out.extra='',comment='', message=FALSE , warning=FALSE}
 #load source code:
 source("import1.R");source("tdrplus.R");require(ggplot2); require(gridExtra)
+source("var_conversion.R")
 mydata= tdr_malaria(htc=F)
 
 source("reporting_plot.R",local = T)
 generate_plot(htc="all",
               mydata=mydata,
+              add_trend=T,
               legend.disease1="Paludisme TDR+",
               legend.disease2="Fièvres",
               disease1.targetvar="malaria_cases",
@@ -63,6 +65,7 @@ for ( s in unique(malaria$deb_sem) ) #foreach unique semaine
       {
       #cat(p," is missing for semaine (malaria):",as.Date(s),"\n")
       tmp1 = data.table(deb_sem=as.Date(s),sites=p,malaria_cases="na")
+      var_conv(malaria,tmp1)
       malaria=rbind(malaria,tmp1)
       rm(tmp1)
       }
@@ -114,8 +117,8 @@ for ( s in unique(fievre$deb_sem) ) #foreach unique semaine
       {
       #cat(p," is missing for semaine(fiever):",s,"\n")
       tmp1 = data.table(deb_sem=as.Date(s),sites=p,SyndF="na")
+      var_conv(fievre,tmp1)
       fievre=rbind(fievre,tmp1)
-     
       rm(tmp1)
       }
     }

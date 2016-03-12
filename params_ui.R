@@ -17,7 +17,7 @@ sentinel_sites=selectInput(inputId="mysites",
                                        "Tsiroanomandidy","Tolagnaro","Toliary",
                                        "Toamasina","Tsaralalana"),
                            selected="Farafangana")
-                           
+##############################Level of aggregation main parameters #################                           
 myfacies_algo=selectInput(inputId ="Cluster_algo", 
                           label="Data aggregation level (facies)",
                           list("National" = "Total",
@@ -27,7 +27,7 @@ myfacies_algo=selectInput(inputId ="Cluster_algo",
                                "Fringe"="Fringe",
                                "National except East"="excepted_East",
                                "National except Central High Land"="excepted_High_land"))
-
+##############################Disease to visualize#####################################
 diseases_choices=selectInput(inputId = "diseases", 
                              label="Select a disease to monitor",
                              choices=list("Malaria" = "Malaria",
@@ -38,17 +38,22 @@ map_choices = radioButtons(inputId = "mapchoice",
                            label = "Choose a map:",
                            c("Leaflet"="leaflet","Other"="other")
                            )
+#####################radio button's choices for epidemic threshold's alerts:
 myradio_map= radioButtons(inputId="Algorithmes_eval", 
                           label="Algorithms:",
                           list(  "Percentile" = "Percentile",
                                  "MinSan" = "MinSan",
                                  "C-SUM" = "Csum",
                                  "RDT+/fever Indicator" = "Ind"))
+                                 
+                                                  
+                                
+########################################################################################
 mycondparam_map_percentile=conditionalPanel(
   condition = "input.Algorithmes_eval == 'Percentile'",
   tags$hr(),
   tags$p("About this algorithm:"),
-  helpText("An alert is triggered when the current week malaria cases exceeds 
+  helpText("An alert is triggered when disease cases of the current week exceed 
            selected value of percentile of the whole chronological series of a site. 
            The 90th percentile is the value such that 90% of the time series values are below it (and therefore 10% are above). "),
   tags$hr(),
@@ -117,8 +122,9 @@ mycondparam_map_mcases=conditionalPanel(
   condition = "input.Algorithmes == 'Mcases'",
   selectInput("sites", "Sentinel Sites", choices = c("Farafangana","Ambovombe","Ambatondrazaka","Antsohihy","Anjozorobe","Antsirabe","Belo sur Tsiribihina","Behoririka","Ambato Boeny","Ambositra","Cd Andohatapenaka","Diego","Mandritsara","Edjeda","Fianarantsoa","Ihosy","Maevatanana","Morondava","Mahajanga","Miandrivazo","Manjakaray","Mananjary","Morombe","Moramanga","Maroantsetra","Maintirano","Nosy Be","Sambava","Sainte-Marie","Tsiroanomandidy","Tolagnaro","Toliary","Toamasina","Tsaralalana")),
   selected=("Farafangana"))
+############## proportion indicator #Malaria/#fiever
 mycondparam_map_ind=  conditionalPanel(
-  condition = "input.Algorithmes_eval == 'Ind'",
+  condition = "input.Algorithmes_eval == 'Ind' & input.diseases=='Malaria'",
   br(),
   sliderInput(inputId = "exp_map", 
               "Malaria cases among fever cases:", 
@@ -133,9 +139,9 @@ mycondparam_map_ind=  conditionalPanel(
               value = 10
   ),
   br(),
-  
   helpText("Malaria cases among fever cases. Indicator is considered, as high when ratio is greater than 40%, and malaria cases among consultants number is greater than 10%.")     
 )
+###########################################################################
 map_parameters=box(status = "primary", solidHeader = TRUE,
                    collapsible = TRUE,title="Parameters",
                    width=4,myradio_map,

@@ -1,16 +1,16 @@
-cat('reading temperature and reshaping temperature data...')
-
-#lst=lst[,include,with=F]
-if (  ("data.table" %in% class(lst))==F )
-{
-  include_index= match(include, names(lst) )
-  lst= lst %>% select(include_index) %>% data.frame()
-} else {
-  lst[,code:=paste0(year(as.Date(deb_sem)),"_",week(as.Date(deb_sem)))]
-}
-
-lst=data.table(gather(lst,key=sites,value=temperature,-c(code,deb_sem)))
-cat('DONE\n')
+# cat('reading temperature and reshaping temperature data...')
+# 
+# #lst=lst[,include,with=F]
+# if (  ("data.table" %in% class(lst))==F )
+# {
+#   include_index= match(include, names(lst) )
+#   lst= lst %>% select(include_index) %>% data.frame()
+# } else {
+#   lst[,code:=paste0(year(as.Date(deb_sem)),"_",week(as.Date(deb_sem)))]
+# }
+# 
+# lst=data.table(gather(lst,key=sites,value=temperature,-c(code,deb_sem)))
+# cat('DONE\n')
 
 
 if ( input$Cluster_algo=="Total")
