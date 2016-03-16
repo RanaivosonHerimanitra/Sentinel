@@ -549,8 +549,8 @@ server<-function(input, output,session) {
     p <- plot_ly(propili_2015, x =weekOfday, y = prop,name="prop.")
     p= p %>% layout(title="%ILI sur Nb.consultations",
                     xaxis = list(title = "Date"),error_x=list(thickness = 0.5)  )
-    p = add_trace(p,y = mymean, name = "Mean<2015")
-    p = add_trace(p,y = mymax, name = "Max<2015")
+    p = p %>% add_trace(x=weekOfday,y = mymean, name = "Mean<2015")
+    p = p %>% add_trace(x=weekOfday,y = mymax, name = "Max<2015")
     p
   })
   #render Syndrome Grippal, Syndrom Dengue-Like
@@ -566,7 +566,7 @@ server<-function(input, output,session) {
     #
    
     p <- plot_ly(tdr_eff, x = deb_sem, y = Synd_g,name="Syndrome Grippal")
-    p = add_trace(tdr_eff, y = ArboSusp, name = "Dengue-Like")
+    p = p %>% add_trace(x = deb_sem, y = ArboSusp, name = "Dengue-Like")
     p= p %>% layout(title="ILI et Dengue-LIKE (34 sites)",
                     xaxis = list(title = "Date"))
     
