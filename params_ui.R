@@ -36,7 +36,7 @@ diseases_choices=selectInput(inputId = "diseases",
                              ),selected = "Malaria")
 map_choices = radioButtons(inputId = "mapchoice",
                            label = "Choose a map:",
-                           c("Leaflet"="leaflet","Other"="other")
+                           list("Leaflet"="leaflet","Other"="other")
                            )
 #####################radio button's choices for epidemic threshold's alerts:
 myradio_map= radioButtons(inputId="Algorithmes_eval", 

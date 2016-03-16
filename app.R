@@ -12,7 +12,6 @@ if ( getwd()!="/srv/shiny-server/sentinel_hrmntr")
 ##############################################server ######################
 source("facies_class.R")
 server<-function(input, output,session) {
-  
   source("import1.R")
   #reactive computation of detection algorithms 
   #(centile,MinSan,C-sum,TDR+/fiever==>case of Malaria) 
@@ -252,7 +251,7 @@ server<-function(input, output,session) {
    
     
     cat("merge tmp1 and tmp2...")
-    mygraph=rbind(tmp1,tmp2)
+     mygraph=rbind(tmp1,tmp2)
     cat('DONE\n')
    
     cat("color and setkeyv")
@@ -274,6 +273,7 @@ server<-function(input, output,session) {
     cat("loading and transforming HF Indicators...")
     hfi=data.table(gather(hfi,key=sites,
                           value=myvalue,-c(code,deb_sem,type_val)))
+    
     cat("DONE\n")
     cat("dispatch data from HFI...")
     setkey(hfi,type_val)
@@ -358,57 +358,18 @@ server<-function(input, output,session) {
                        by.y=c("code"), all.x=T )
           cat('DONE\n')
         }
+   
+    
     #using plotly:
-    p <- plot_ly(myprop, x = deb_sem, y = 100*prop,name=input$diseases)
-    p = add_trace(p, y = caid_value, name = "CAID")
-    p = add_trace(p, y = pmm_value, name = "pmm")
-    p = add_trace(p, y = mild_value, name = "mild")
-    p = add_trace(p, y = temperature, name = "Temp.")
+    p <- plot_ly(myprop, x = deb_sem,
+                 y = 100*prop,name=input$diseases)
+    p = p %>% add_trace(x = deb_sem, y = caid_value, name = "CAID")
+    p = p %>% add_trace(x = deb_sem, y = pmm_value, name = "pmm")
+    p = p %>% add_trace(x = deb_sem, y = mild_value, name = "mild")
+    p = p %>% add_trace(x = deb_sem, y = temperature, name = "Temp.")
     p
     
-   #using rbokeh
-#     p <- figure() %>% ly_lines(x=deb_sem,y=100*prop, data = myprop,color="red")
-#     p <- p %>% ly_lines(x=deb_sem,y=caid_value, data = myprop,color="blue")
-#     p <- p %>% ly_lines(x=deb_sem,y=pmm_value, data = myprop,color="green")
-#     p <- p %>% ly_lines(x=deb_sem,y=ndvi_value, data = myprop,color="orange")
-#     p <- p %>% ly_lines(x=deb_sem,y=mild_value, data = myprop,color="magenta")
-#     p <- p %>% ly_lines(x=deb_sem,y=temperature, data = myprop,color="black")
-#     p
-# using highcharts:    
-#     cat('part1')
-#      h1 <- Highcharts$new()
-#    
-#      h1$title(text = paste("Weekly prop. of sites in alert for",
-#                            input$diseases ,"using",input$Algorithmes_eval))
-#      h1$chart(type = "spline")
-#      h1$series(name=paste("%",input$diseases),color='rgba(255,0,0,0.8)',data = 100*myprop$prop)
-#      #, dashStyle = "longdash"
-#      cat('DONE\n')
-#      
-#      cat('part2')
-#      h1$xAxis(title= list(text="Date") )
-#      h1$series(name="pmm",data = myprop$pmm_value)
-#      cat('DONE\n')
-#      
-#      cat('part3')
-#      h1$series(name="CAID",data = myprop$caid_value)
-#      cat('DONE\n')
-#      
-#      cat('part4')
-#      h1$series(name="Temp.",data = myprop$temperature)
-#      cat('DONE\n')
-#      
-#      cat('part5')
-#      h1$series(name="Mild",data = myprop$mild_value)
-#      cat('DONE\n')
-#      
-#      cat('part6')
-#      h1$series(name="Ndvi",data = 100*myprop$ndvi_value)
-#      h1$legend(symbolWidth = 50)
-#      h1$addParams(height = 300, dom = 'propsite_alerte')
-#      cat('DONE\n')
-#      
-#      h1
+  
   })
   #display sites in alert for the current week into the map (02 map choices currently)
   output$madagascar_map <- renderLeaflet({
@@ -447,31 +408,21 @@ server<-function(input, output,session) {
         cat("display alert status into the map using a simple indicator...\n")
       }
     #feeding leaflet with our data:
-    madagascar_map=leaflet()
-    madagascar_map=leaflet(sentinel_latlong) 
-    madagascar_map=madagascar_map %>% setView(lng = 47.051532 , 
+    mada_map=leaflet()
+    mada_map=leaflet(sentinel_latlong) 
+    mada_map=mada_map %>% setView(lng = 47.051532 , 
                                               lat =-19.503781 , zoom = 5) 
-    madagascar_map=madagascar_map %>% addTiles() 
-#     tmp=as.data.frame(sentinel_latlong[1:4,])
-#     madagascar_map=madagascar_map %>% addPolygons(data = tmp, 
-#                                                   fill = FALSE, 
-#                                                   color = '#FFFF00', 
-#                                                   opacity = 1, 
-#                                                   layerId = 'sel_cty')
-#     madagascar_map=madagascar_map %>% fitBounds(lng1 = bbox(tmp)[1], 
-#               lat1 = bbox(tmp)[2], 
-#               lng2 = bbox(tmp)[3], 
-#               lat2 = bbox(tmp)[4])
+    mada_map=mada_map %>% addTiles() 
     #change color to red when alert is triggered:
     #navy
     pal <- colorFactor(c("red", "green"), domain = c("normal", "alert"))
-    madagascar_map=madagascar_map %>% addCircleMarkers(lng = ~Long, 
+    mada_map=mada_map %>% addCircleMarkers(lng = ~Long, 
                                                        lat = ~Lat, 
                                                        weight = 1,
                                                        radius = ~myradius, 
                                                        color = ~pal(alert_status),
                                                        popup = ~name)
-    return(madagascar_map)
+    return(mada_map)
     })
   output$madagascar_map2 <- renderPlot({
       if (input$Algorithmes_eval=="Percentile") 
@@ -533,16 +484,23 @@ server<-function(input, output,session) {
       return(madagascar_map2)  
       
     },height = 640)
+  #Leaflet or ggmap:
+  mymapchoice = reactive({
+    return(input$mapchoice)
+  })
   #click event handler for leaflet:
   selected_site_leaflet=eventReactive(input$madagascar_map_marker_click,{
-      event <- input$madagascar_map_marker_click
-      return(sentinel_latlong[Long==event$lng & Lat==event$lat,get("sites")])
-  })
+    event= input$madagascar_map_marker_click
+    print(str(event))
+    return(sentinel_latlong[Long==event$lng & Lat==event$lat,get("sites")])
+  },ignoreNULL=F)
+ 
   #click event handler (news since shiny 0.13)
  selected_site=eventReactive(input$madagascar_map2_brush, {
     Z <- brushedPoints(sentinel_latlong, 
                        input$madagascar_map2_brush, 
                        xvar="Long",yvar="Lat",allRows = TRUE)
+    
     return(sentinel_latlong[Z$selected_,get("sites")])
   })
  clicked_site=eventReactive(input$madagascar_map2_click, {
@@ -551,9 +509,7 @@ server<-function(input, output,session) {
                    xvar="Long",yvar="Lat",allRows = TRUE)
    return(sentinel_latlong[Z$selected_,get("sites")])
  })
-  mymapchoice = reactive({
-    return(input$mapchoice)
-  })
+  
   #render Proportion of ILI sur Nombre de consultant
   output$propili = renderPlotly({
     #preprocess data:
@@ -615,21 +571,13 @@ server<-function(input, output,session) {
                     xaxis = list(title = "Date"))
     
     p
-    # using highcharts (slow)
-#     myili <- Highcharts$new()
-#     myili$title(text = paste("ILI recensed (34 sites)",
-#                           input$diseases ,"using",input$Algorithmes_eval))
-#     myili$chart(type = "spline")
-#     myili$legend(symbolWidth = 50)
-#     myili$addParams(height = 300, dom = 'ili_graph')
-#     myili$series(name="Syndrome grippal",data =tdr_eff$Synd_g )
-#     myili$series(name="Dengue-Like",data =tdr_eff$ArboSusp )
-#     return(myili)
+   
     
   })
   #render weekly malaria cases for a clicked site
   output$weekly_disease_cases_persite = renderPlotly({
     mydata=preprocessing()
+   
     setkey(mydata,sites)
     if ( mymapchoice()=="other" )
     {
@@ -638,7 +586,9 @@ server<-function(input, output,session) {
       mydata=mydata[sites %in% sites_list ,
                     list(occurence=sum(occurence,na.rm=T)),by="deb_sem"]
     } else {
-      mydata=mydata[sites %in% selected_site_leaflet()]
+      print(selected_site_leaflet())
+      mydata=mydata[sites %in% selected_site_leaflet(),]
+      
     }
     
     #reorder time series
@@ -687,7 +637,7 @@ server<-function(input, output,session) {
                                             ,1,week(Sys.Date())),
                          minsan_weekrange=input$minsan_weekrange,
                          minsan_consecutive_week=input$minsan_consecutive_week,byvar="code")$propsite_alerte_minsan
-      #print(X);Sys.sleep(20)
+     
       }
     #if ( input$Algorithmes == 'Ind') { source(".R") }
     
@@ -710,8 +660,7 @@ server<-function(input, output,session) {
     X[,years:=year(deb_sem)]
     
   
-   print(unique(X$sites))
-  
+   
     X=X[years %in% (2016-as.numeric(input$nbyear)):2016,]
     
     #try selection using dplyr so then avoid data.frame conversion!
