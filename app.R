@@ -51,9 +51,6 @@ server<-function(input, output,session) {
     mydata[,sites:=as.character(sites)]
     setkeyv(mydata,c('sites','weeks','years','code'))
     cat("DONE\n")
-    
-   
-    
     return(mydata)
   })
   percentile_algorithm = reactive({
@@ -513,7 +510,7 @@ server<-function(input, output,session) {
   #render Proportion of ILI sur Nombre de consultant
   output$propili = renderPlotly({
     #preprocess data:
-    tdr_eff= tdr_eff %>% data.frame() ; gc()
+    #tdr_eff= tdr_eff %>% data.frame() ; gc()
     tdr_eff = tdr_eff %>% mutate( Synd_g = GrippSusp + AutrVirResp )
     #34 sites we need:
     sites34= toupper(include[-c(1:2)])
@@ -526,7 +523,6 @@ server<-function(input, output,session) {
     propili_2015[,prop := 100*sum(Synd_g,na.rm = T)/sum(NxConsltTotal,na.rm=T) ,by="deb_sem"]
     propili_2015= unique(propili_2015[,list(deb_sem,prop)])
     propili_2015[,weekOfday:=week(deb_sem)] #create a key to merge later 
-   # propili_2015[,weekOfday:=as.character(weekOfday)]
     cat("DONE\n")
     
   
@@ -557,7 +553,7 @@ server<-function(input, output,session) {
   output$ili_graph = renderPlotly({
     #data processing:
     #require(profvis)
-    tdr_eff= tdr_eff %>% data.frame() ; gc()
+   # tdr_eff= tdr_eff %>% data.frame() ; gc()
     tdr_eff = tdr_eff %>% mutate( Synd_g = GrippSusp + AutrVirResp )
     #34 sites we need:
     sites34= toupper(include[-c(1:2)])
@@ -574,21 +570,43 @@ server<-function(input, output,session) {
    
     
   })
-  #render weekly malaria cases for a clicked site
+  #render weekly diseases cases for a clicked site
   output$weekly_disease_cases_persite = renderPlotly({
     mydata=preprocessing()
-   
     setkey(mydata,sites)
+    cat("reshape HFI to extract rainFall...")
+    hfi=data.table(gather(hfi,key=sites,
+                          value=myvalue,-c(code,deb_sem,type_val)))
+    setkeyv(hfi,c("type_val","sites"))
+    cat("DONE\n")
+    
     if ( mymapchoice()=="other" )
     {
       sites_list=unique(c(selected_site(),clicked_site()))
       #if the user has clicked on the map:
       mydata=mydata[sites %in% sites_list ,
                     list(occurence=sum(occurence,na.rm=T)),by="deb_sem"]
-    } else {
-      print(selected_site_leaflet())
-      mydata=mydata[sites %in% selected_site_leaflet(),]
+      # RainFall ou Precipitation:
+      cat("merge rainfall or precipitation with mydata for chosen site(s)...")
+       pmm = hfi[type_val=="PRECIPITATION" & sites %in% sites_list()];
+       setnames(pmm,old="myvalue",new="rainFall")
+       # merge with mydata
+       pmm[,deb_sem:=NULL]
+       mydata=merge(mydata,pmm,by.x=c("code"),by.y=c("code"))
+       #
+      cat("DONE\n")
       
+    } else {
+      mydata=mydata[sites %in% selected_site_leaflet(),]
+      # RainFall ou Precipitation:
+      cat("merge rainfall or precipitation with mydata for chosen site(s)...")
+       pmm = hfi[type_val=="PRECIPITATION" & sites %in% selected_site_leaflet()];
+       setnames(pmm,old="myvalue",new="rainFall")
+       # merge with mydata
+       pmm[,deb_sem:=NULL]
+       mydata=merge(mydata,pmm,by.x=c("code"),by.y=c("code"))
+      #
+      cat("DONE\n")
     }
     
     #reorder time series
@@ -600,8 +618,9 @@ server<-function(input, output,session) {
     #
     p=plot_ly(data=mydata,
               y=occurence,
-              x=Semaine)
+              x=Semaine,name=paste0(input$diseases," for selected site"))
     p %>% layout(title=mytitle, yaxis = list(title = "Nb.Cas"))
+    p = p %>% add_trace(x = Semaine, y = rainFall/10, name = "rainfall/10")
     
   })
   #Health heatmap plot with plotly and using percentile algorithm:

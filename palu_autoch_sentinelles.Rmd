@@ -12,7 +12,8 @@ output: pdf_document
 
 
 ```{r,echo=F,fig.width=10, out.extra='',comment='', message=FALSE , warning=FALSE}
-source("import1.R");source("preprocessing.R");require(ggplot2); require(gridExtra)
+source("import1.R");
+source("preprocessing.R");require(ggplot2); require(gridExtra)
 #Retrieve Malaria (TDR+ ~~PaluConf) for HTC sites
 mydata= preprocessing_disease(select_htc=TRUE)[["Malaria"]]
 setnames(mydata,"occurence","palu")
@@ -26,6 +27,9 @@ htc= c("deb_sem","code","abon","ambl","ants","bela",
 palu_autoch=palu_autoch[,htc,with=F]
 palu_autoch=as.data.table(gather(palu_autoch,
                                  key=sites,value=autoch,-c(code,deb_sem)))
+# sum autoch by deb_sem and sites
+palu_autoch[,autoch:=sum(autoch),by="deb_sem,sites"]
+palu_autoch=unique(palu_autoch)
 #Merge autochtone & Palu (all)
 mydata=merge(mydata,palu_autoch[,list(code,sites,autoch)],
              by.x=c("code","sites"),by.y=c("code","sites"),all.x=T,all.y=T)
@@ -74,6 +78,8 @@ for ( k in 2:6 )
 # selection for last 6 weeks before current week for Palu autochtone:
 last6_palu_autoch=palu_autoch[as.Date(deb_sem) %in% semaine,list(deb_sem,sites,autoch)]
 
+#knitr::kable(last6_palu_autoch)
+
 
 #transform NA into XX
 last6_palu_autoch$autoch=as.character(last6_palu_autoch$autoch)
@@ -84,10 +90,14 @@ last6_palu_autoch[,autoch:=ifelse(nchar(autoch)<2,paste0("0",autoch),autoch)]
 #inline historical occurence:
 last6_palu_autoch[,vals:=paste(autoch,collapse = "-"),by="sites"]
 last6_palu_autoch[,autoch:=NULL]
-lastweek =  unique(palu_autoch[as.Date(deb_sem)==max_deb_sem-7, list(sites,autoch)])
+lastweek =  palu_autoch[as.Date(deb_sem)==max_deb_sem-7, list(sites,autoch)]
+
 lastweek[,autoch:=as.character(autoch)]
 lastweek[is.na(autoch)==T,autoch:="na"]
-last6_palu_autoch= merge(unique(last6_palu_autoch[,list(sites,vals)]),lastweek, by.x="sites", by.y="sites")
+
+#knitr::kable(lastweek)
+
+last6_palu_autoch=merge(unique(last6_palu_autoch[,list(sites,vals)]),lastweek, by.x="sites", by.y="sites")
              
 # merge with sentinel_code :
 sentinel_code=fread('data/sentinel_codes.csv')
@@ -96,7 +106,10 @@ setnames(sentinel_code,"Code","sites")
 
 last6_palu_autoch=merge(last6_palu_autoch,
                         sentinel_code,by.x="sites",by.y="sites")
-#knitr::kable(last6_palu_autoch)
+
+
+
+
  #
  setnames(last6_palu_autoch,c("sites","vals","autoch"),
                  c("Sites","6 semaines précédentes","Semaine dernière"))

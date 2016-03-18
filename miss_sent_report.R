@@ -101,5 +101,5 @@ doc = addFlexTable( doc, mytable2 )
 
 writeDoc(doc, file = "missing_sent.docx")
 #sudo apt-get install unoconv
-#system("doc2pdf missing_sent.docx") #write in pdf using cli command
+system("doc2pdf missing_sent.docx") #write in pdf using cli command
 cat('DONE\n')
