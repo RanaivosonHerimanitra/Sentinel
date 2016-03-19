@@ -160,7 +160,7 @@ calculate_minsan=function(data=mydata,
    data[alert_status=="alert",nbsite_alerte:=sum(occurence,na.rm = T)*1.0,by="sites,code"]
    data[alert_status=="normal",nbsite_normal:=sum(occurence,na.rm = T)*1.0,by="sites,code"]
    data[alert_status=="normal",myradius:=5*(nbsite_alerte+1)/sqrt(nbsite_normal+1)]
-   data[alert_status=="alert",myradius:=(nbsite_alerte+1)/sqrt(nbsite_normal+1)]
+   data[alert_status=="alert",myradius:=5*(nbsite_alerte+1)/sqrt(nbsite_normal+1)]
    data[alert_status %in% NA, myradius:=10*myradius]
   cat('DONE\n')
   

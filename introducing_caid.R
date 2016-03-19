@@ -1,22 +1,3 @@
-cat('reading caid and reshaping caid data...')
-
-#
-# if ( ("data.table" %in% class(caid))==F )
-# {
-#   include_index= match(include, names(caid) )
-#   caid= caid %>% select(include_index) %>% data.frame() 
-#   caid = caid %>% mutate(code=paste0(year(as.Date(deb_sem)),"_",week(as.Date(deb_sem))) )
-#   
-# } else {
-#  caid[,code:=paste0(year(as.Date(deb_sem)),"_",week(as.Date(deb_sem)))]
-# }
-#
-
-
-#caid=caid[,include,with=F]
-#caid=data.table(gather(caid,key=sites,value=caid_value,-c(code,deb_sem)))
-#caid[,code:=paste0(year(as.Date(deb_sem)),"_",week(as.Date(deb_sem)))]
-cat('DONE\n')
 
 if ( input$Cluster_algo=="Total")
  {

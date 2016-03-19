@@ -1,12 +1,15 @@
 #whether to run on local for debugging and development purpose
 #or to pull data directly from the server:
-remote_server=F;writing_to_disk=F
+remote_server=T;writing_to_disk=F
 #load required packages:
 source("libraries.R");source("var_conversion.R")
 if ( exists("PaluConf")==F ) #to speed up things
 {
   if ( remote_server==TRUE ) {
    # cat("connection to the server and read data using dplyr to select views and tables:\n")
+  withProgress(message = 'Loading data...', value = 0, {
+    n=4 #monitor progress in 4 steps:
+    incProgress(1/n, detail = "establish connection to the server...")
     sentinel <- src_postgres(dbname="sentinel",
                              host = "172.16.0.230", 
                              user = "cnx_florian",
@@ -17,6 +20,8 @@ if ( exists("PaluConf")==F ) #to speed up things
                                user="cnx_florian",
                                password="sigflorianipm")
     #should accelerate extraction
+    incProgress(1/n, detail = "load malaria data...")
+    
     PaluConf=fread("data/PaluConf.csv")
     max_date=max(PaluConf$deb_sem)
     PaluConf_tmp= tbl(sentinel,
@@ -62,7 +67,22 @@ if ( exists("PaluConf")==F ) #to speed up things
     SyndF=SyndF[deb_sem<max_date,]
     SyndF=(rbind(SyndF,SyndF_tmp))
     
+    #palu autochtone:
+    palu_autoch=fread("data/palu_autoch.csv")
+    max_date=max(palu_autoch$deb_sem)
+    palu_autoch_tmp=tbl(sentinel,
+                        build_sql("SELECT * FROM ",
+                                  "crosstab_autoch_format"," WHERE deb_sem>=",
+                                  max_date))
+    #transform into data.table:
+    palu_autoch_tmp= palu_autoch_tmp  %>% data.frame() %>% data.table()
+    #conversion of variables:
+    var_conv(palu_autoch,palu_autoch_tmp)
+    #rbind 02 dataframe:
+    palu_autoch=unique(rbind(palu_autoch,palu_autoch_tmp))
+    
     #
+    incProgress(1/n, detail = "load diarrhea data...")
     Diarrh=fread("data/Diarrh.csv")
     max_date=max(Diarrh$deb_sem)
     Diarrh_tmp=tbl(sentinel,
@@ -94,21 +114,10 @@ if ( exists("PaluConf")==F ) #to speed up things
     Diarrh_feb=unique(rbind(Diarrh_feb,Diarrh_feb_tmp))
     
     
-    #palu autochtone:
-    palu_autoch=fread("data/palu_autoch.csv")
-    max_date=max(palu_autoch$deb_sem)
-    palu_autoch_tmp=tbl(sentinel,
-                    build_sql("SELECT * FROM ",
-                              "crosstab_autoch_format"," WHERE deb_sem>=",
-                              max_date))
-    #transform into data.table:
-    palu_autoch_tmp= palu_autoch_tmp  %>% data.frame() %>% data.table()
-    #conversion of variables:
-    var_conv(palu_autoch,palu_autoch_tmp)
-    #rbind 02 dataframe:
-    palu_autoch=unique(rbind(palu_autoch,palu_autoch_tmp))
+    
     
     #Paralysie flasque aigue
+    incProgress(1/n, detail = "load PFA data...")
     pfa=fread("data/pfa.csv")
     max_date=max(pfa$deb_sem)
     pfa_tmp= tbl(sentinel,
@@ -126,6 +135,8 @@ if ( exists("PaluConf")==F ) #to speed up things
     
     
     #cat('query of TDR effectif\n')
+    incProgress(1/n, detail = "load High Frequency indicators data...")
+    
     tdr_eff=fread("data/tdr_eff.csv")
     max_date = max(tdr_eff$deb_sem)
     tdr_eff_tmp= tbl(sentinel,
@@ -156,54 +167,7 @@ if ( exists("PaluConf")==F ) #to speed up things
     ili=ili[deb_sem<max_date]
     ili=(rbind(ili,ili_tmp))
     
-    #cat('query of Land Surface Temperature(lst)\n')
-#     lst=fread("data/lst.csv")
-#     max_date=max(lst$deb_sem)
-#     lst_tmp=tbl(data_iri_env,
-#             build_sql("SELECT * FROM ",
-#                       "groupe_lst_day_format",
-#                       " WHERE deb_sem>=",max_date))
-#     #conversion of dataframe:
-#     lst_tmp = lst_tmp %>% data.frame() %>% data.table()
-#     #conversion of variables:
-#     var_conv(lst,lst_tmp)
-#     #rbind 02 dataframe:
-#     lst= lst[deb_sem<max_date,]
-#     lst=(rbind(lst,lst_tmp))
-    
-    
-    #cat('query of NDVI\n')
-#     ndvi=fread("data/ndvi.csv")
-#     max_date= max(ndvi$deb_sem)
-#     ndvi_tmp=tbl(data_iri_env,
-#              build_sql("SELECT * FROM ",
-#                        "groupe_ndvi_format",
-#                        " WHERE deb_sem>=",max_date))
-#     #conversion of dataframe:
-#     ndvi_tmp = ndvi_tmp %>% data.frame() %>% data.table()
-#     #conversion of variables:
-#     var_conv(ndvi,ndvi_tmp)
-#     #rbind 02 dataframe:
-#     ndvi= ndvi[deb_sem<max_date,]
-#     ndvi=(rbind(ndvi,ndvi_tmp))
-    
-    #cat('query of Precipitation(pmm)\n')
-#     pmm=fread("data/pmm.csv")
-#     max_date= max(pmm$deb_sem)
-#     pmm_tmp=tbl(data_iri_env,
-#             build_sql('SELECT * FROM "groupe_precipitation_format"'))
-#     #conversion of dataframe:
-#     pmm_tmp = pmm_tmp %>% data.frame() %>% data.table()
-#     #conversion of variables:
-#     var_conv(pmm,pmm_tmp)
-#     #rbind 02 dataframe:
-#     pmm= pmm[deb_sem<max_date,]
-#     pmm=(rbind(pmm,pmm_tmp))
-    
-    #cat('query of CAID\n')
-    #caid=fread("data/caid.csv")
-    #caid_tmp=tbl(sentinel,"caid")
-
+   
     #cat('query of mild\n')
     mild<-fread("data/mild_export.csv") 
     # mild=as.data.table(as.data.frame(mild))
@@ -227,7 +191,7 @@ if ( exists("PaluConf")==F ) #to speed up things
      #rbind 02 dataframe:
      hfi= hfi[deb_sem<max_date,]
      hfi=(rbind(hfi,hfi_tmp))
-     
+  })
     if (writing_to_disk==T )
     {
       #need conversion here---- NOT ACTUALLY

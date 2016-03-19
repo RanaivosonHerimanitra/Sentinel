@@ -1,10 +1,7 @@
 cat('reading mild and reshaping mild data...')
-#include_index= match(include, names(mild) )
-#mild= mild %>% select(include_index) %>% as.data.frame()
-#mild = mild %>% mutate (code=paste0(year(as.Date(deb_sem)),"_",week(as.Date(deb_sem))))
-mild[,code:=paste0(year(as.Date(deb_sem)),"_",week(as.Date(deb_sem)))]
-mild=mild[,include,with=F]
-mild=as.data.table(gather(mild,key=sites,value=mild_value,-c(code,deb_sem)))
+ mild[,code:=paste0(year(as.Date(deb_sem)),"_",week(as.Date(deb_sem)))]
+ mild=mild[,include,with=F]
+ mild=as.data.table(gather(mild,key=sites,value=mild_value,-c(code,deb_sem)))
 cat('DONE\n')
 
 if ( input$Cluster_algo=="Total")

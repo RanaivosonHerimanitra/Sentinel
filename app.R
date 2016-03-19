@@ -264,20 +264,18 @@ server<-function(input, output,session) {
   })
   #display proportion of sites in alert with these HFI
   output$propsite_alerte = renderPlotly({
-   
     source("create_facies.R")
-    
     cat("loading and transforming HF Indicators...")
-    hfi=data.table(gather(hfi,key=sites,
+     hfi=data.table(gather(hfi,key=sites,
                           value=myvalue,-c(code,deb_sem,type_val)))
-    
+     hfi= create_facies(hfi)
     cat("DONE\n")
     cat("dispatch data from HFI...")
-    setkey(hfi,type_val)
-    caid = hfi[type_val=="CAID"];setnames(caid,old="myvalue",new="caid_value")
-    pmm = hfi[type_val=="PRECIPITATION"];setnames(pmm,old="myvalue",new="pmm_value")
-    lst = hfi[type_val=="LST_DAY"];setnames(lst,old="myvalue",new="temperature")
-    ndvi = hfi[type_val=="NDVI"];setnames(ndvi,old="myvalue",new="ndvi_value")
+     setkey(hfi,type_val)
+     caid = hfi[type_val=="CAID"];setnames(caid,old="myvalue",new="caid_value")
+     pmm = hfi[type_val=="PRECIPITATION"];setnames(pmm,old="myvalue",new="pmm_value")
+     lst = hfi[type_val=="LST_DAY"];setnames(lst,old="myvalue",new="temperature")
+     ndvi = hfi[type_val=="NDVI"];setnames(ndvi,old="myvalue",new="ndvi_value")
     cat("DONE\n")
     source("introducing_caid.R",local = T) #==>now in caid
     source("introducing_mild.R",local = T)
@@ -296,6 +294,23 @@ server<-function(input, output,session) {
     
         if ( input$Cluster_algo !="Total"  )
         {
+          setkeyv( mild , c("code","facies") )
+          cat('merging mild data with proportion of sites in alert...')
+          myprop=merge(myprop,mild[,list(code,mild_value,facies)],
+                       by.x=c("code","facies"),
+                       by.y=c("code","facies"), all.x=T)
+          cat('DONE\n')
+          cat('nrow of myprop  after merge with MILD are:',nrow(myprop),"\n")
+          
+          
+          setkeyv( caid , c("code","facies") )
+          cat('merging caid data with proportion of sites in alert...')
+          myprop=merge(myprop,caid[,list(code,caid_value,facies)],
+                       by.x=c("code","facies"),
+                       by.y=c("code","facies"), all.x=T)
+          cat('DONE\n')
+          cat('nrow of myprop  after merge with CAID are:',nrow(myprop),"\n")
+          
           setkeyv( myprop , c("code","facies") );setkeyv( ndvi , c("code","facies") )
           cat('merging ndvi data with proportion of sites in alert...')
           myprop=merge(myprop,ndvi[,list(code,ndvi_value,facies)],
@@ -356,14 +371,16 @@ server<-function(input, output,session) {
           cat('DONE\n')
         }
    
-    
+    #print(head(myprop));print(tail(myprop));Sys.sleep(10)
     #using plotly:
     p <- plot_ly(myprop, x = deb_sem,
                  y = 100*prop,name=input$diseases)
-    p = p %>% add_trace(x = deb_sem, y = caid_value, name = "CAID")
-    p = p %>% add_trace(x = deb_sem, y = pmm_value, name = "pmm")
-    p = p %>% add_trace(x = deb_sem, y = mild_value, name = "mild")
-    p = p %>% add_trace(x = deb_sem, y = temperature, name = "Temp.")
+    p = p %>% add_trace(x = deb_sem, y = caid_value, name = "CAID",visible='legendonly')
+    p = p %>% add_trace(x = deb_sem, y = pmm_value, name = "pmm",visible='legendonly')
+    p = p %>% add_trace(x = deb_sem, y = mild_value, name = "mild",visible='legendonly')
+    p = p %>% add_trace(x = deb_sem, y = temperature, name = "Temp.",visible='legendonly')
+    p = p %>% layout(legend = list(x = 0, y = 100))
+    
     p
     
   
@@ -575,9 +592,9 @@ server<-function(input, output,session) {
     mydata=preprocessing()
     setkey(mydata,sites)
     cat("reshape HFI to extract rainFall...")
-    hfi=data.table(gather(hfi,key=sites,
+     hfi=data.table(gather(hfi,key=sites,
                           value=myvalue,-c(code,deb_sem,type_val)))
-    setkeyv(hfi,c("type_val","sites"))
+     setkeyv(hfi,c("type_val","sites"))
     cat("DONE\n")
     
     if ( mymapchoice()=="other" )
@@ -585,13 +602,12 @@ server<-function(input, output,session) {
       sites_list=unique(c(selected_site(),clicked_site()))
       #if the user has clicked on the map:
       mydata=mydata[sites %in% sites_list ,
-                    list(occurence=sum(occurence,na.rm=T)),by="deb_sem"]
+                    list(occurence=sum(occurence,na.rm=T)),by="code"]
       # RainFall ou Precipitation:
       cat("merge rainfall or precipitation with mydata for chosen site(s)...")
-       pmm = hfi[type_val=="PRECIPITATION" & sites %in% sites_list()];
+       pmm = hfi[type_val=="PRECIPITATION" & sites %in% sites_list];
        setnames(pmm,old="myvalue",new="rainFall")
        # merge with mydata
-       pmm[,deb_sem:=NULL]
        mydata=merge(mydata,pmm,by.x=c("code"),by.y=c("code"))
        #
       cat("DONE\n")
@@ -620,7 +636,8 @@ server<-function(input, output,session) {
               y=occurence,
               x=Semaine,name=paste0(input$diseases," for selected site"))
     p %>% layout(title=mytitle, yaxis = list(title = "Nb.Cas"))
-    p = p %>% add_trace(x = Semaine, y = rainFall/10, name = "rainfall/10")
+    p = p %>% add_trace(x = Semaine, y = rainFall/10, name = "rainfall/10",visible='legendonly')
+    #mode="bar"
     
   })
   #Health heatmap plot with plotly and using percentile algorithm:
