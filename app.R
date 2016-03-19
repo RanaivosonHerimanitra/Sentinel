@@ -635,7 +635,7 @@ server<-function(input, output,session) {
     p=plot_ly(data=mydata,
               y=occurence,
               x=Semaine,name=paste0(input$diseases," for selected site"))
-    p %>% layout(title=mytitle, yaxis = list(title = "Nb.Cas"))
+    p= p %>% layout(title=mytitle, yaxis = list(title = "Nb.Cas"))
     p = p %>% add_trace(x = Semaine, y = rainFall/10, name = "rainfall/10",visible='legendonly')
     #mode="bar"
     
