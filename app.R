@@ -426,15 +426,16 @@ server<-function(input, output,session) {
     mada_map=leaflet(sentinel_latlong) 
     mada_map=mada_map %>% setView(lng = 47.051532 , 
                                               lat =-19.503781 , zoom = 5) 
-    mada_map=mada_map %>% addTiles() 
+    mada_map=mada_map %>% addTiles(urlTemplate="http://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}") 
     #change color to red when alert is triggered:
     #navy
-    pal <- colorFactor(c("red", "green"), domain = c("normal", "alert"))
+    pal <- colorFactor(c("red", "darkgreen"), domain = c("normal", "alert"))
     mada_map=mada_map %>% addCircleMarkers(lng = ~Long, 
                                                        lat = ~Lat, 
                                                        weight = 1,
                                                        radius = ~myradius, 
                                                        color = ~pal(alert_status),
+                                                       fillOpacity = 0.7,
                                                        popup = ~name)
     return(mada_map)
     })
@@ -748,7 +749,7 @@ server<-function(input, output,session) {
 #skeleton of the user interface:
 source('initialize_ui.R')
 ui = list(dashboardPage(skin = "blue",
-                   
+               
   dashboardHeader(title="Surveillance sentinelle",titleWidth="233"),
   dashboardSidebar(
     sidebarMenu(
