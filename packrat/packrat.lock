@@ -447,6 +447,12 @@ Version: 0.5.1
 Hash: 3d9eaa2d45febd7c1237f93a4c7c210d
 Requires: htmltools, shiny
 
+Package: shinyjs
+Source: CRAN
+Version: 0.4.0
+Hash: d8c48d8f86be1c442b27e493ab3521c9
+Requires: digest, htmltools, shiny
+
 Package: shinythemes
 Source: CRAN
 Version: 1.0.1
