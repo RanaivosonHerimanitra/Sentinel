@@ -379,10 +379,18 @@ server<-function(input, output,session) {
     p <- plot_ly(myprop, x = deb_sem,
                  y = 100*prop,name=input$diseases,
                  line = list(width=line_width,color = "rgb(255, 0, 0)") )
-    p = p %>% add_trace(x = deb_sem, y = caid_value, name = "CAID",line = list(width=line_width),visible='legendonly')
-    p = p %>% add_trace(x = deb_sem, y = pmm_value, name = "pmm",line = list(width=line_width),visible='legendonly')
-    p = p %>% add_trace(x = deb_sem, y = mild_value, name = "mild",line = list(width=line_width),visible='legendonly')
-    p = p %>% add_trace(x = deb_sem, y = temperature, name = "Temp.", line = list(width=line_width,color = "rgb(0, 102, 204)"),visible='legendonly')
+    p = p %>% add_trace(x = deb_sem, y = caid_value, name = "CAID",
+                        line = list(width=line_width),visible='legendonly')
+    p = p %>% add_trace(x = deb_sem, y = pmm_value, name = "pmm",
+                        line = list(width=line_width),visible='legendonly')
+    p = p %>% add_trace(x = deb_sem, y = mild_value, name = "mild",
+                        color="Mild",
+                        opacity=0.5,
+                        colors="#132B43",
+                        type="bar",
+                        visible='legendonly')
+    p = p %>% add_trace(x = deb_sem, y = temperature, name = "Temp.",
+                        line = list(width=line_width,color = "rgb(0, 102, 204)"),visible='legendonly')
     p = p %>% layout(legend = list(x = 0, y = 100))
 
     p
@@ -605,6 +613,7 @@ server<-function(input, output,session) {
      setkeyv(hfi,c("type_val","sites"))
     cat("DONE\n")
     
+    
     if ( mymapchoice()=="other" )
     {
       sites_list=unique(c(selected_site(),clicked_site()))
@@ -633,6 +642,14 @@ server<-function(input, output,session) {
       cat("DONE\n")
     }
     
+    #merge mild with 
+    source("introducing_mild.R",local = T)
+    # merge with mydata
+    mydata=merge(mydata,mild[,list(code,mild_value)],
+                 by.x=c("code"),by.y=c("code"))
+    #
+    #
+    
     #reorder time series
     mydata[,deb_sem:=as.Date(deb_sem)]
     mydata=mydata[order(deb_sem),]
@@ -653,7 +670,13 @@ server<-function(input, output,session) {
                         line = list(width=line_width,color = "rgb(0, 204, 0)"),
                         name = "rainfall/10",visible='legendonly')
    
-    #mode="bar"
+    p = p %>% add_trace(x = Semaine, y = mild_value, name = "mild",
+                        color="Mild",
+                        opacity=0.5,
+                        colors="#132B43",
+                        type="bar",
+                        visible='legendonly')
+    p
     
   })
   #Health heatmap plot with plotly and using percentile algorithm:
@@ -771,8 +794,6 @@ ui = list(dashboardPage(skin = "blue",
       menuItem(text="Main",tabName="mytabbox", 
                icon = icon("database")),
       includeHTML("www/gears.html"),
-     # HTML('<section data-display-if="!output.madagascar_map">
-     #        <img src="/www/img/gears.svg" ></section>'),
       diseases_choices,
       map_choices,
       myfacies_algo,
