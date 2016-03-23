@@ -257,10 +257,9 @@ server<-function(input, output,session) {
     cat("DONE\n")
     
     h <- ggplot(mygraph, aes(x=weeks, y=cases,fill=Status)) +
-      geom_bar(stat="identity") + scale_fill_manual(values=cols) + ggtitle(paste("Malaria cases in",input$mysites,"since 01/01/2015")) 
-    ggplotly(h)
-    
-   
+       geom_bar(stat="identity") + scale_x_continuous(name="") + scale_y_continuous(name="") + scale_fill_manual(values=cols) + ggtitle(paste("Malaria cases in",input$mysites,"since 01/01/2015")) 
+     h= ggplotly(h)
+    h = h %>% layout(xaxis = list(title = "Semaine") )
   })
   #display proportion of sites in alert with these HFI
   output$propsite_alerte = renderPlotly({

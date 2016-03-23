@@ -17,7 +17,10 @@ algoviz_display=tabItem(tabName="myalgoviz",
                           plotlyOutput("propsite_alerte"))
                         ),
                         sentinel_sites,
-                        fluidRow( box(status = "primary", solidHeader = TRUE,
-                                   collapsible = TRUE, plotlyOutput("malariacases"),width = 12)
+                        fluidRow( 
+                          #box(status = "primary", solidHeader = TRUE,
+                               #    collapsible = TRUE,
+                              plotlyOutput("malariacases")
+                              #,width = 12)
                      )
 )
