@@ -7,9 +7,9 @@ if ( exists("PaluConf")==F ) #to speed up things
 {
   if ( remote_server==TRUE ) {
    # cat("connection to the server and read data using dplyr to select views and tables:\n")
-  withProgress(message = 'Loading data...', value = 0, {
-    n=4 #monitor progress in 4 steps:
-    incProgress(1/n, detail = "establish connection to the server...")
+  #withProgress(message = 'Loading data...', value = 0, {
+   # n=4 #monitor progress in 4 steps:
+    #incProgress(1/n, detail = "establish connection to the server...")
     sentinel <- src_postgres(dbname="sentinel",
                              host = "172.16.0.230", 
                              user = "cnx_florian",
@@ -20,7 +20,7 @@ if ( exists("PaluConf")==F ) #to speed up things
                                user="cnx_florian",
                                password="sigflorianipm")
     #should accelerate extraction
-    incProgress(1/n, detail = "load malaria data...")
+    #incProgress(1/n, detail = "load malaria data...")
     
     PaluConf=fread("data/PaluConf.csv")
     max_date=max(PaluConf$deb_sem)
@@ -82,7 +82,7 @@ if ( exists("PaluConf")==F ) #to speed up things
     palu_autoch=unique(rbind(palu_autoch,palu_autoch_tmp))
     
     #
-    incProgress(1/n, detail = "load diarrhea data...")
+    #incProgress(1/n, detail = "load diarrhea data...")
     Diarrh=fread("data/Diarrh.csv")
     max_date=max(Diarrh$deb_sem)
     Diarrh_tmp=tbl(sentinel,
@@ -117,7 +117,7 @@ if ( exists("PaluConf")==F ) #to speed up things
     
     
     #Paralysie flasque aigue
-    incProgress(1/n, detail = "load PFA data...")
+    #incProgress(1/n, detail = "load PFA data...")
     pfa=fread("data/pfa.csv")
     max_date=max(pfa$deb_sem)
     pfa_tmp= tbl(sentinel,
@@ -135,7 +135,7 @@ if ( exists("PaluConf")==F ) #to speed up things
     
     
     #cat('query of TDR effectif\n')
-    incProgress(1/n, detail = "load High Frequency indicators data...")
+    #incProgress(1/n, detail = "load High Frequency indicators data...")
     
     tdr_eff=fread("data/tdr_eff.csv")
     max_date = max(tdr_eff$deb_sem)
@@ -191,7 +191,7 @@ if ( exists("PaluConf")==F ) #to speed up things
      #rbind 02 dataframe:
      hfi= hfi[deb_sem<max_date,]
      hfi=(rbind(hfi,hfi_tmp))
-  })
+ # })
     if (writing_to_disk==T )
     {
       #need conversion here---- NOT ACTUALLY

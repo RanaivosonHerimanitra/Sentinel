@@ -786,30 +786,33 @@ server<-function(input, output,session) {
 #skeleton of the user interface:
 source('initialize_ui.R')
 ui = list(dashboardPage(skin = "blue",
-               
+                            
   dashboardHeader(title="Surveillance sentinelle",titleWidth="233"),
   dashboardSidebar(
     sidebarMenu(
       menuItem(text="Main",tabName="mytabbox", 
                icon = icon("database")),
-      includeHTML("www/gears.html"),
+     
       diseases_choices,
       map_choices,
       myfacies_algo,
       menuItem(text="Download diseases report",
                tabName="diparam", 
                icon = icon("building")),
-      menuItem(text=list("Forecasting", tags$small(class="media-heading",
-                                                   tags$span(class="label label-danger", "available soon"))),
+      menuItem(text=list("Forecasting", tags$small(class="media-heading",tags$span(class="label label-danger", "available soon"))),
                tabName="myforecast", 
                icon = icon("line-chart"))
-  )),
-  dashboardBody(tabItems(tabbox_item,
+  )), 
+  dashboardBody(tabItems(
+                         tabbox_item,
                          disease_item,
                          forecast_item
                          ))
 ),
-tags$head(HTML("<script type='text/javascript' src='js/myjs.js'></script>")))
+tags$body(includeHTML("www/gears.html")),
+tags$head(HTML("<link rel='stylesheet' href='www/css/mycss.css'/>")),
+tags$head(HTML("<script type='text/javascript' src='js/myjs.js'></script>"))
+)
 #assemble UI and SERVER:
 shinyApp(ui, server)
 
