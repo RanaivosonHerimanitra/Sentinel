@@ -733,19 +733,21 @@ server<-function(input, output,session) {
     cat('spreading data...')
     X[,years:=year(deb_sem)]
     
-  
+    
+    X=merge(X,sentinel_latlong[,list(sites,name)],by.x="sites",by.y="sites")
+    
    
     X=X[years %in% (2016-as.numeric(input$nbyear)):2016,]
     
     #try selection using dplyr so then avoid data.frame conversion!
-    
-    myz= as.data.frame(spread(unique(X[,list(sites,deb_sem,alert_status2)]),
+    #as.data.frame otherwise It won't work
+    myz= as.data.frame(spread(unique(X[,list(name,deb_sem,alert_status2)]),
                               deb_sem,alert_status2))
     
     #
     cat("DONE\n")
   
-    row.names(myz) <- myz$sites
+    row.names(myz) <- myz$name
     d3heatmap(myz[,-1], dendrogram = "none",scale = "none",
               xaxis_font_size="9px",
               color=c("grey","blue","red"))
