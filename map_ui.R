@@ -2,9 +2,6 @@
 map_display=list(
   conditionalPanel( condition = "input.mapchoice=='leaflet'", 
                     leafletOutput("madagascar_map"),
-                    #tags$img(src="images/legende_redcircle.png"),
-                    #tags$img(src="images/legende_greencircle.png"),
-                    #tags$img(src="images/legende_greycircle.png"),
                     includeHTML("www/legende.html"), #cool that works!
                     tags$strong("Alert -  Normal  -  No Data")
                     )

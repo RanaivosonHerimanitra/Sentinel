@@ -378,11 +378,13 @@ server<-function(input, output,session) {
     p <- plot_ly(myprop, x = deb_sem,
                  y = 100*prop,name=input$diseases,
                  line = list(width=line_width,color = "rgb(255, 0, 0)") )
-    p = p %>% add_trace(x = deb_sem, y = caid_value, name = "CAID",
+    p = p %>% add_trace(x = deb_sem, y = caid_value, name = "IRS",
                         line = list(width=line_width),visible='legendonly')
-    p = p %>% add_trace(x = deb_sem, y = pmm_value, name = "pmm",
+    p = p %>% add_trace(x = deb_sem, y = 100*ndvi_value, name = "NDVI",
                         line = list(width=line_width),visible='legendonly')
-    p = p %>% add_trace(x = deb_sem, y = mild_value, name = "mild",
+    p = p %>% add_trace(x = deb_sem, y = pmm_value, name = "Rainfall(mm)",
+                        line = list(width=line_width),visible='legendonly')
+    p = p %>% add_trace(x = deb_sem, y = mild_value, name = "LLIN",
                         color="Mild",
                         opacity=0.5,
                         colors="#132B43",
@@ -443,13 +445,13 @@ server<-function(input, output,session) {
     mada_map=mada_map %>% addTiles(urlTemplate="http://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}") 
     #change color to red when alert is triggered:
     #navy
-    pal <- colorFactor(c("red", "blue"), domain = c("normal", "alert"))
+    pal <- colorFactor(c("red", "darkgreen"), domain = c("normal", "alert"))
     mada_map=mada_map %>% addCircleMarkers(lng = ~Long, 
                                                        lat = ~Lat, 
                                                        weight = 1,
                                                        radius = ~myradius, 
                                                        color = ~pal(alert_status),
-                                                       fillOpacity = 0.5,
+                                                       fillOpacity = 0.7,
                                                        popup = ~name)
     return(mada_map)
     })
@@ -571,27 +573,27 @@ server<-function(input, output,session) {
     
     
     #merge:
+    line_width=1.0
     propili_2015= merge(propili_2015,stat_ili,
                         by.x="weekOfday",by.y="weekOfday", all.x=T)
     
-    p <- plot_ly(propili_2015, x =weekOfday, y = prop,name="prop.")
+    p <- plot_ly(propili_2015, x =weekOfday, y = prop,name="prop.",line = list(width=line_width))
     p= p %>% layout(title="%ILI sur Nb.consultations",
                     xaxis = list(title = "Date"),error_x=list(thickness = 0.5)  )
-    p = p %>% add_trace(x=weekOfday,y = mymean, name = "Mean<2015")
-    p = p %>% add_trace(x=weekOfday,y = mymax, name = "Max<2015")
+    p = p %>% add_trace(x=weekOfday,line = list(width=line_width),y = mymean, name = "Mean<2015")
+    p = p %>% add_trace(x=weekOfday,line = list(width=line_width),y = mymax, name = "Max<2015")
     p
   })
   #render Syndrome Grippal, Syndrom Dengue-Like
   output$ili_graph = renderPlotly({
     #data processing:
-    #require(profvis)
-   # tdr_eff= tdr_eff %>% data.frame() ; gc()
     tdr_eff = tdr_eff %>% mutate( Synd_g = GrippSusp + AutrVirResp )
     #34 sites we need:
     sites34= toupper(include[-c(1:2)])
     #filter rows:
     tdr_eff= tdr_eff %>% filter(sites %in% sites34 )
-    #
+    # filter dates:
+    tdr_eff=tdr_eff %>% filter( year(as.Date(deb_sem ))>=2015 )
    
     p <- plot_ly(tdr_eff, x = deb_sem, y = Synd_g,name="Syndrome Grippal")
     p = p %>% add_trace(x = deb_sem, y = ArboSusp, name = "Dengue-Like")
@@ -645,7 +647,7 @@ server<-function(input, output,session) {
     source("introducing_mild.R",local = T)
     # merge with mydata
     mydata=merge(mydata,mild[,list(code,mild_value)],
-                 by.x=c("code"),by.y=c("code"))
+                 by.x=c("code"),by.y=c("code"),all.x=T)
     #
     #
     
@@ -743,14 +745,14 @@ server<-function(input, output,session) {
     #as.data.frame otherwise It won't work
     myz= as.data.frame(spread(unique(X[,list(name,deb_sem,alert_status2)]),
                               deb_sem,alert_status2))
-    
+   
     #
     cat("DONE\n")
-  
+   
     row.names(myz) <- myz$name
     d3heatmap(myz[,-1], dendrogram = "none",scale = "none",
               xaxis_font_size="9px",
-              color=c("grey","blue","red"))
+              color=c("grey","darkgreen","red"))
   })
   #Bubble chart to display past alert:
   output$mybubble = renderPlotly({

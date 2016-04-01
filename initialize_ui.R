@@ -193,9 +193,7 @@ tabbox_item= tabItem(tabName = "mytabbox",
                                   pastalert_display)
                        ),width = 8)
                      ))
-forecast_item=tabItem(tabName="myforecast",
-                      fluidRow(box(title="Choose a model for prediction",width=12,
-                                   selectInput(inputId = "mymodel",label="Model",
-                                               choices = list("SARIMAX"="SARIMAX","GH-Filter"="GHFILTER","Kalman-Filter"="KFilter","Random Forest"="RF")) )))
+source("forecast_ui.R")
+forecast_item=tabItem(tabName="myforecast",myforecast_ui)
 disease_item=tabItem(tabName = "diparam",
                      fluidRow(choose_disease_report)  )
