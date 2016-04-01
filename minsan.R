@@ -156,12 +156,21 @@ calculate_minsan=function(data=mydata,
   rm(Nbsite_withdata);rm(Nbsite_beyond);gc()
   
   cat('calculate radius for per site for percentile algorithm alert...')
-   data[,nbsite_alerte:=1.0]; data[,nbsite_normal:=1.0]
-   data[alert_status=="alert",nbsite_alerte:=sum(occurence,na.rm = T)*1.0,by="sites,code"]
-   data[alert_status=="normal",nbsite_normal:=sum(occurence,na.rm = T)*1.0,by="sites,code"]
-   data[alert_status=="normal",myradius:=5*(nbsite_alerte+1)/sqrt(nbsite_normal+1)]
-   data[alert_status=="alert",myradius:=5*(nbsite_alerte+1)/sqrt(nbsite_normal+1)]
-   data[alert_status %in% NA, myradius:=10*myradius]
+  #fixons la taille du cercle à 15 pour les alertes
+  #la taille des cercles en situation normale est proportionnelle
+  # au nombre de cas mais ne dépasse pas 15.
+  data[alert_status=="alert",myradius:=15.0]
+  data[alert_status=="normal",sum_occurence_week:=sum(occurence,na.rm=T),by="code"]
+  data[alert_status=="normal", myradius:=15*occurence/sum_occurence_week,by="sites,code"]
+  data[alert_status %in% NA | myradius %in% NA , myradius:=5.0]
+  
+   # data[,nbsite_alerte:=1.0]; data[,nbsite_normal:=1.0]
+   # data[alert_status=="alert",nbsite_alerte:=sum(occurence,na.rm = T)*1.0,by="sites,code"]
+   # data[alert_status=="normal",nbsite_normal:=sum(occurence,na.rm = T)*1.0,by="sites,code"]
+   # data[alert_status=="normal",myradius:=5*(nbsite_alerte+1)/sqrt(nbsite_normal+1)]
+   # data[alert_status=="alert",myradius:=5*(nbsite_alerte+1)/sqrt(nbsite_normal+1)]
+   # data[alert_status %in% NA, myradius:=10*myradius]
+   # 
   cat('DONE\n')
   
   
