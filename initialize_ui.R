@@ -191,7 +191,7 @@ tabbox_item= tabItem(tabName = "mytabbox",
                                          tags$small(class="media-heading",
                                                     tags$span(class="label label-danger", "beta"))),
                                   pastalert_display)
-                       ),width = 8)
+                       ),width = 9)
                      ))
 source("forecast_ui.R")
 forecast_item=tabItem(tabName="myforecast",myforecast_ui)

@@ -579,7 +579,11 @@ server<-function(input, output,session) {
     
     p <- plot_ly(propili_2015, x =weekOfday, y = prop,name="prop.",line = list(width=line_width))
     p= p %>% layout(title="%ILI sur Nb.consultations",
-                    xaxis = list(title = "Date"),error_x=list(thickness = 0.5)  )
+                    xaxis = list(title = "Date"),
+                    error_x=list(thickness = 0.5),
+                    legend = list(x = 0, 
+                                  y = 10)
+                    )
     p = p %>% add_trace(x=weekOfday,line = list(width=line_width),y = mymean, name = "Mean<2015")
     p = p %>% add_trace(x=weekOfday,line = list(width=line_width),y = mymax, name = "Max<2015")
     p
@@ -597,8 +601,12 @@ server<-function(input, output,session) {
    
     p <- plot_ly(tdr_eff, x = deb_sem, y = Synd_g,name="Syndrome Grippal")
     p = p %>% add_trace(x = deb_sem, y = ArboSusp, name = "Dengue-Like")
+    
+    #position legend at top of the graph
     p= p %>% layout(title="ILI et Dengue-LIKE (34 sites)",
-                    xaxis = list(title = "Date"))
+                    xaxis = list(title = "Date"),
+                    legend = list(x = 0, y = 40) 
+                    )
     
     p
    
@@ -661,10 +669,13 @@ server<-function(input, output,session) {
     line_width=1
     p=plot_ly(data=mydata,
               y=occurence,
-              x=Semaine,name=paste0(input$diseases," for selected site"),
+              x=Semaine,name=paste0(input$diseases),
               line = list(width=line_width,color = "rgb(255, 0, 0)") #red for disease
               )
-   
+    #position legend at top of the graph
+    p = p %>% layout(title=paste0(input$diseases," for selected site"),
+                     legend = list(x = 0, y =10 ))
+    
     
     p = p %>% add_trace(x = Semaine, 
                         y = rainFall/10, 

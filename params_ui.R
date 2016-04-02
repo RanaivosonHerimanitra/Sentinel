@@ -144,7 +144,7 @@ mycondparam_map_ind=  conditionalPanel(
 ###########################################################################
 map_parameters=box(status = "primary", solidHeader = TRUE,
                    collapsible = TRUE,title="Parameters",
-                   width=4,myradio_map,
+                   width=3,myradio_map,
                    mycondparam_map_percentile,
                    mycondparam_map_minsan,
                    mycondparam_map_cumsum,
