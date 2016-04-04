@@ -614,7 +614,27 @@ server<-function(input, output,session) {
   })
   #render weekly diseases cases for a clicked site
   output$weekly_disease_cases_persite = renderPlotly({
-    mydata=preprocessing()
+    
+    #mydata=preprocessing()
+    mydata=percentile_algorithm()$mydata
+    mydata[sites==input$diseases]
+    #recupere date d'alerte  pour chaque site
+    #cree une nouvelle variable = valeur de cette alerte
+    mydata[,myalerte:=0]
+    if ( "alert" %in% mydata$alert_status )
+    {
+      #recupere les positions des alertes:
+      pos_alerte= which( mydata$alert_status %in% "alert" )
+      for ( k in pos_alerte )
+      {
+        #recupere  l'occurence et la date de l'alerte courante:
+        deb_sem_k= mydata[k,get("deb_sem")]
+        occurence_k= mydata[k,get("occurence")]
+        cat("alert at position ", k,"with occurence ",occurence_k,"\n")
+        mydata[k,myalerte:=occurence_k]
+      }
+    }
+    
     setkey(mydata,sites)
     cat("reshape HFI to extract rainFall...")
      hfi=data.table(gather(hfi,key=sites,
@@ -673,9 +693,22 @@ server<-function(input, output,session) {
               line = list(width=line_width,color = "rgb(255, 0, 0)") #red for disease
               )
     #position legend at top of the graph
+    #90th percentile as horizontal line:
     p = p %>% layout(title=paste0(input$diseases," for selected site"),
-                     legend = list(x = 0, y =10 ))
-    
+                     legend = list(x = 0, y =10 )
+                     # ,shapes = list(
+                     #   list(type = "rect", 
+                     #        fillcolor = "blue", 
+                     #        line = list(color = "blue"), 
+                     #        opacity = 0.3, 
+                     #        x0 = as.character(min(mydata$Semaine)), 
+                     #        x1 = as.character(max(mydata$Semaine)), 
+                     #        xref = "x", 
+                     #        y0 = 12.5, y1 = 12.5, yref = "y")
+                     #   )
+                     )
+    p = p %>% add_trace(x=Semaine,y=myalerte,line=list(color="rgb(165,41,157)"),
+                        name="percentile alerte")
     
     p = p %>% add_trace(x = Semaine, 
                         y = rainFall/10, 
@@ -689,6 +722,7 @@ server<-function(input, output,session) {
                         type="bar",
                         visible='legendonly')
     p
+   
     
   })
   #Health heatmap plot with plotly and using percentile algorithm:
