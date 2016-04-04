@@ -199,68 +199,68 @@ server<-function(input, output,session) {
                propsite_alerte_fever_byfacies=propsite_alerte_fever_byfacies))
   })
   #Malaria cases and weekly mean:
-  output$malariacases <-renderPlotly({
-    cat('retrieving code corresponding to selected sites...')
-    setkey(sentinel_latlong,name)
-    mysite=sentinel_latlong[name %in% grep(input$mysites,name,value=T),get("sites") ]
-    cat('==>',mysite,'...')
-    cat('DONE\n')
-    mydata=preprocessing() 
-    cat('fetching number of cases per week and sites for visualization...')
-    setkey(mydata,years)
-    graph1=mydata[years==2015,sum(occurence,na.rm = T),by="weeks,sites"]
-    #rename some cols and rows:
-    setnames(graph1,old="V1",new="cases")
-    cat('DONE\n')
-    cat('fetching mean cases per week and sites for visualization...')
-    graph2=mydata[years %in% 2009:2014,mean(occurence,na.rm = T),by="weeks,sites"]
-    setnames(graph2,old="V1",new="weeklymean")
-    cat('DONE\n')
-    cat("fetching the",input$Centile_map,"th percentile for all years...")
-    graph3=mydata[,quantile(occurence,na.rm = T,probs = input$Centile_map/100),by="sites"]
-    setnames(graph3,old="V1",new="percentile90")
-    cat('DONE\n')
-   
-    cat("merging number of cases,mean cases and",input$Centile_map,"th percentile...")
-    mygraph=merge(graph1,graph2,by.x=c("sites","weeks"),by.y=c("sites","weeks"))
-    mygraph=merge(mygraph,graph3,by.x="sites",by.y="sites")
-    rm(graph3);rm(graph2);rm(graph1);gc()
-    cat('DONE\n')
-   
-    
-    cat('additionnal transformation to produce stacked bar chart...')
-    mygraph=mygraph[sites==mysite,]
-    mygraph[,value1:=ifelse(cases>percentile90,cases-percentile90,0)]
-    mygraph[,value2:=ifelse(cases>percentile90,percentile90,cases)]
-    cat('DONE\n')
-    
-    cat('tmp1')
-     tmp1=mygraph[,list(weeks,value1)];setnames(tmp1,"value1","cases")
-    cat('DONE\n')
-    
-    cat('tmp2')
-     tmp2=mygraph[,list(weeks,value2)];setnames(tmp2,"value2","cases")
-    cat('DONE\n')
-    
-    tmp1[,Status:=">threshold"]
-    tmp2[,Status:="Normal"]
-    
-   
-    
-    cat("merge tmp1 and tmp2...")
-     mygraph=rbind(tmp1,tmp2)
-    cat('DONE\n')
-   
-    cat("color and setkeyv")
-    cols=c("Normal"="blue",">threshold"="red")
-    setkeyv(mygraph,c("weeks","cases"))
-    cat("DONE\n")
-    
-    h <- ggplot(mygraph, aes(x=weeks, y=cases,fill=Status)) +
-       geom_bar(stat="identity") + scale_x_continuous(name="") + scale_y_continuous(name="") + scale_fill_manual(values=cols) + ggtitle(paste("Malaria cases in",input$mysites,"since 01/01/2015")) 
-     h= ggplotly(h)
-    h = h %>% layout(xaxis = list(title = "Semaine") )
-  })
+  # output$malariacases <-renderPlotly({
+  #   cat('retrieving code corresponding to selected sites...')
+  #   setkey(sentinel_latlong,name)
+  #   mysite=sentinel_latlong[name %in% grep(input$mysites,name,value=T),get("sites") ]
+  #   cat('==>',mysite,'...')
+  #   cat('DONE\n')
+  #   mydata=preprocessing() 
+  #   cat('fetching number of cases per week and sites for visualization...')
+  #   setkey(mydata,years)
+  #   graph1=mydata[years==2015,sum(occurence,na.rm = T),by="weeks,sites"]
+  #   #rename some cols and rows:
+  #   setnames(graph1,old="V1",new="cases")
+  #   cat('DONE\n')
+  #   cat('fetching mean cases per week and sites for visualization...')
+  #   graph2=mydata[years %in% 2009:2014,mean(occurence,na.rm = T),by="weeks,sites"]
+  #   setnames(graph2,old="V1",new="weeklymean")
+  #   cat('DONE\n')
+  #   cat("fetching the",input$Centile_map,"th percentile for all years...")
+  #   graph3=mydata[,quantile(occurence,na.rm = T,probs = input$Centile_map/100),by="sites"]
+  #   setnames(graph3,old="V1",new="percentile90")
+  #   cat('DONE\n')
+  #  
+  #   cat("merging number of cases,mean cases and",input$Centile_map,"th percentile...")
+  #   mygraph=merge(graph1,graph2,by.x=c("sites","weeks"),by.y=c("sites","weeks"))
+  #   mygraph=merge(mygraph,graph3,by.x="sites",by.y="sites")
+  #   rm(graph3);rm(graph2);rm(graph1);gc()
+  #   cat('DONE\n')
+  #  
+  #   
+  #   cat('additionnal transformation to produce stacked bar chart...')
+  #   mygraph=mygraph[sites==mysite,]
+  #   mygraph[,value1:=ifelse(cases>percentile90,cases-percentile90,0)]
+  #   mygraph[,value2:=ifelse(cases>percentile90,percentile90,cases)]
+  #   cat('DONE\n')
+  #   
+  #   cat('tmp1')
+  #    tmp1=mygraph[,list(weeks,value1)];setnames(tmp1,"value1","cases")
+  #   cat('DONE\n')
+  #   
+  #   cat('tmp2')
+  #    tmp2=mygraph[,list(weeks,value2)];setnames(tmp2,"value2","cases")
+  #   cat('DONE\n')
+  #   
+  #   tmp1[,Status:=">threshold"]
+  #   tmp2[,Status:="Normal"]
+  #   
+  #  
+  #   
+  #   cat("merge tmp1 and tmp2...")
+  #    mygraph=rbind(tmp1,tmp2)
+  #   cat('DONE\n')
+  #  
+  #   cat("color and setkeyv")
+  #   cols=c("Normal"="blue",">threshold"="red")
+  #   setkeyv(mygraph,c("weeks","cases"))
+  #   cat("DONE\n")
+  #   
+  #   h <- ggplot(mygraph, aes(x=weeks, y=cases,fill=Status)) +
+  #      geom_bar(stat="identity") + scale_x_continuous(name="") + scale_y_continuous(name="") + scale_fill_manual(values=cols) + ggtitle(paste("Malaria cases in",input$mysites,"since 01/01/2015")) 
+  #    h= ggplotly(h)
+  #   h = h %>% layout(xaxis = list(title = "Semaine") )
+  # })
   #display proportion of sites in alert with these HFI
   output$propsite_alerte = renderPlotly({
     source("create_facies.R")
@@ -295,7 +295,7 @@ server<-function(input, output,session) {
         {
           setkeyv( mild , c("code","facies") )
           cat('merging mild data with proportion of sites in alert...')
-          myprop=merge(myprop,mild[,list(code,mild_value,facies)],
+           myprop=merge(myprop,unique(mild[,list(code,mild_value,facies)]),
                        by.x=c("code","facies"),
                        by.y=c("code","facies"), all.x=T)
           cat('DONE\n')
@@ -304,23 +304,25 @@ server<-function(input, output,session) {
           
           setkeyv( caid , c("code","facies") )
           cat('merging caid data with proportion of sites in alert...')
-          myprop=merge(myprop,caid[,list(code,caid_value,facies)],
+           myprop=merge(myprop,(caid[,list(code,caid_value,facies)]),
                        by.x=c("code","facies"),
                        by.y=c("code","facies"), all.x=T)
           cat('DONE\n')
-          cat('nrow of myprop  after merge with CAID are:',nrow(myprop),"\n")
           
+          cat('nrow of myprop  after merge with CAID are:',nrow(myprop),"\n")
+           
           setkeyv( myprop , c("code","facies") );setkeyv( ndvi , c("code","facies") )
-          cat('merging ndvi data with proportion of sites in alert...')
-          myprop=merge(myprop,ndvi[,list(code,ndvi_value,facies)],
+           cat('merging ndvi data with proportion of sites in alert...')
+            myprop=merge(myprop,(ndvi[,list(code,ndvi_value,facies)]),
                        by.x=c("code","facies"),
                        by.y=c("code","facies"), all.x=T)
-          cat('DONE\n')
+           cat('DONE\n')
+          
           cat('nrow of myprop  after merge with ndvi are:',nrow(myprop),"\n")
           
           cat('merging temperature data with proportion of sites in alert...')
-          setkeyv( lst , c("code","facies") )
-          myprop=merge(myprop,lst[,list(code,temperature,facies)],
+           setkeyv( lst , c("code","facies") )
+           myprop=merge(myprop,(lst[,list(code,temperature,facies)]),
                        by.x=c("code","facies"),
                        by.y=c("code","facies"), all.x=T)
           cat('DONE\n')
@@ -328,12 +330,15 @@ server<-function(input, output,session) {
           cat('nrow of myprop  after merge with lst are:',nrow(myprop),"\n")
           
           cat('merging rainFall data with proportion of sites in alert...')
-          setkeyv( pmm , c("code","facies") )
-          myprop=merge(myprop,pmm[,list(code,pmm_value,facies)],
+           setkeyv( pmm , c("code","facies") )
+           myprop=merge(myprop,(pmm[,list(code,pmm_value,facies)]),
                        by.x=c("code","facies"),
                        by.y=c("code","facies"), all.x=T)
           cat('DONE\n')
           
+          cat("selection of faciès...")
+           myprop=myprop[facies==input$Cluster_algo]
+          cat("DONE\n")
         } else {
           setkey(myprop,"code");setkey(caid,"code")
           cat('merging caid data with proportion of sites in alert...')
@@ -544,19 +549,20 @@ server<-function(input, output,session) {
   #render Proportion of ILI sur Nombre de consultant
   output$propili = renderPlotly({
     #preprocess data:
-    #tdr_eff= tdr_eff %>% data.frame() ; gc()
     tdr_eff = tdr_eff %>% mutate( Synd_g = GrippSusp + AutrVirResp )
+    
     #34 sites we need:
     sites34= toupper(include[-c(1:2)])
     propili_2015= tdr_eff %>% filter(sites %in% sites34 & Annee>2014)
     propili_2015= as.data.table(propili_2015)
     stat_ili=tdr_eff %>% filter(sites %in% sites34 & Annee<2015)
     stat_ili = as.data.table(stat_ili)
+    
     #filter rows:
     cat("calculating prop of ILI on Nb consultation...")
-    propili_2015[,prop := 100*sum(Synd_g,na.rm = T)/sum(NxConsltTotal,na.rm=T) ,by="deb_sem"]
-    propili_2015= unique(propili_2015[,list(deb_sem,prop)])
-    propili_2015[,weekOfday:=week(deb_sem)] #create a key to merge later 
+     propili_2015[,prop := 100*sum(Synd_g,na.rm = T)/sum(NxConsltTotal,na.rm=T) ,by="deb_sem"]
+     propili_2015= unique(propili_2015[,list(deb_sem,prop)])
+     propili_2015[,weekOfday:=week(deb_sem)] #create a key to merge later 
     cat("DONE\n")
     
   
@@ -568,7 +574,7 @@ server<-function(input, output,session) {
      stat_ili= unique(stat_ili[,list(weekOfday,mymax,mymean)])
      #create a key to merge later 
     cat("DONE\n")
-    
+    gc()
     
     
     
@@ -577,15 +583,22 @@ server<-function(input, output,session) {
     propili_2015= merge(propili_2015,stat_ili,
                         by.x="weekOfday",by.y="weekOfday", all.x=T)
     
-    p <- plot_ly(propili_2015, x =weekOfday, y = prop,name="prop.",line = list(width=line_width))
-    p= p %>% layout(title="%ILI sur Nb.consultations",
+    setorder(propili_2015,-deb_sem)
+    
+    p <- plot_ly(propili_2015, 
+                 x =deb_sem, 
+                 y = prop,name="prop.",
+                 line = list(width=line_width))
+    p = p %>% layout(title="%ILI sur Nb.consultations",
                     xaxis = list(title = "Date"),
                     error_x=list(thickness = 0.5),
                     legend = list(x = 0, 
                                   y = 10)
                     )
-    p = p %>% add_trace(x=weekOfday,line = list(width=line_width),y = mymean, name = "Mean<2015")
-    p = p %>% add_trace(x=weekOfday,line = list(width=line_width),y = mymax, name = "Max<2015")
+    p = p %>% add_trace(x=deb_sem,line = list(width=line_width),
+                        y = mymean, name = "Mean<2015")
+    p = p %>% add_trace(x=deb_sem,line = list(width=line_width),
+                        y = mymax, name = "Max<2015")
     p
   })
   #render Syndrome Grippal, Syndrom Dengue-Like
@@ -599,8 +612,8 @@ server<-function(input, output,session) {
     # filter dates:
     tdr_eff=tdr_eff %>% filter( year(as.Date(deb_sem ))>=2015 )
    
-    p <- plot_ly(tdr_eff, x = deb_sem, y = Synd_g,name="Syndrome Grippal")
-    p = p %>% add_trace(x = deb_sem, y = ArboSusp, name = "Dengue-Like")
+    p <- plot_ly(tdr_eff, x = deb_sem, type="bar",y = Synd_g,name="Syndrome Grippal")
+    p = p %>% add_trace(x = deb_sem, type="bar",y = ArboSusp, name = "Dengue-Like")
     
     #position legend at top of the graph
     p= p %>% layout(title="ILI et Dengue-LIKE (34 sites)",
