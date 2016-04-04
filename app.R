@@ -634,19 +634,20 @@ server<-function(input, output,session) {
     #recupere date d'alerte  pour chaque site
     #cree une nouvelle variable = valeur de cette alerte
     mydata[,myalerte:=0]
-    if ( "alert" %in% mydata$alert_status )
-    {
-      #recupere les positions des alertes:
-      pos_alerte= which( mydata$alert_status %in% "alert" )
-      for ( k in pos_alerte )
-      {
-        #recupere  l'occurence et la date de l'alerte courante:
-        deb_sem_k= mydata[k,get("deb_sem")]
-        occurence_k= mydata[k,get("occurence")]
-        cat("alert at position ", k,"with occurence ",occurence_k,"\n")
-        mydata[k,myalerte:=occurence_k]
-      }
-    }
+    mydata[,myalerte:=ifelse(alert_status=="alert",occurence,0.0)]
+    # if ( "alert" %in% mydata$alert_status )
+    # {
+    #   #recupere les positions des alertes:
+    #   pos_alerte= which( mydata$alert_status %in% "alert" )
+    #   for ( k in pos_alerte )
+    #   {
+    #     #recupere  l'occurence et la date de l'alerte courante:
+    #     deb_sem_k= mydata[k,get("deb_sem")]
+    #     occurence_k= mydata[k,get("occurence")]
+    #     cat("alert at position ", k,"with occurence ",occurence_k,"\n")
+    #     mydata[k,myalerte:=occurence_k]
+    #   }
+    # }
     
     setkey(mydata,sites)
     cat("reshape HFI to extract rainFall...")
