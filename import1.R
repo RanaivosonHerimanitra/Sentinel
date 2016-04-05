@@ -7,9 +7,6 @@ if ( exists("PaluConf")==F ) #to speed up things
 {
   if ( remote_server==TRUE ) {
    # cat("connection to the server and read data using dplyr to select views and tables:\n")
-  #withProgress(message = 'Loading data...', value = 0, {
-   # n=4 #monitor progress in 4 steps:
-    #incProgress(1/n, detail = "establish connection to the server...")
     sentinel <- src_postgres(dbname="sentinel",
                              host = "172.16.0.230", 
                              user = "cnx_florian",

@@ -94,6 +94,9 @@ calculate_percentile=function(data=mydata,
     data[alert_status=="alert", myradius:=15]
     data[alert_status=="normal",sum_occurence_week:=sum(occurence,na.rm=T),by="code"]
     data[alert_status=="normal", myradius:=15*occurence/sum_occurence_week,by="sites,code"]
+    #set a minimum value if less than 2.5 in radius (for visibility purpose):
+    data[alert_status=="normal", myradius:=ifelse(myradius<2.5,2.5,myradius),by="sites,code"]
+    
     data[alert_status %in% NA | myradius %in% NA , myradius:=5.0]
     
     #data[alert_status=="alert",nbsite_alerte:=sum(occurence,na.rm = T)*1.0,by="sites,code"]

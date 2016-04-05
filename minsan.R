@@ -116,14 +116,7 @@ calculate_minsan=function(data=mydata,
   
   
   cat('merge with deb_sem to reorder time series...')
-  #BEfore 10h47 12mars2016
-#   propsite_alerte_minsan=merge(propsite_alerte_minsan[,list(code,prop)],
-#                                unique(data[,list(code,deb_sem,alert_status,sites)]),
-#                                    by.x=byvar,by.y=byvar)
-  #Now 10h47 12mars2016
-#      propsite_alerte_minsan=merge(propsite_alerte_minsan[,list(code,prop)],
-#                                   unique(data[code %in% unique(propsite_alerte_minsan$code),list(code,deb_sem)]),
-#                                       by.x=byvar,by.y=byvar)
+ #
      propsite_alerte_minsan=merge(propsite_alerte_minsan,
                                       data[,list(code,deb_sem,sites,alert_status,East,
                                                  South,High_land,Fringe,excepted_East,
@@ -162,6 +155,10 @@ calculate_minsan=function(data=mydata,
   data[alert_status=="alert",myradius:=15.0]
   data[alert_status=="normal",sum_occurence_week:=sum(occurence,na.rm=T),by="code"]
   data[alert_status=="normal", myradius:=15*occurence/sum_occurence_week,by="sites,code"]
+  
+  #set a minimum value if less than 2.5 in radius (for visibility purpose):
+  data[alert_status=="normal", myradius:=ifelse(myradius<2.5,2.5,myradius),by="sites,code"]
+  
   data[alert_status %in% NA | myradius %in% NA , myradius:=5.0]
   
    # data[,nbsite_alerte:=1.0]; data[,nbsite_normal:=1.0]

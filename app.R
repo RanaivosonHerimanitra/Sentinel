@@ -822,17 +822,18 @@ server<-function(input, output,session) {
                            week_length=input$comet_map,
                            percentile_value=input$Centile_map)$mydata
                            
-    if (input$Cluster_algo=="Total")
-    {
-      X=X[alert_status=="alert" ,]
-    } else {
-      X=X[alert_status=="alert" & get(input$Cluster_algo)==1,]
-    }
+    # if (input$Cluster_algo=="Total")
+    # {
+       X=X[alert_status=="alert" ,]
+    # } else {
+      #X=X[alert_status=="alert" & get(input$Cluster_algo)==1,]
+    #}
+       print(X)
     X=merge(X,sentinel_latlong,by.x="sites",by.y="sites")
     setorder(X,sites,deb_sem)
-    plot_ly(X, y = log(occurence+1), x=deb_sem,
-            color=name, 
-            size = log(occurence+2), mode = "markers")
+    plot_ly(X, y = occurence, x=deb_sem,
+            color=facies, 
+            size = log(occurence+1), mode = "markers")
     #type="scatter3d"
   
   })

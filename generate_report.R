@@ -103,7 +103,8 @@ for ( j in mycode )
   annee = as.numeric(unlist(strsplit(j,"_"))[1])
   alerte_palu= percentile_palu_alerte[code == j & alert_status=="alert",c("code","name",grep("^alert",names(percentile_palu_alerte),value=T)),with=F]
   alerte_diar= percentile_diar_alerte[code == j & alert_status=="alert",c("code","name",grep("^alert",names(percentile_diar_alerte),value=T)),with=F] 
-  alerte_manque_tdr=PaluConf_tdr[code==j & manque_tdr==1,list(code,name,manque_tdr,TestPalu,SyndF)]
+  #15h39 (5 avril,'16)==>manque_tdr==1
+  alerte_manque_tdr=PaluConf_tdr[code==j & manque_tdr>0,list(code,name,manque_tdr,TestPalu,SyndF)]
   palu_NA= percentile_palu_alerte[code == j & is.na(occurence)==T,get("name")]
   diar_NA= percentile_diar_alerte[code == j & is.na(occurence)==T,get("name")]
   mydate = pot(paste0(annee,"-",semaine,":"),format=textBoldItalic(underline = TRUE ))
