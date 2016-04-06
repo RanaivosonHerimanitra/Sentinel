@@ -4,12 +4,14 @@ map_display=list(
                     leafletOutput("madagascar_map"),
                     includeHTML("www/legende.html"), #cool that works!
                     tags$strong("Alert -  Normal  -  No Data")
-                    )
-                    ,
-  conditionalPanel( condition = "input.mapchoice=='other'", plotOutput("madagascar_map2",
-                                                                       click = "madagascar_map2_click",
-                                                                       brush = brushOpts(id = "madagascar_map2_brush"))
-    ),
+                    ),
+  conditionalPanel( condition = "input.mapchoice=='other'", 
+                    plotOutput("madagascar_map2",click = "madagascar_map2_click",
+                               brush = brushOpts(id = "madagascar_map2_brush")),
+                    tags$br(), tags$br(), tags$br(),tags$br(), tags$br(), tags$br(),tags$br(), tags$br(), tags$br(),
+                    includeHTML("www/legende.html"),
+                    tags$strong("Alert -  Normal  -  No Data")
+                   ),
   tags$br(), tags$br(),
   plotlyOutput("weekly_disease_cases_persite"))
 

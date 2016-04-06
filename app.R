@@ -499,7 +499,8 @@ server<-function(input, output,session) {
                                ,by.x="sites",by.y = "sites")
         cat("display alert status into the map using a simple indicator...\n")
       }
-    
+      #exclude Haute Terre Centrale (High_land) from the map
+      sentinel_latlong=sentinel_latlong[!(sites %in% High_land)]
       #latest verification fo radius and alert status (handle NA's)
       sentinel_latlong[is.na(alert_status)==T,alert_status:="No data"]
       sentinel_latlong[is.na(myradius)==T,myradius:=5.0]
@@ -508,13 +509,17 @@ server<-function(input, output,session) {
       madagascar_layer=readRDS("madagascar.rds")
       madagascar_map2=ggmap(madagascar_layer,base_layer = ggplot(data = sentinel_latlong,aes(x=Long,y=Lat)))
       if ( length(unique(sentinel_latlong$alert_status))!=1) {
+        
         madagascar_map2 = madagascar_map2 + geom_point(data = sentinel_latlong,
-                                                       alpha=0.4,
+                                                       alpha=0.8,
                                                        aes(color=alert_status,
-                                                           size=myradius))
+                                                           size=myradius
+                                                           ),show_guide = FALSE)
+        madagascar_map2 = madagascar_map2 + scale_colour_manual(values=c("#f05249", "#808284", "#69c39a"))
+        madagascar_map2 = madagascar_map2 + scale_size_discrete(guide = F)
       } else {
         madagascar_map2 = madagascar_map2 + geom_point(data = sentinel_latlong,
-                                                       alpha=0.4,
+                                                       alpha=0.8,
                                                        aes(color=alert_status,
                                                            size=myradius),
                                                        color="blue")
@@ -709,7 +714,8 @@ server<-function(input, output,session) {
     #90th percentile as horizontal line:
     p = p %>% layout(title=paste0(input$diseases," for selected site"),
                      legend = list(x = 0, y =10 ),
-                     xaxis =list(title="Weeks")
+                     xaxis =list(title="Weeks"),
+                     yaxis =list(title="#Cases")
                      )
     p = p %>% add_trace(x=Semaine,y=myalerte,line=list(color="rgb(165,41,157)"),
                         name="percentile alerte")
