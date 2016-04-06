@@ -6,7 +6,7 @@ select_disease = function(disease="Malaria")
     #cat("You have chosen to display",disease,"\n")
     return(PaluConf)
   }
-  if ( disease=="Diarrhée") 
+  if ( disease=="Diarrhea") 
   {
     #cat("You have chosen to display",disease,"\n")
     return(Diarrh)
@@ -16,7 +16,7 @@ select_disease = function(disease="Malaria")
     #cat("You have chosen to display",disease,"\n")
     return(Diarrh_feb)
   }
-  if ( disease=="Grippe")
+  if ( disease=="ILI")
   {
     #cat("You have chosen to display",disease,"\n")
     #ILI = GrippSusp + AutrVirResp = Syndrome Grippal

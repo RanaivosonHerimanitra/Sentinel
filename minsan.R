@@ -157,7 +157,7 @@ calculate_minsan=function(data=mydata,
   data[alert_status=="normal", myradius:=15*occurence/sum_occurence_week,by="sites,code"]
   
   #set a minimum value if less than 2.5 in radius (for visibility purpose):
-  data[alert_status=="normal", myradius:=ifelse(myradius<2.5,2.5,myradius),by="sites,code"]
+  data[alert_status=="normal" & is.na(myradius)==F, myradius:=ifelse(myradius<2.5,2.5,myradius),by="sites,code"]
   
   data[alert_status %in% NA | myradius %in% NA , myradius:=5.0]
   

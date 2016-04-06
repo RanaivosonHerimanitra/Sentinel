@@ -383,6 +383,7 @@ server<-function(input, output,session) {
     p <- plot_ly(myprop, x = deb_sem,
                  y = 100*prop,name=input$diseases,
                  line = list(width=line_width,color = "rgb(255, 0, 0)") )
+    p = p %>% layout(title="%sites in alert and High Freq. Indicators")
     p = p %>% add_trace(x = deb_sem, y = caid_value, name = "IRS",
                         line = list(width=line_width),visible='legendonly')
     p = p %>% add_trace(x = deb_sem, y = 100*ndvi_value, name = "NDVI",
@@ -397,7 +398,10 @@ server<-function(input, output,session) {
                         visible='legendonly')
     p = p %>% add_trace(x = deb_sem, y = temperature, name = "Temp.",
                         line = list(width=line_width,color = "rgb(0, 102, 204)"),visible='legendonly')
-    p = p %>% layout(legend = list(x = 0, y = 100))
+    p = p %>% layout(legend = list(x = 0, y = 100),
+                     xaxis =list(title="Weeks"),
+                     yaxis =list(title="Values")
+                     )
 
     p
     
@@ -549,14 +553,16 @@ server<-function(input, output,session) {
   #render Proportion of ILI sur Nombre de consultant
   output$propili = renderPlotly({
     #preprocess data:
-    tdr_eff = tdr_eff %>% mutate( Synd_g = GrippSusp + AutrVirResp )
-    
+    #tdr_eff = tdr_eff %>% mutate( Synd_g = GrippSusp + AutrVirResp )
+    tdr_eff[,Synd_g:=GrippSusp + AutrVirResp]
     #34 sites we need:
     sites34= toupper(include[-c(1:2)])
-    propili_2015= tdr_eff %>% filter(sites %in% sites34 & Annee>2014)
-    propili_2015= as.data.table(propili_2015)
-    stat_ili=tdr_eff %>% filter(sites %in% sites34 & Annee<2015)
-    stat_ili = as.data.table(stat_ili)
+    #propili_2015= tdr_eff %>% filter(sites %in% sites34 & Annee>2014)
+    propili_2015 = tdr_eff[sites %in% sites34 & Annee>2014]
+    #propili_2015= as.data.table(propili_2015)
+    #stat_ili=tdr_eff %>% filter(sites %in% sites34 & Annee<2015)
+    stat_ili= tdr_eff[sites %in% sites34 & Annee <2015]
+    #stat_ili = as.data.table(stat_ili)
     
     #filter rows:
     cat("calculating prop of ILI on Nb consultation...")
@@ -591,33 +597,38 @@ server<-function(input, output,session) {
                  line = list(width=line_width))
     p = p %>% layout(title="%ILI sur Nb.consultations",
                     xaxis = list(title = "Date"),
-                    error_x=list(thickness = 0.5),
+                    #error_x=list(thickness = 0.5),
                     legend = list(x = 0, 
                                   y = 10)
                     )
     p = p %>% add_trace(x=deb_sem,line = list(width=line_width),
-                        y = mymean, name = "Mean<2015")
+                        y = mymean, name = "Mean<2015",visible='legendonly')
+    
+    
     p = p %>% add_trace(x=deb_sem,line = list(width=line_width),
-                        y = mymax, name = "Max<2015")
+                        y = mymax, name = "Max<2015",visible='legendonly')
     p
   })
   #render Syndrome Grippal, Syndrom Dengue-Like
   output$ili_graph = renderPlotly({
     #data processing:
-    tdr_eff = tdr_eff %>% mutate( Synd_g = GrippSusp + AutrVirResp )
+    #tdr_eff = tdr_eff %>% mutate( Synd_g = GrippSusp + AutrVirResp )
+    tdr_eff[,Synd_g := GrippSusp + AutrVirResp ]
     #34 sites we need:
     sites34= toupper(include[-c(1:2)])
     #filter rows:
-    tdr_eff= tdr_eff %>% filter(sites %in% sites34 )
+    #tdr_eff= tdr_eff %>% filter(sites %in% sites34 )
+    tdr_eff=tdr_eff[sites %in% sites34 & year(as.Date(deb_sem ))>=2015]
     # filter dates:
-    tdr_eff=tdr_eff %>% filter( year(as.Date(deb_sem ))>=2015 )
-   
+    #tdr_eff=tdr_eff %>% filter( year(as.Date(deb_sem ))>=2015 )
+     
     p <- plot_ly(tdr_eff, x = deb_sem, type="bar",y = Synd_g,name="Syndrome Grippal")
     p = p %>% add_trace(x = deb_sem, type="bar",y = ArboSusp, name = "Dengue-Like")
     
     #position legend at top of the graph
-    p= p %>% layout(title="ILI et Dengue-LIKE (34 sites)",
+    p= p %>% layout(title="ILI & Dengue-LIKE (34 sites)",
                     xaxis = list(title = "Date"),
+                    yaxis = list(title = "# Cases"),
                     legend = list(x = 0, y = 40) 
                     )
     
@@ -634,20 +645,8 @@ server<-function(input, output,session) {
     #recupere date d'alerte  pour chaque site
     #cree une nouvelle variable = valeur de cette alerte
     mydata[,myalerte:=0]
-    mydata[,myalerte:=ifelse(alert_status=="alert",occurence,0.0)]
-    # if ( "alert" %in% mydata$alert_status )
-    # {
-    #   #recupere les positions des alertes:
-    #   pos_alerte= which( mydata$alert_status %in% "alert" )
-    #   for ( k in pos_alerte )
-    #   {
-    #     #recupere  l'occurence et la date de l'alerte courante:
-    #     deb_sem_k= mydata[k,get("deb_sem")]
-    #     occurence_k= mydata[k,get("occurence")]
-    #     cat("alert at position ", k,"with occurence ",occurence_k,"\n")
-    #     mydata[k,myalerte:=occurence_k]
-    #   }
-    # }
+    mydata[,myalerte:=ifelse(alert_status=="alert",occurence,NA)]
+    
     
     setkey(mydata,sites)
     cat("reshape HFI to extract rainFall...")
@@ -709,17 +708,8 @@ server<-function(input, output,session) {
     #position legend at top of the graph
     #90th percentile as horizontal line:
     p = p %>% layout(title=paste0(input$diseases," for selected site"),
-                     legend = list(x = 0, y =10 )
-                     # ,shapes = list(
-                     #   list(type = "rect", 
-                     #        fillcolor = "blue", 
-                     #        line = list(color = "blue"), 
-                     #        opacity = 0.3, 
-                     #        x0 = as.character(min(mydata$Semaine)), 
-                     #        x1 = as.character(max(mydata$Semaine)), 
-                     #        xref = "x", 
-                     #        y0 = 12.5, y1 = 12.5, yref = "y")
-                     #   )
+                     legend = list(x = 0, y =10 ),
+                     xaxis =list(title="Weeks")
                      )
     p = p %>% add_trace(x=Semaine,y=myalerte,line=list(color="rgb(165,41,157)"),
                         name="percentile alerte")

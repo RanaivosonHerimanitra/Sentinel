@@ -94,13 +94,7 @@ calculate_csum = function (data=mydata,
     
     csum_alerte[alert_status %in% NA | myradius %in% NA , myradius:=5.0]
     
-    # csum_alerte[,nbsite_alerte:=1.0]; csum_alerte[,nbsite_normal:=1.0]
-    # csum_alerte[,myradius:=1]
-    # csum_alerte[alert_status=="alert",nbsite_alerte:=sum(occurence,na.rm = T)*1.0,by="sites,code"]
-    # csum_alerte[alert_status=="normal",nbsite_normal:=sum(occurence,na.rm = T)*1.0,by="sites,code"]
-    # csum_alerte[alert_status=="normal",myradius:=5*(nbsite_alerte+1)/sqrt(nbsite_normal+1)]
-    # csum_alerte[alert_status=="alert",myradius:=sqrt(nbsite_alerte+1)/(nbsite_normal+1)]
-    # csum_alerte[alert_status %in% NA, myradius:=10*myradius]
+   
     cat('DONE\n')
     
   

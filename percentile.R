@@ -83,7 +83,7 @@ calculate_percentile=function(data=mydata,
 
     cat('calculate radius per site for percentile algorithm alert...')
     data[,nbsite_alerte:=1.0]; data[,nbsite_normal:=1.0];
-    data[,myradius:=1]
+    data[,myradius:=1.0]
     
     ##################### new algo to determine radius of circle 
     # if no data then set radius to 5
@@ -91,19 +91,14 @@ calculate_percentile=function(data=mydata,
     # if not normal then  15*(weighted sum of # cases)
     # l'idée c'est de différencier les sites selon nombre de cas selon les sites mais de se
     #fixer un max size de 15
-    data[alert_status=="alert", myradius:=15]
+    data[alert_status=="alert", myradius:=15.0]
     data[alert_status=="normal",sum_occurence_week:=sum(occurence,na.rm=T),by="code"]
-    data[alert_status=="normal", myradius:=15*occurence/sum_occurence_week,by="sites,code"]
+    data[alert_status=="normal", myradius:=15.0*occurence/sum_occurence_week,by="sites,code"]
     #set a minimum value if less than 2.5 in radius (for visibility purpose):
-    data[alert_status=="normal", myradius:=ifelse(myradius<2.5,2.5,myradius),by="sites,code"]
+    data[alert_status=="normal" & is.na(myradius)==F, myradius:=ifelse(myradius<2.5,2.5,myradius),by="sites,code"]
     
     data[alert_status %in% NA | myradius %in% NA , myradius:=5.0]
     
-    #data[alert_status=="alert",nbsite_alerte:=sum(occurence,na.rm = T)*1.0,by="sites,code"]
-    #data[alert_status=="normal",nbsite_normal:=sum(occurence,na.rm = T)*1.0,by="sites,code"]
-    #data[alert_status=="normal",myradius:=5*(nbsite_alerte+1)/sqrt(nbsite_normal+1)]
-    #data[alert_status=="alert",myradius:=(nbsite_alerte+1)/(nbsite_normal+1)]
-    #data[alert_status %in% NA, myradius:=10*myradius]
     
     
     cat('DONE\n')

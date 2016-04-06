@@ -16,7 +16,7 @@ algoviz_display=tabItem(tabName="myalgoviz",
                             #rbokehOutput("propsite_alerte"))
                           plotlyOutput("propsite_alerte"))
                         ),
-                        sentinel_sites,
+                        #sentinel_sites,
                         fluidRow( 
                           #box(status = "primary", solidHeader = TRUE,
                                #    collapsible = TRUE,
