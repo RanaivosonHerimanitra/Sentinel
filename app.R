@@ -198,69 +198,7 @@ server<-function(input, output,session) {
                propsite_alerte_fever=propsite_alerte_fever,
                propsite_alerte_fever_byfacies=propsite_alerte_fever_byfacies))
   })
-  #Malaria cases and weekly mean:
-  # output$malariacases <-renderPlotly({
-  #   cat('retrieving code corresponding to selected sites...')
-  #   setkey(sentinel_latlong,name)
-  #   mysite=sentinel_latlong[name %in% grep(input$mysites,name,value=T),get("sites") ]
-  #   cat('==>',mysite,'...')
-  #   cat('DONE\n')
-  #   mydata=preprocessing() 
-  #   cat('fetching number of cases per week and sites for visualization...')
-  #   setkey(mydata,years)
-  #   graph1=mydata[years==2015,sum(occurence,na.rm = T),by="weeks,sites"]
-  #   #rename some cols and rows:
-  #   setnames(graph1,old="V1",new="cases")
-  #   cat('DONE\n')
-  #   cat('fetching mean cases per week and sites for visualization...')
-  #   graph2=mydata[years %in% 2009:2014,mean(occurence,na.rm = T),by="weeks,sites"]
-  #   setnames(graph2,old="V1",new="weeklymean")
-  #   cat('DONE\n')
-  #   cat("fetching the",input$Centile_map,"th percentile for all years...")
-  #   graph3=mydata[,quantile(occurence,na.rm = T,probs = input$Centile_map/100),by="sites"]
-  #   setnames(graph3,old="V1",new="percentile90")
-  #   cat('DONE\n')
-  #  
-  #   cat("merging number of cases,mean cases and",input$Centile_map,"th percentile...")
-  #   mygraph=merge(graph1,graph2,by.x=c("sites","weeks"),by.y=c("sites","weeks"))
-  #   mygraph=merge(mygraph,graph3,by.x="sites",by.y="sites")
-  #   rm(graph3);rm(graph2);rm(graph1);gc()
-  #   cat('DONE\n')
-  #  
-  #   
-  #   cat('additionnal transformation to produce stacked bar chart...')
-  #   mygraph=mygraph[sites==mysite,]
-  #   mygraph[,value1:=ifelse(cases>percentile90,cases-percentile90,0)]
-  #   mygraph[,value2:=ifelse(cases>percentile90,percentile90,cases)]
-  #   cat('DONE\n')
-  #   
-  #   cat('tmp1')
-  #    tmp1=mygraph[,list(weeks,value1)];setnames(tmp1,"value1","cases")
-  #   cat('DONE\n')
-  #   
-  #   cat('tmp2')
-  #    tmp2=mygraph[,list(weeks,value2)];setnames(tmp2,"value2","cases")
-  #   cat('DONE\n')
-  #   
-  #   tmp1[,Status:=">threshold"]
-  #   tmp2[,Status:="Normal"]
-  #   
-  #  
-  #   
-  #   cat("merge tmp1 and tmp2...")
-  #    mygraph=rbind(tmp1,tmp2)
-  #   cat('DONE\n')
-  #  
-  #   cat("color and setkeyv")
-  #   cols=c("Normal"="blue",">threshold"="red")
-  #   setkeyv(mygraph,c("weeks","cases"))
-  #   cat("DONE\n")
-  #   
-  #   h <- ggplot(mygraph, aes(x=weeks, y=cases,fill=Status)) +
-  #      geom_bar(stat="identity") + scale_x_continuous(name="") + scale_y_continuous(name="") + scale_fill_manual(values=cols) + ggtitle(paste("Malaria cases in",input$mysites,"since 01/01/2015")) 
-  #    h= ggplotly(h)
-  #   h = h %>% layout(xaxis = list(title = "Semaine") )
-  # })
+  
   #display proportion of sites in alert with these HFI
   output$propsite_alerte = renderPlotly({
     source("create_facies.R")
@@ -808,6 +746,7 @@ server<-function(input, output,session) {
     d3heatmap(myz[,-1], dendrogram = "none",scale = "none",
               xaxis_font_size="9px",
               color=c("grey","darkgreen","red"))
+    
   })
   #Bubble chart to display past alert:
   output$mybubble = renderPlotly({
@@ -840,6 +779,7 @@ server<-function(input, output,session) {
       file.copy('report.pdf', file)
     }
   )
+  
   #Forecasting of # cases of Malaria:
   #in the future should take anykind of diseases:
   output$forecast_plot = renderPlotly({
@@ -852,13 +792,22 @@ server<-function(input, output,session) {
       load(file = "holt_retrospective.rda")
       L_preds= length(preds)
       L=length(X$occurence)
+     X[,mymonth:=paste0(mymonth,"/",substr(myyear,3,4))]
       ################# plotting begins ##################################
       line_width=1.5
       cat ("MAE of holt retrospective:",mae(X$occurence[1:L_preds],preds),"\n")
-      p = plot_ly(X, x=1:nrow(X),y = occurence,
-                  name="Montly cases of Malaria",
-                  line = list(width=line_width,color = "rgb(250,67,69)") )
-      p = p %>% add_trace(x = 1:nrow(X), y = c(round(preds),X$occurence[(L_preds+1):L]),
+      p = plot_ly(X, x=mymonth,y = occurence,
+                  name="Monthly cases of Malaria",
+                  line = list(width=line_width,color = "rgb(250,67,69)"))
+                   
+      p = p %>% layout(legend = list(x = 0, y = 350),
+                       #autosize = F,
+                       #width=500,
+                       #height=500,
+                       title="Actual serie (Farafanga & Mananjary) vs forecasts",
+                       xaxis =list(title="",dtick=3, tickangle=90),
+                       yaxis =list(title="#Cases"))
+      p = p %>% add_trace(x = mymonth, y = c(round(preds),X$occurence[(L_preds+1):L]),
                           name = "retrospective forecast",
                           line = list(width=line_width,color="rgb(85,135,249)") )
       p
@@ -868,14 +817,22 @@ server<-function(input, output,session) {
       load(file = "holt_prospective.rda")
       L_preds= length(preds)
       L=length(X$occurence)
+      X[,mymonth:=paste0(mymonth,"/",substr(myyear,3,4))]
       ########################### plotting begins #########################
       line_width=1.5
       cat ("MAE of holt prospective:",mae(X$occurence[(L-L_preds+1):L],preds),"\n")
-      p = plot_ly(X, x=1:nrow(X),
-                  y = occurence,name="Montly cases of Malaria",
+      p = plot_ly(X, x=mymonth,
+                  y = occurence,name="Monthly cases of Malaria",
                   line = list(width=line_width,color = "rgb(250,67,69)") )
-      p = p %>% add_trace(x = 1:nrow(X), y = c(X$occurence[1:(L-L_preds)],round(preds)),
-                          name = "pospective forecast",
+      p = p %>% layout(legend = list(x = 0, y = 350),
+                       #autosize = T,
+                       #width=500,
+                       #height=450,
+                       title="Actual serie (Farafanga & Mananjary) vs forecasts",
+                       xaxis =list(title="",dtick=3, tickangle=90),
+                       yaxis =list(title="#Cases"))
+      p = p %>% add_trace(x = mymonth, y = c(X$occurence[1:(L-L_preds)],round(preds)),
+                          name = "prospective forecast",
                           line = list(width=line_width,color="rgb(85,135,249)") )
       p
     }

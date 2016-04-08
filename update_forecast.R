@@ -25,9 +25,10 @@ for ( a in alpha_range )
 print (paste("best alpha",best_a))
 print (paste("best beta",best_b))
 model= run_back_test(alpha=best_a,beta=best_b,plot=F,direction=direction)
-preds=model$preds
+
 #handle <0:
-preds= ifelse(preds<0,0,preds)
+preds=abs(model$preds) #more accurate?
+#preds= ifelse(preds<0,0,preds)
 fit1= model$mymodel
 ################################### save model and forecasts ###########################
   if (direction=="prospective")
