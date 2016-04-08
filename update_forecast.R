@@ -1,4 +1,4 @@
-source("import1.R",local = T)
+source("import_data.R",local = T)
 source("prepare_data_forecast.R",local = T)
 source("forecasting_functions.R",local = T)
 ############################### run model (update forecast) #################

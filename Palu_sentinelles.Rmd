@@ -9,7 +9,7 @@ output: pdf_document
 
 ```{r,echo=F, fig.width=10, out.extra='',comment='', message=FALSE , warning=FALSE}
 #load source code:
-source("import1.R");source("tdrplus.R");require(ggplot2); require(gridExtra)
+source("import_data.R");source("tdrplus.R");require(ggplot2); require(gridExtra)
 source("var_conversion.R")
 mydata= tdr_malaria(htc=F)
 

@@ -43,17 +43,20 @@ doc <- addParagraph(doc, sous_titre2)
 alert_parameter1 = pot("Le 90ième percentile calculé sur toutes les semaines historiques exceptées la semaine en cours.")
 alert_parameter2 = pot("03 semaines consécutives sont nécessaire pour déclencher une ")+pot("alerte",format=en_gras()) 
 alert_parameter2=alert_parameter2 + pot(" (i.e lorsque les cas de Malaria ou de Diarrhée dépassent le 90ième percentile durant ces 03 semaines consécutives).")
+alert_parameter3 = pot ("Les bases de données manquantes dans la dernière semaine reflètent la semaine en cours d’acquisition.")
 
-alert_parameter= set_of_paragraphs(alert_parameter1,alert_parameter2)
+alert_parameter= set_of_paragraphs(alert_parameter1,alert_parameter2,alert_parameter3)
+
+
 doc=addParagraph( doc, value = alert_parameter, stylename="BulletList")
 
 ######################### R code to generate the report ##########################
-require(tidyr);source("import1.R");source("percentile.R");
+require(tidyr);source("import_data.R");source("percentile.R");
 source("tdrplus.R");source("preprocessing.R");
 mydata=preprocessing_disease()
 PaluConf_tdr= tdr_malaria()
 Malaria=mydata[["Malaria"]]
-diarrh=mydata[["Diarrhée"]]
+diarrh=mydata[["Diarrhea"]]
 
 percentile_palu_alerte=calculate_percentile(data=Malaria,
                                             week_length=3,

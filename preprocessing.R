@@ -6,7 +6,7 @@ preprocessing_disease = function (select_htc=FALSE)
   data_list=list()
   source("diseases_control.R")
   #--ensure that list here are the same as in source("diseases_control.R")
-  for ( j in c("Malaria","Diarrhée","Diarrhée fébrile","Grippe","PFA") )
+  for ( j in c("Malaria","Diarrhea","Diarrhée fébrile","ILI","PFA") )
   {
     #cat("Disease:",j,"\n")
     data=select_disease(disease=j)
@@ -46,6 +46,7 @@ preprocessing_disease = function (select_htc=FALSE)
     {
       if ( j!="ILI")
       {
+       
         data=data[,include,with=F]
       }
      

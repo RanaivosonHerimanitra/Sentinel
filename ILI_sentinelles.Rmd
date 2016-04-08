@@ -8,9 +8,9 @@ output: pdf_document
 
 
 ```{r,echo=F, fig.width=10, out.extra='',comment='', message=FALSE , warning=FALSE}
-source("import1.R");source("preprocessing.R");require(ggplot2); require(gridExtra)
+source("import_data.R");source("preprocessing.R");require(ggplot2); require(gridExtra)
 #Retrieve ILI
-mydata= preprocessing_disease()[["Grippe"]] #ensure this is the same as in #diseases_control.R
+mydata= preprocessing_disease()[["ILI"]] #ensure this is the same as in #diseases_control.R
 
 #aggregate occurence by week:
 mydata$occurence=as.numeric(mydata$occurence)
@@ -35,7 +35,7 @@ print(d)
 ```
 
 ```{r,echo=F,out.extra='',comment='', message=FALSE , warning=FALSE}
-mydata= preprocessing_disease()[["Grippe"]]
+mydata= preprocessing_disease()[["ILI"]]
 semaine=array()
 max_deb_sem=max(as.Date(mydata$deb_sem))
 semaine[6]= max_deb_sem-2*7 

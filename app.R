@@ -12,7 +12,7 @@ if ( getwd()!="/srv/shiny-server/sentinel_hrmntr")
 ##############################################server ######################
 source("facies_class.R")
 server<-function(input, output,session) {
-  source("import1.R")
+  source("import_data.R")
   #reactive computation of detection algorithms 
   #(centile,MinSan,C-sum,TDR+/fiever==>case of Malaria) 
   #depending on different parameters:
@@ -800,6 +800,11 @@ server<-function(input, output,session) {
                   name="Monthly cases of Malaria",
                   line = list(width=line_width,color = "rgb(250,67,69)"))
       p = p %>% layout(legend = list(x = 0, y = 350),
+                       # shapes = list(
+                       #   list(type = "rect", 
+                       #        fillcolor = "blue", line = list(color = "blue"), opacity = 0.3, 
+                       #        x0 = L_preds+1, x1 =L , xref = "x", 
+                       #        y0 = 350, y1 = 350, yref = "y")),
                        #autosize = F,
                        #width=500,
                        #height=500,
@@ -825,6 +830,11 @@ server<-function(input, output,session) {
                   y = occurence,name="Monthly cases of Malaria",
                   line = list(width=line_width,color = "rgb(250,67,69)") )
       p = p %>% layout(legend = list(x = 0, y = 350),
+                       # shapes = list(
+                       #   list(type = "rect", 
+                       #        fillcolor = "blue", line = list(color = "blue"), opacity = 0.3, 
+                       #        x0 = 1, x1 = L-L_preds, xref = "x", 
+                       #        y0 = 350, y1 = 350, yref = "y")),
                        #autosize = T,
                        #width=500,
                        #height=450,

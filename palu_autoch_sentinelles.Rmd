@@ -12,7 +12,7 @@ output: pdf_document
 
 
 ```{r,echo=F,fig.width=10, out.extra='',comment='', message=FALSE , warning=FALSE}
-source("import1.R");
+source("import_data.R");
 source("preprocessing.R");require(ggplot2); require(gridExtra)
 #Retrieve Malaria (TDR+ ~~PaluConf) for HTC sites
 mydata= preprocessing_disease(select_htc=TRUE)[["Malaria"]]
