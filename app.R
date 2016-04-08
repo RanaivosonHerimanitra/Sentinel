@@ -786,20 +786,20 @@ server<-function(input, output,session) {
     source("prepare_data_forecast.R",local = T)
     source("forecasting_functions.R",local = T)
     #########################################################################################################
-    if (input$forecast_type=="retrospective")
+    if ( input$mymodel=="HLT" & input$forecast_type=="retrospective")
     {
       direction="retrospective"
       load(file = "holt_retrospective.rda")
       L_preds= length(preds)
       L=length(X$occurence)
-     X[,mymonth:=paste0(mymonth,"/",substr(myyear,3,4))]
+      X[,mymonth:=paste0(mymonth,"/",substr(myyear,3,4))]
       ################# plotting begins ##################################
       line_width=1.5
       cat ("MAE of holt retrospective:",mae(X$occurence[1:L_preds],preds),"\n")
       p = plot_ly(X, x=mymonth,y = occurence,
                   name="Monthly cases of Malaria",
                   line = list(width=line_width,color = "rgb(250,67,69)"))
-                   
+      cat("p defined\n")             
       p = p %>% layout(legend = list(x = 0, y = 350),
                        #autosize = F,
                        #width=500,
@@ -807,12 +807,17 @@ server<-function(input, output,session) {
                        title="Actual serie (Farafanga & Mananjary) vs forecasts",
                        xaxis =list(title="",dtick=3, tickangle=90),
                        yaxis =list(title="#Cases"))
+      cat("layout defined\n")    
       p = p %>% add_trace(x = mymonth, y = c(round(preds),X$occurence[(L_preds+1):L]),
                           name = "retrospective forecast",
                           line = list(width=line_width,color="rgb(85,135,249)") )
-      p
+      cat("trace added\n")    
+    
       
-    } else {
+    } 
+    #####################################################################
+    if (input$mymodel=="HLT" & input$forecast_type=="prospective" ) 
+    {
       direction="prospective"
       load(file = "holt_prospective.rda")
       L_preds= length(preds)
@@ -834,8 +839,8 @@ server<-function(input, output,session) {
       p = p %>% add_trace(x = mymonth, y = c(X$occurence[1:(L-L_preds)],round(preds)),
                           name = "prospective forecast",
                           line = list(width=line_width,color="rgb(85,135,249)") )
-      p
     }
+    p
   })
 }
 

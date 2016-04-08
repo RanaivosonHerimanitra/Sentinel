@@ -14,5 +14,6 @@ myforecast_ui=list(fluidRow(box(title="Choose a model for prediction",
                                selectInput(inputId = "forecast_type",
                                            label="Forecast type",
                                            choices=list("Retrospective"="retrospective",
-                                                        "Prospective"="prospective"))))
+                                                        "Prospective"="prospective"),
+                                           selected="prospective")))
                    ,box(plotlyOutput("forecast_plot"),width=12) )
