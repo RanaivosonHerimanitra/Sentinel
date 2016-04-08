@@ -183,12 +183,15 @@ if ( exists("PaluConf")==F ) #to speed up things
                         " WHERE deb_sem>=",max_date))
      #conversion of dataframe:
      hfi_tmp = hfi_tmp %>% data.frame() %>% data.table()
-     #conversion of variables:
-     var_conv(hfi,hfi_tmp)
-     #rbind 02 dataframe:
-     hfi= hfi[deb_sem<max_date,]
-     hfi=(rbind(hfi,hfi_tmp))
- # })
+     #append only if non empty datatable 
+     if ( nrow(hfi_tmp)>0 )
+     {
+       #conversion of variables:
+       var_conv(hfi,hfi_tmp)
+       #rbind 02 dataframe:
+       hfi= hfi[deb_sem<max_date,]
+       hfi=(rbind(hfi,hfi_tmp))
+     }
     if (writing_to_disk==T )
     {
       #need conversion here---- NOT ACTUALLY

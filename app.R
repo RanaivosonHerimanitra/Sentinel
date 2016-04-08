@@ -322,7 +322,7 @@ server<-function(input, output,session) {
                  y = 100*prop,name=input$diseases,
                  line = list(width=line_width,color = "rgb(255, 0, 0)") )
     p = p %>% layout(title="%sites in alert and High Freq. Indicators")
-    p = p %>% add_trace(x = deb_sem, y = caid_value, name = "IRS",
+    p = p %>% add_trace(x = deb_sem, y = caid_value, name = "IRS",type="bar",
                         line = list(width=line_width),visible='legendonly')
     p = p %>% add_trace(x = deb_sem, y = 100*ndvi_value, name = "NDVI",
                         line = list(width=line_width),visible='legendonly')
@@ -799,7 +799,6 @@ server<-function(input, output,session) {
       p = plot_ly(X, x=mymonth,y = occurence,
                   name="Monthly cases of Malaria",
                   line = list(width=line_width,color = "rgb(250,67,69)"))
-      cat("p defined\n")             
       p = p %>% layout(legend = list(x = 0, y = 350),
                        #autosize = F,
                        #width=500,
@@ -807,13 +806,9 @@ server<-function(input, output,session) {
                        title="Actual serie (Farafanga & Mananjary) vs forecasts",
                        xaxis =list(title="",dtick=3, tickangle=90),
                        yaxis =list(title="#Cases"))
-      cat("layout defined\n")    
       p = p %>% add_trace(x = mymonth, y = c(round(preds),X$occurence[(L_preds+1):L]),
                           name = "retrospective forecast",
                           line = list(width=line_width,color="rgb(85,135,249)") )
-      cat("trace added\n")    
-    
-      
     } 
     #####################################################################
     if (input$mymodel=="HLT" & input$forecast_type=="prospective" ) 
