@@ -8,8 +8,24 @@ calculate_csum = function (data=mydata,
                            week_Csum_map=input$week_Csum_map,
                            year_choice=year(Sys.Date()),byvar="code")
 {
-  #take most recent week in the data:
+  # data format:
+  #      deb_sem    code sites  occurence  facies East South High_land Fringe
+  # 1: 2007-04-09 2007_15   abv        NA excepted_High_land   NA     1        NA     NA
+  # 2: 2007-04-16 2007_16   abv        NA excepted_High_land   NA     1        NA     NA
+  # 3: 2007-04-23 2007_17   abv        NA excepted_High_land   NA     1        NA     NA
+  # 4: 2007-04-30 2007_18   abv        NA excepted_High_land   NA     1        NA     NA
+  # 5: 2007-05-07 2007_19   abv        NA excepted_High_land   NA     1        NA     NA
+  # 6: 2007-05-14 2007_20   abv        NA excepted_High_land   NA     1        NA     NA
+  # excepted_East excepted_High_land weeks years
+  # 1:             1                  1    15  2007
+  # 2:             1                  1    16  2007
+  # 3:             1                  1    17  2007
+  # 4:             1                  1    18  2007
+  # 5:             1                  1    19  2007
+  # 6:             1                  1    20  2007
   
+  #take 52 most recent week in the data:
+  #because they will be compared to historical values (week per week)
   max_deb_sem= max(as.Date(data$deb_sem))
   last52weeks= unique(as.Date(data$deb_sem))[order(unique(as.Date(data$deb_sem)),decreasing = T)[1:52]]
   
@@ -24,7 +40,6 @@ calculate_csum = function (data=mydata,
       Lleft = Lright -1
     } else {
       alignement="center" 
-      #No problem here because Csum_week_map will be at the center
       #define L (lag to right and left)
       Lright= (Csum_week_map - 1)/2
       Lleft= (Csum_week_map - 1)/2
@@ -146,7 +161,7 @@ calculate_csum = function (data=mydata,
                              by.x=c(byvar,"facies"),by.y=c(byvar,"facies"))
   rm(Nbsite_withdata);rm(Nbsite_beyond);gc()
   cat("DONE\n")
-  
+  #return a list of dataframes; alerts are in `csum_alerte_currentweek`
   return(list(
     csum_alerte_currentweek=csum_alerte[as.Date(deb_sem)==max_deb_sem-7,],
     csum_alerte=csum_alerte,

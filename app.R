@@ -840,6 +840,46 @@ server<-function(input, output,session) {
       file.copy('report.pdf', file)
     }
   )
+  #Forecasting of # cases of Malaria:
+  #in the future should take anykind of diseases:
+  output$forecast_plot = renderPlotly({
+    source("prepare_data_forecast.R",local = T)
+    source("forecasting_functions.R",local = T)
+    #########################################################################################################
+    if (input$forecast_type=="retrospective")
+    {
+      direction="retrospective"
+      load(file = "holt_retrospective.rda")
+      L_preds= length(preds)
+      L=length(X$occurence)
+      ################# plotting begins ##################################
+      line_width=1.5
+      cat ("MAE of holt retrospective:",mae(X$occurence[1:L_preds],preds),"\n")
+      p = plot_ly(X, x=1:nrow(X),y = occurence,
+                  name="Montly cases of Malaria",
+                  line = list(width=line_width,color = "rgb(250,67,69)") )
+      p = p %>% add_trace(x = 1:nrow(X), y = c(round(preds),X$occurence[(L_preds+1):L]),
+                          name = "retrospective forecast",
+                          line = list(width=line_width,color="rgb(85,135,249)") )
+      p
+      
+    } else {
+      direction="prospective"
+      load(file = "holt_prospective.rda")
+      L_preds= length(preds)
+      L=length(X$occurence)
+      ########################### plotting begins #########################
+      line_width=1.5
+      cat ("MAE of holt prospective:",mae(X$occurence[(L-L_preds+1):L],preds),"\n")
+      p = plot_ly(X, x=1:nrow(X),
+                  y = occurence,name="Montly cases of Malaria",
+                  line = list(width=line_width,color = "rgb(250,67,69)") )
+      p = p %>% add_trace(x = 1:nrow(X), y = c(X$occurence[1:(L-L_preds)],round(preds)),
+                          name = "pospective forecast",
+                          line = list(width=line_width,color="rgb(85,135,249)") )
+      p
+    }
+  })
 }
 
 ##############################################User interface ##############
@@ -859,7 +899,7 @@ ui = list(dashboardPage(skin = "blue",
       menuItem(text="Download diseases report",
                tabName="diparam", 
                icon = icon("building")),
-      menuItem(text=list("Forecasting", tags$small(class="media-heading",tags$span(class="label label-danger", "available soon"))),
+      menuItem(text=list("Forecasting", tags$small(class="media-heading",tags$span(class="label label-danger", "beta release"))),
                tabName="myforecast", 
                icon = icon("line-chart"))
   )), 
