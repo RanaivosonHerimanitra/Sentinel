@@ -48,7 +48,7 @@ fit1= model$mymodel
     print (mae(X$occurence[1:L_preds],preds))
     
     ts.plot(X$occurence)
-    lines(c(round(preds),X$occurence[(L_preds+1):L]),col="blue")
+    lines(c(preds,X$occurence[(L_preds+1):L]),col="blue")
     
   }
 #######################################################################################

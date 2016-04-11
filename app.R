@@ -452,7 +452,7 @@ server<-function(input, output,session) {
                                                        alpha=0.8,
                                                        aes(color=alert_status,
                                                            size=myradius
-                                                           ),show_guide = FALSE)
+                                                           ),show.legend  = FALSE)
         madagascar_map2 = madagascar_map2 + scale_colour_manual(values=c("#f05249", "#808284", "#69c39a"))
         madagascar_map2 = madagascar_map2 + scale_size_discrete(guide = F)
       } else {
@@ -650,7 +650,7 @@ server<-function(input, output,session) {
               )
     #position legend at top of the graph
     #90th percentile as horizontal line:
-    p = p %>% layout(title=paste0(input$diseases," for selected site"),
+    p = p %>% layout(title=paste0("Weekly ",input$diseases," cases number"),
                      legend = list(x = 0, y =10 ),
                      xaxis =list(title="Weeks"),
                      yaxis =list(title="#Cases")
@@ -801,9 +801,9 @@ server<-function(input, output,session) {
                   line = list(width=line_width,color = "rgb(250,67,69)"))
       p = p %>% layout(legend = list(x = 0, y = 350),
                        # shapes = list(
-                       #   list(type = "rect", 
-                       #        fillcolor = "blue", line = list(color = "blue"), opacity = 0.3, 
-                       #        x0 = L_preds+1, x1 =L , xref = "x", 
+                       #   list(type = "rect",
+                       #        fillcolor = "blue", line = list(color = "blue"), opacity = 0.3,
+                       #        x0 = L_preds+1, x1 =L , xref = "x",
                        #        y0 = 350, y1 = 350, yref = "y")),
                        #autosize = F,
                        #width=500,
@@ -854,12 +854,11 @@ server<-function(input, output,session) {
 source('initialize_ui.R')
 ui = list(dashboardPage(skin = "blue",
                             
-  dashboardHeader(title="Surveillance sentinelle",titleWidth="233"),
+  dashboardHeader(title="Sentinel surveillance",titleWidth="233"),
   dashboardSidebar(
     sidebarMenu(
       menuItem(text="Main",tabName="mytabbox", 
                icon = icon("database")),
-     
       diseases_choices,
       map_choices,
       myfacies_algo,

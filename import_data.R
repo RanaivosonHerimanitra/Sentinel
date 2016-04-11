@@ -32,7 +32,7 @@ if ( exists("PaluConf")==F ) #to speed up things
       #rbind 02 dataframe:
       PaluConf=PaluConf[deb_sem<max_date,]
       PaluConf=(rbind(PaluConf,PaluConf_tmp))
-      
+      setorder(PaluConf,-deb_sem)
     }
     
     #should accelerate extraction:
@@ -51,6 +51,7 @@ if ( exists("PaluConf")==F ) #to speed up things
       #rbind 02 dataframe:
       Consultations=Consultations[deb_sem<max_date,]
       Consultations=(rbind(Consultations,Consultations_tmp)) 
+      setorder(Consultations,-deb_sem)
     }
     
     SyndF=fread("data/SyndF.csv")
@@ -68,6 +69,7 @@ if ( exists("PaluConf")==F ) #to speed up things
       #rbind 02 dataframe:
       SyndF=SyndF[deb_sem<max_date,]
       SyndF=(rbind(SyndF,SyndF_tmp))
+      setorder(SyndF,-deb_sem)
     }
     #palu autochtone:
     palu_autoch=fread("data/palu_autoch.csv")
@@ -84,6 +86,7 @@ if ( exists("PaluConf")==F ) #to speed up things
       var_conv(palu_autoch,palu_autoch_tmp)
       #rbind 02 dataframe:
       palu_autoch=unique(rbind(palu_autoch,palu_autoch_tmp))
+      setorder(palu_autoch,-deb_sem)
     }
     #
     Diarrh=fread("data/Diarrh.csv")
@@ -102,7 +105,7 @@ if ( exists("PaluConf")==F ) #to speed up things
       #rbind 02 dataframe:
       Diarrh=Diarrh[deb_sem<max_date,]
       Diarrh=(rbind(Diarrh,Diarrh_tmp))
-      
+      setorder(Diarrh,-deb_sem)
     }
     
     
@@ -123,7 +126,7 @@ if ( exists("PaluConf")==F ) #to speed up things
       #remove old obs. and rbind 02 dataframe:
       Diarrh_feb=Diarrh_feb[deb_sem<max_date,]
       Diarrh_feb=unique(rbind(Diarrh_feb,Diarrh_feb_tmp))
-      
+      setorder(Diarrh_feb,-deb_sem)
     }
     #Paralysie flasque aigue
     #incProgress(1/n, detail = "load PFA data...")
@@ -142,6 +145,7 @@ if ( exists("PaluConf")==F ) #to speed up things
       #rbind 02 dataframe:
       pfa= pfa[deb_sem<max_date,]
       pfa=(rbind(pfa,pfa_tmp))
+      setorder(pfa,-deb_sem)
     }
   
     tdr_eff=fread("data/tdr_eff.csv")
@@ -158,7 +162,7 @@ if ( exists("PaluConf")==F ) #to speed up things
       #rbind 02 dataframe:
       tdr_eff=tdr_eff[deb_sem<max_date,]
       tdr_eff=(rbind(tdr_eff,tdr_eff_tmp))
-      
+      setorder(tdr_eff,-deb_sem)
     }
     #définir taille de cercle f(Nb total diarrhée) dans map
     ili=fread("data/ili.csv")
@@ -176,6 +180,7 @@ if ( exists("PaluConf")==F ) #to speed up things
       #rbind 02 dataframe:
       ili=ili[deb_sem<max_date]
       ili=(rbind(ili,ili_tmp))
+      setorder(ili,-deb_sem)
     }
     
     
@@ -204,6 +209,7 @@ if ( exists("PaluConf")==F ) #to speed up things
        #rbind 02 dataframe:
        hfi= hfi[deb_sem<max_date,]
        hfi=(rbind(hfi,hfi_tmp))
+       setorder(hfi,-deb_sem)
      }
     if (writing_to_disk==T )
     {

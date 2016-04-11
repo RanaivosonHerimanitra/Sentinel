@@ -1,5 +1,6 @@
 ##########################Map UI #############################
 map_display=list(
+  tags$h4("Week:",paste0( year(Sys.Date()) ,"_", week(Sys.Date()) ) ),
   conditionalPanel( condition = "input.mapchoice=='leaflet'", 
                     leafletOutput("madagascar_map"),
                     includeHTML("www/legende.html"), #cool that works!
