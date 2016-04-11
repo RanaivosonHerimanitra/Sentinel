@@ -34,15 +34,20 @@ calculate_percentile=function(data=mydata,
      week_range = week1
    }
     cat('retrieve epidemiological weeks corresponding to parameters...')
-    code_range = unique(unlist(lapply(week_range,function(i) paste0( year(i),"_",ifelse(week(i)<10,paste0("0",week(i)),week(i)) ) )))[1:week_length]
+      code_range = unique(unlist(lapply(week_range,function(i) paste0( year(i),"_",ifelse(week(i)<10,paste0("0",week(i)),week(i)) ) )))[1:week_length]
     cat('DONE\n')
-    
     cat("code range defined by user encompasses:",code_range,"\n")
     
-    cat('calculate ',percentile_value,'-th percentile for all the data except for the ongoing/selected week...')
+    cat('calculate ',percentile_value,'-th percentile for all the data except for the current week...')
     setkey(data,deb_sem)
-    mypercentile=data[as.Date(deb_sem)<max_deb_sem,
-                          quantile(occurence,probs=percentile_value/100,na.rm=T),by="sites"]
+    if (max_deb_sem==Sys.Date() ) {
+      #if max_date == current week then exclude this current week
+      #from calculation of alert , otherwise include 
+      mypercentile=data[as.Date(deb_sem)<max_deb_sem,
+                        quantile(occurence,probs=percentile_value/100,na.rm=T),by="sites"]
+    } else {
+      mypercentile=data[,quantile(occurence,probs=percentile_value/100,na.rm=T),by="sites"]
+    } 
     setnames(mypercentile,old="V1",new="n_percentile")
     cat("DONE\n")
 
@@ -110,7 +115,13 @@ calculate_percentile=function(data=mydata,
     cat('DONE\n')
     
     cat("prepare alert to be displayed on the map (latest finished week)...")
-    percentile_alerte_currentweek=percentile_alerte[as.Date(deb_sem)==max_deb_sem-7,]
+    if (max_deb_sem==Sys.Date() ) {
+      #if max_date == current week then exclude this current week
+      #from calculation of alert , otherwise include 
+      percentile_alerte_currentweek=percentile_alerte[as.Date(deb_sem)==max_deb_sem-7,]
+    } else {
+      percentile_alerte_currentweek=percentile_alerte
+    }
     cat("DONE\n")
    
   cat("calculate weekly prop of sites in alert (all)...")
