@@ -331,22 +331,28 @@ server<-function(input, output,session) {
                  y = 100*prop,name=input$diseases,
                  line = list(width=line_width,color = "rgb(255, 0, 0)") )
     p = p %>% layout(title="%sites in alert")
-    p = p %>% add_trace(x = deb_sem, y = caid_value, name = "IRS",
-                        type="bar",
-                        color= "IRS",
-                        colors="#dfb678",
-                        visible='legendonly')
+    #these are only make sense when Malaria (not for other diseases)
+    if ( input$diseases=="Malaria")
+    {
+      p = p %>% add_trace(x = deb_sem, y = caid_value, name = "IRS",
+                          type="bar",
+                          color= "IRS",
+                          colors="#dfb678",
+                          visible='legendonly')
+      p = p %>% add_trace(x = deb_sem, y = mild_value, name = "LLIN",
+                          color="Mild",
+                          opacity=0.5,
+                          colors="#132B43",
+                          type="bar",
+                          visible='legendonly')
+    }
+   
     p = p %>% add_trace(x = deb_sem, y = 100*ndvi_value, name = "NDVI",
                         line = list(width=line_width),visible='legendonly')
     p = p %>% add_trace(x = deb_sem, y = pmm_value, name = "Rainfall(mm)",
                         line = list(width=line_width,color="#307ff0"),
                         visible='legendonly')
-    p = p %>% add_trace(x = deb_sem, y = mild_value, name = "LLIN",
-                        color="Mild",
-                        opacity=0.5,
-                        colors="#132B43",
-                        type="bar",
-                        visible='legendonly')
+    
     p = p %>% add_trace(x = deb_sem, y = temperature, name = "Temp.",
                         line = list(width=line_width,color = "#ff8d00"),
                         visible='legendonly')
@@ -467,9 +473,9 @@ server<-function(input, output,session) {
                                                        alpha=0.8,
                                                        aes(color=alert_status,
                                                            size=myradius
-                                                           ),show.legend  = FALSE)
+                                                           ),show.legend  = T)
         madagascar_map2 = madagascar_map2 + scale_colour_manual(values=c("#f05249", "#808284", "#69c39a"))
-        madagascar_map2 = madagascar_map2 + scale_size_discrete(guide = F)
+        #madagascar_map2 = madagascar_map2 + scale_size_discrete(guide = F)
       } else {
         madagascar_map2 = madagascar_map2 + geom_point(data = sentinel_latlong,
                                                        alpha=0.8,
@@ -511,22 +517,20 @@ server<-function(input, output,session) {
   #render Proportion of ILI sur Nombre de consultant
   output$propili = renderPlotly({
     #preprocess data:
-    #tdr_eff = tdr_eff %>% mutate( Synd_g = GrippSusp + AutrVirResp )
     tdr_eff[,Synd_g:=GrippSusp + AutrVirResp]
     #34 sites we need:
     sites34= toupper(include[-c(1:2)])
-    #propili_2015= tdr_eff %>% filter(sites %in% sites34 & Annee>2014)
     propili_2015 = tdr_eff[sites %in% sites34 & Annee>2014]
-    #propili_2015= as.data.table(propili_2015)
-    #stat_ili=tdr_eff %>% filter(sites %in% sites34 & Annee<2015)
     stat_ili= tdr_eff[sites %in% sites34 & Annee <2015]
-    #stat_ili = as.data.table(stat_ili)
+    #remove:
+    
     
     #filter rows:
     cat("calculating prop of ILI on Nb consultation...")
      propili_2015[,prop := 100*sum(Synd_g,na.rm = T)/sum(NxConsltTotal,na.rm=T) ,by="deb_sem"]
      propili_2015= unique(propili_2015[,list(deb_sem,prop)])
      propili_2015[,weekOfday:=week(deb_sem)] #create a key to merge later 
+     gc()
     cat("DONE\n")
     
   
@@ -536,6 +540,7 @@ server<-function(input, output,session) {
      stat_ili[,mymax:=max(Synd_g,na.rm = T),by="weekOfday"]
      stat_ili[,mymean:=mean(Synd_g,na.rm = T),by="weekOfday"]
      stat_ili= unique(stat_ili[,list(weekOfday,mymax,mymean)])
+    
      #create a key to merge later 
     cat("DONE\n")
     gc()
@@ -569,17 +574,13 @@ server<-function(input, output,session) {
   #render Syndrome Grippal, Syndrom Dengue-Like
   output$ili_graph = renderPlotly({
     #data processing:
-    #tdr_eff = tdr_eff %>% mutate( Synd_g = GrippSusp + AutrVirResp )
     tdr_eff[,Synd_g := GrippSusp + AutrVirResp ]
     #34 sites we need:
     sites34= toupper(include[-c(1:2)])
     #filter rows:
-    #tdr_eff= tdr_eff %>% filter(sites %in% sites34 )
-    tdr_eff=tdr_eff[sites %in% sites34 & year(as.Date(deb_sem ))>=2015]
-    # filter dates:
-    #tdr_eff=tdr_eff %>% filter( year(as.Date(deb_sem ))>=2015 )
-     
-    p <- plot_ly(tdr_eff, x = deb_sem, type="bar",y = Synd_g,name="Syndrome Grippal")
+    myili=tdr_eff[sites %in% sites34 & year(as.Date(deb_sem ))>=2015]
+    
+    p <- plot_ly(myili, x = deb_sem, type="bar",y = Synd_g,name="Syndrome Grippal")
     p = p %>% add_trace(x = deb_sem, type="bar",y = ArboSusp, name = "Dengue-Like")
     
     #position legend at top of the graph
