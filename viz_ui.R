@@ -1,7 +1,7 @@
 #########################Visualization UI ##################################
 
 algoviz_display=tabItem(tabName="myalgoviz",
-                        conditionalPanel(condition = "input.diseases=='Grippe'",
+                        conditionalPanel(condition = "input.diseases=='ILI'",
                         fluidRow(
                          #showOutput("ili_graph","highcharts"))
                          #rbokehOutput("ili_graph"))
@@ -10,7 +10,7 @@ algoviz_display=tabItem(tabName="myalgoviz",
                        fluidRow(
                          plotlyOutput("propili"))
                         ),
-                        conditionalPanel(condition = "input.diseases!='Grippe'",
+                        conditionalPanel(condition = "input.diseases!='ILI'",
                         fluidRow(
                             #showOutput("propsite_alerte", "highcharts"))
                             #rbokehOutput("propsite_alerte"))

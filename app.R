@@ -330,13 +330,17 @@ server<-function(input, output,session) {
     p <- plot_ly(myprop, x = deb_sem,
                  y = 100*prop,name=input$diseases,
                  line = list(width=line_width,color = "rgb(255, 0, 0)") )
-    p = p %>% layout(title="%sites in alert and High Freq. Indicators")
-    p = p %>% add_trace(x = deb_sem, y = caid_value, name = "IRS",type="bar",
-                        line = list(width=line_width),visible='legendonly')
+    p = p %>% layout(title="%sites in alert")
+    p = p %>% add_trace(x = deb_sem, y = caid_value, name = "IRS",
+                        type="bar",
+                        color= "IRS",
+                        colors="#dfb678",
+                        visible='legendonly')
     p = p %>% add_trace(x = deb_sem, y = 100*ndvi_value, name = "NDVI",
                         line = list(width=line_width),visible='legendonly')
     p = p %>% add_trace(x = deb_sem, y = pmm_value, name = "Rainfall(mm)",
-                        line = list(width=line_width),visible='legendonly')
+                        line = list(width=line_width,color="#307ff0"),
+                        visible='legendonly')
     p = p %>% add_trace(x = deb_sem, y = mild_value, name = "LLIN",
                         color="Mild",
                         opacity=0.5,
@@ -344,7 +348,8 @@ server<-function(input, output,session) {
                         type="bar",
                         visible='legendonly')
     p = p %>% add_trace(x = deb_sem, y = temperature, name = "Temp.",
-                        line = list(width=line_width,color = "rgb(0, 102, 204)"),visible='legendonly')
+                        line = list(width=line_width,color = "#ff8d00"),
+                        visible='legendonly')
     p = p %>% layout(legend = list(x = 0, y = 100),
                      xaxis =list(title="Weeks"),
                      yaxis =list(title="Values")
@@ -409,7 +414,8 @@ server<-function(input, output,session) {
                                                        color = ~pal(alert_status),
                                                        fillOpacity = 0.7,
                                                        popup = ~name)
-    return(mada_map)
+    
+    mada_map
     })
   output$madagascar_map2 <- renderPlot({
       if (input$Algorithmes_eval=="Percentile") 
@@ -549,7 +555,6 @@ server<-function(input, output,session) {
                  line = list(width=line_width))
     p = p %>% layout(title="%ILI sur Nb.consultations",
                     xaxis = list(title = "Date"),
-                    #error_x=list(thickness = 0.5),
                     legend = list(x = 0, 
                                   y = 10)
                     )
@@ -593,7 +598,7 @@ server<-function(input, output,session) {
     
     #mydata=preprocessing()
     mydata=percentile_algorithm()$mydata
-    mydata[sites==input$diseases]
+   # mydata[sites==input$diseases]
     #recupere date d'alerte  pour chaque site
     #cree une nouvelle variable = valeur de cette alerte
     mydata[,myalerte:=0]
@@ -648,8 +653,8 @@ server<-function(input, output,session) {
     mydata[,deb_sem:=as.Date(deb_sem)]
     mydata=mydata[order(deb_sem),]
     setnames(mydata,"deb_sem","Semaine")
-    #
-    mytitle=paste("Historical", input$diseases ,"cases in selected sites" )
+    #handle title programmatically (depends on user choice)
+     mytitle=paste0("Weekly ",input$diseases," cases number in ",sentinel_latlong[sites==selected_site_leaflet(),get("name")])
     #
     line_width=1
     p=plot_ly(data=mydata,
@@ -659,7 +664,8 @@ server<-function(input, output,session) {
               )
     #position legend at top of the graph
     #90th percentile as horizontal line:
-    p = p %>% layout(title=paste0("Weekly ",input$diseases," cases number"),
+    p = p %>% layout(title=mytitle,
+                     font=list(size=9),
                      legend = list(x = 0, y =10 ),
                      xaxis =list(title="Weeks"),
                      yaxis =list(title="#Cases")
