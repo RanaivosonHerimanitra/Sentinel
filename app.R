@@ -184,17 +184,26 @@ server<-function(input, output,session) {
    cat('DONE\n')
   
    cat('calculate radius for per site for percentile algorithm alert...')
-   PaluConf_SyndF[,nbsite_alerte:=1.0]; PaluConf_SyndF[,nbsite_normal:=1.0]
-   setkey(PaluConf_SyndF,alert_status_hist)
-   PaluConf_SyndF[alert_status_hist=="alert",nbsite_alerte:=sum(malaria_cases,na.rm = T)*1.0,by="sites,code"]
-   PaluConf_SyndF[alert_status_hist=="normal",nbsite_normal:=sum(malaria_cases,na.rm = T)*1.0,by="sites,code"]
-   PaluConf_SyndF[alert_status_hist=="normal",myradius:=5*(nbsite_alerte+1)/sqrt(nbsite_normal+1)]
-   PaluConf_SyndF[alert_status_hist=="alert",myradius:=(nbsite_alerte+1)/(nbsite_normal+1)]
-   PaluConf_SyndF[alert_status_hist %in% NA, myradius:=10*myradius]
+    #PaluConf_SyndF[,nbsite_alerte:=1.0]; PaluConf_SyndF[,nbsite_normal:=1.0]
+    setkey(PaluConf_SyndF,alert_status_hist)
+    PaluConf_SyndF[alert_status=="alert", myradius:=15.0]
+    #PaluConf_SyndF[alert_status_hist=="alert",nbsite_alerte:=sum(malaria_cases,na.rm = T)*1.0,by="sites,code"]
+    #PaluConf_SyndF[alert_status_hist=="normal",nbsite_normal:=sum(malaria_cases,na.rm = T)*1.0,by="sites,code"]
+    #PaluConf_SyndF[alert_status_hist=="normal",myradius:=5*(nbsite_alerte+1)/sqrt(nbsite_normal+1)]
+    #PaluConf_SyndF[alert_status_hist=="alert",myradius:=(nbsite_alerte+1)/(nbsite_normal+1)]
+    #PaluConf_SyndF[alert_status_hist %in% NA, myradius:=10*myradius]
+    PaluConf_SyndF[alert_status_hist=="normal", sum_occurence_week:=sum(malaria_cases,na.rm=T),by="code"]
+    PaluConf_SyndF[alert_status=="normal", myradius:=15.0*malaria_cases/sum_occurence_week,by="sites,code"]
+    PaluConf_SyndF[alert_status_hist %in% NA, myradius:=5.0]
    cat('DONE\n')
-   
+   if (max(as.Date(PaluConf_SyndF$deb_sem)) ==Sys.Date() )
+   {
+     tdrplus_ind_currentweek = PaluConf_SyndF[as.Date(deb_sem)==max(as.Date(deb_sem))-7,]
+   } else {
+     tdrplus_ind_currentweek = PaluConf_SyndF[as.Date(deb_sem)==max(as.Date(deb_sem)),]
+   }
    return(list(
-               tdrplus_ind_currentweek = PaluConf_SyndF[as.Date(deb_sem)==max(as.Date(deb_sem))-7,],
+               tdrplus_ind_currentweek =tdrplus_ind_currentweek,
                propsite_alerte_fever=propsite_alerte_fever,
                propsite_alerte_fever_byfacies=propsite_alerte_fever_byfacies))
   })
