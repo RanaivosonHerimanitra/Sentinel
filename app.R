@@ -97,15 +97,17 @@ server<-function(input, output,session) {
     Consultations=as.data.table(as.data.frame(Consultations))
     Consultations=Consultations[,include,with=F]
     cat('DONE\n')
-    cat("convert PaluConf table to data.table format...")
-    PaluConf=as.data.table(as.data.frame(PaluConf))
-    PaluConf=PaluConf[,include,with=F]
     
+    cat("convert PaluConf table to data.table format...")
+     PaluConf=as.data.table(as.data.frame(PaluConf))
+     PaluConf=PaluConf[,include,with=F]
     cat('DONE\n')
+    
     cat("convert SyndF table to data.table format...")
-    SyndF=as.data.table(as.data.frame(SyndF))
-    SyndF=SyndF[,include,with=F]
+     SyndF=as.data.table(as.data.frame(SyndF))
+     SyndF=SyndF[,include,with=F]
     cat('DONE\n')
+    
     cat('reshape Consultations...')
     Consultations=as.data.table(gather(Consultations,
                                   key=sites,
@@ -184,17 +186,11 @@ server<-function(input, output,session) {
    cat('DONE\n')
   
    cat('calculate radius for per site for percentile algorithm alert...')
-    #PaluConf_SyndF[,nbsite_alerte:=1.0]; PaluConf_SyndF[,nbsite_normal:=1.0]
-    setkey(PaluConf_SyndF,alert_status_hist)
-    PaluConf_SyndF[alert_status=="alert", myradius:=15.0]
-    #PaluConf_SyndF[alert_status_hist=="alert",nbsite_alerte:=sum(malaria_cases,na.rm = T)*1.0,by="sites,code"]
-    #PaluConf_SyndF[alert_status_hist=="normal",nbsite_normal:=sum(malaria_cases,na.rm = T)*1.0,by="sites,code"]
-    #PaluConf_SyndF[alert_status_hist=="normal",myradius:=5*(nbsite_alerte+1)/sqrt(nbsite_normal+1)]
-    #PaluConf_SyndF[alert_status_hist=="alert",myradius:=(nbsite_alerte+1)/(nbsite_normal+1)]
-    #PaluConf_SyndF[alert_status_hist %in% NA, myradius:=10*myradius]
-    PaluConf_SyndF[alert_status_hist=="normal", sum_occurence_week:=sum(malaria_cases,na.rm=T),by="code"]
-    PaluConf_SyndF[alert_status=="normal", myradius:=15.0*malaria_cases/sum_occurence_week,by="sites,code"]
-    PaluConf_SyndF[alert_status_hist %in% NA, myradius:=5.0]
+     setkey(PaluConf_SyndF,alert_status_hist)
+     PaluConf_SyndF[alert_status=="alert", myradius:=15.0]
+     PaluConf_SyndF[alert_status_hist=="normal", sum_occurence_week:=sum(malaria_cases,na.rm=T),by="code"]
+     PaluConf_SyndF[alert_status=="normal", myradius:=15.0*malaria_cases/sum_occurence_week,by="sites,code"]
+     PaluConf_SyndF[alert_status_hist %in% NA, myradius:=5.0]
    cat('DONE\n')
    if (max(as.Date(PaluConf_SyndF$deb_sem)) ==Sys.Date() )
    {
@@ -202,7 +198,7 @@ server<-function(input, output,session) {
    } else {
      tdrplus_ind_currentweek = PaluConf_SyndF[as.Date(deb_sem)==max(as.Date(deb_sem)),]
    }
-   return(list(
+   return(list(mydata=PaluConf_SyndF,
                tdrplus_ind_currentweek =tdrplus_ind_currentweek,
                propsite_alerte_fever=propsite_alerte_fever,
                propsite_alerte_fever_byfacies=propsite_alerte_fever_byfacies))
@@ -367,7 +363,46 @@ server<-function(input, output,session) {
   })
   #display sites in alert for the current week into the map (02 map choices currently)
   output$madagascar_map <- renderLeaflet({
-      if (input$Algorithmes_eval=="Percentile") 
+    if (input$diseases=="Malaria")
+    {
+      if (input$Algorithmes_eval1=="Percentile" ) 
+      {
+        
+        cat("display alert status into the map using percentile algorithm...\n")
+        #setkey for fast merging
+        setkey(sentinel_latlong,sites)
+        setkey(percentile_algorithm()$percentile_alerte_currentweek,sites)
+        sentinel_latlong=merge(sentinel_latlong,percentile_algorithm()$percentile_alerte_currentweek
+                               ,by.x="sites",by.y = "sites")
+        
+      }
+      if (input$Algorithmes_eval1=="MinSan"  ) 
+      {
+       
+        cat("display alert status into the map using MinSan algorithm...\n")
+        setkey(sentinel_latlong,sites);
+        setkey(minsan_algorithm()$minsan_alerte_currentweek,sites)
+        sentinel_latlong=merge(sentinel_latlong,minsan_algorithm()$minsan_alerte_currentweek
+                               ,by.x="sites",by.y = "sites")
+      }
+      if (input$Algorithmes_eval1=="Csum"  ) 
+      {
+        cat("display alert status into the map using Csum algorithm...\n")
+        setkey(sentinel_latlong,sites);
+        setkey(csum_algorithm()$csum_alerte,sites)
+        sentinel_latlong=merge(sentinel_latlong,csum_algorithm()$csum_alerte_currentweek
+                               ,by.x="sites",by.y = "sites")
+      }
+      if (input$Algorithmes_eval1=="Ind" ) 
+      {
+        setkey(sentinel_latlong,sites);
+        setkey(tdrplus_fever_ind()$tdrplus_ind_currentweek,sites)
+        sentinel_latlong=merge(sentinel_latlong,tdrplus_fever_ind()$tdrplus_ind_currentweek
+                               ,by.x="sites",by.y = "sites")
+        cat("display alert status into the map using a simple indicator...\n")
+      }
+    } else {
+      if (input$Algorithmes_eval2=="Percentile" ) 
       {
         cat("display alert status into the map using percentile algorithm...\n")
         #setkey for fast merging
@@ -377,15 +412,16 @@ server<-function(input, output,session) {
                                ,by.x="sites",by.y = "sites")
         
       }
-      if (input$Algorithmes_eval=="MinSan") 
+      if (input$Algorithmes_eval2=="MinSan"  ) 
       {
+        
         cat("display alert status into the map using MinSan algorithm...\n")
         setkey(sentinel_latlong,sites);
         setkey(minsan_algorithm()$minsan_alerte_currentweek,sites)
         sentinel_latlong=merge(sentinel_latlong,minsan_algorithm()$minsan_alerte_currentweek
                                ,by.x="sites",by.y = "sites")
       }
-      if (input$Algorithmes_eval=="Csum") 
+      if (input$Algorithmes_eval2=="Csum"  ) 
       {
         cat("display alert status into the map using Csum algorithm...\n")
         setkey(sentinel_latlong,sites);
@@ -393,15 +429,9 @@ server<-function(input, output,session) {
         sentinel_latlong=merge(sentinel_latlong,csum_algorithm()$csum_alerte_currentweek
                                ,by.x="sites",by.y = "sites")
       }
-      if (input$Algorithmes_eval=="Ind") 
-      {
-        setkey(sentinel_latlong,sites);
-        setkey(tdrplus_fever_ind()$tdrplus_ind_currentweek,sites)
-        sentinel_latlong=merge(sentinel_latlong,tdrplus_fever_ind()$tdrplus_ind_currentweek
-                               ,by.x="sites",by.y = "sites")
-        cat("display alert status into the map using a simple indicator...\n")
-      }
-    #exclude Haute Terre Centrale (High_land) from the map
+     
+    }
+      #exclude Haute Terre Centrale (High_land) from the map
     sentinel_latlong=sentinel_latlong[!(sites%in% High_land)]
     #DONE
     #feeding leaflet with our data:
@@ -424,7 +454,9 @@ server<-function(input, output,session) {
     mada_map
     })
   output$madagascar_map2 <- renderPlot({
-      if (input$Algorithmes_eval=="Percentile") 
+    if (input$diseases=="Malaria" )
+    {
+      if (input$Algorithmes_eval1=="Percentile" ) 
       {
         cat("display alert status into the map using percentile algorithm...\n")
         #setkey for fast merging
@@ -434,7 +466,7 @@ server<-function(input, output,session) {
                                ,by.x="sites",by.y = "sites")
         
       }
-      if (input$Algorithmes_eval=="MinSan") 
+      if (input$Algorithmes_eval1=="MinSan" ) 
       {
         cat("display alert status into the map using MinSan algorithm...\n")
         setkey(sentinel_latlong,sites);
@@ -442,7 +474,7 @@ server<-function(input, output,session) {
         sentinel_latlong=merge(sentinel_latlong,minsan_algorithm()$minsan_alerte_currentweek
                                ,by.x="sites",by.y = "sites")
       }
-      if (input$Algorithmes_eval=="Csum") 
+      if (input$Algorithmes_eval1=="Csum" ) 
       {
         cat("display alert status into the map using Csum algorithm...\n")
         setkey(sentinel_latlong,sites);
@@ -450,7 +482,7 @@ server<-function(input, output,session) {
         sentinel_latlong=merge(sentinel_latlong,csum_algorithm()$csum_alerte_currentweek
                                ,by.x="sites",by.y = "sites")
       }
-      if (input$Algorithmes_eval=="Ind") 
+      if (input$Algorithmes_eval1=="Ind" ) 
       {
         setkey(sentinel_latlong,sites);
         setkey(tdrplus_fever_ind()$tdrplus_ind_currentweek,sites)
@@ -458,6 +490,35 @@ server<-function(input, output,session) {
                                ,by.x="sites",by.y = "sites")
         cat("display alert status into the map using a simple indicator...\n")
       }
+    } else {
+      if (input$Algorithmes_eval2=="Percentile" ) 
+      {
+        cat("display alert status into the map using percentile algorithm...\n")
+        #setkey for fast merging
+        setkey(sentinel_latlong,sites)
+        setkey(percentile_algorithm()$percentile_alerte_currentweek,sites)
+        sentinel_latlong=merge(sentinel_latlong,percentile_algorithm()$percentile_alerte_currentweek
+                               ,by.x="sites",by.y = "sites")
+        
+      }
+      if (input$Algorithmes_eval2=="MinSan" ) 
+      {
+        cat("display alert status into the map using MinSan algorithm...\n")
+        setkey(sentinel_latlong,sites);
+        setkey(minsan_algorithm()$minsan_alerte_currentweek,sites)
+        sentinel_latlong=merge(sentinel_latlong,minsan_algorithm()$minsan_alerte_currentweek
+                               ,by.x="sites",by.y = "sites")
+      }
+      if (input$Algorithmes_eval2=="Csum" ) 
+      {
+        cat("display alert status into the map using Csum algorithm...\n")
+        setkey(sentinel_latlong,sites);
+        setkey(csum_algorithm()$csum_alerte,sites)
+        sentinel_latlong=merge(sentinel_latlong,csum_algorithm()$csum_alerte_currentweek
+                               ,by.x="sites",by.y = "sites")
+      }
+      
+    }
       #exclude Haute Terre Centrale (High_land) from the map
       sentinel_latlong=sentinel_latlong[!(sites %in% High_land)]
       #latest verification fo radius and alert status (handle NA's)
@@ -692,39 +753,79 @@ server<-function(input, output,session) {
   #Health heatmap plot with plotly and using percentile algorithm:
   output$heatmap_percentile = renderD3heatmap({
     mydata=preprocessing()
-    #depending on the algorithm chosen, display heatmap:
-    if ( input$Algorithmes_eval == 'Percentile' ) { 
-      #mydata=preprocessing()
-      source("percentile.R")
-      X=calculate_percentile(data=mydata,
-                             week_length=input$comet_map,
-                                         percentile_value=input$Centile_map)$propsite_alerte_percentile
-   
+    if ( input$diseases=="Malaria" )
+    {
+      #depending on the algorithm chosen, display heatmap:
+      if ( input$Algorithmes_eval1 == 'Percentile' ) { 
+        #mydata=preprocessing()
+        source("percentile.R")
+        X=calculate_percentile(data=mydata,
+                               week_length=input$comet_map,
+                               percentile_value=input$Centile_map)$propsite_alerte_percentile
+        
       }
-    
-    if ( input$Algorithmes_eval == 'Csum' ) { 
-      source("csum.R") 
-      X=calculate_csum(data=mydata,
-                       Csum_year_map=input$Csum_year_map,
-                       Csum_week_map=input$Csum_week_map,
-                       Sd_csum_map=input$Sd_csum_map,
-                       week_choice=ifelse(Sys.Date()-as.Date(paste0(year(Sys.Date()),"-01-01"))<8
-                                          ,1,week(Sys.Date())),
-                       week_Csum_map=input$week_Csum_map,
-                       year_choice=year(Sys.Date()),byvar="code")$propsite_alerte_csum
-      }
-    if ( input$Algorithmes_eval == 'MinSan' ) { 
-      source("minsan.R") 
-      #mydata=preprocessing()
-      X=calculate_minsan(data=mydata,slope_minsan=input$slope_minsan,
-                         year_choice=year(Sys.Date()),
+      if ( input$Algorithmes_eval1 == 'Csum'  ) { 
+        source("csum.R") 
+        X=calculate_csum(data=mydata,
+                         Csum_year_map=input$Csum_year_map,
+                         Csum_week_map=input$Csum_week_map,
+                         Sd_csum_map=input$Sd_csum_map,
                          week_choice=ifelse(Sys.Date()-as.Date(paste0(year(Sys.Date()),"-01-01"))<8
                                             ,1,week(Sys.Date())),
-                         minsan_weekrange=input$minsan_weekrange,
-                         minsan_consecutive_week=input$minsan_consecutive_week,byvar="code")$propsite_alerte_minsan
-     
+                         week_Csum_map=input$week_Csum_map,
+                         year_choice=year(Sys.Date()),byvar="code")$propsite_alerte_csum
       }
-    #if ( input$Algorithmes == 'Ind') { source(".R") }
+      if ( input$Algorithmes_eval1 == 'MinSan'  ) { 
+        source("minsan.R") 
+        #mydata=preprocessing()
+        X=calculate_minsan(data=mydata,slope_minsan=input$slope_minsan,
+                           year_choice=year(Sys.Date()),
+                           week_choice=ifelse(Sys.Date()-as.Date(paste0(year(Sys.Date()),"-01-01"))<8
+                                              ,1,week(Sys.Date())),
+                           minsan_weekrange=input$minsan_weekrange,
+                           minsan_consecutive_week=input$minsan_consecutive_week,byvar="code")$propsite_alerte_minsan
+        
+      }
+      #MUST EXIST!!
+      if ( input$Algorithmes_eval1 == 'Ind') 
+        { 
+        X= tdrplus_fever_ind()$mydata
+        #print(X)
+        #Sys.sleep(25)
+        }
+    } else {
+      if ( input$Algorithmes_eval2 == 'Percentile' ) { 
+        #mydata=preprocessing()
+        source("percentile.R")
+        X=calculate_percentile(data=mydata,
+                               week_length=input$comet_map,
+                               percentile_value=input$Centile_map)$propsite_alerte_percentile
+        
+      }
+      if ( input$Algorithmes_eval2 == 'Csum'  ) { 
+        source("csum.R") 
+        X=calculate_csum(data=mydata,
+                         Csum_year_map=input$Csum_year_map,
+                         Csum_week_map=input$Csum_week_map,
+                         Sd_csum_map=input$Sd_csum_map,
+                         week_choice=ifelse(Sys.Date()-as.Date(paste0(year(Sys.Date()),"-01-01"))<8
+                                            ,1,week(Sys.Date())),
+                         week_Csum_map=input$week_Csum_map,
+                         year_choice=year(Sys.Date()),byvar="code")$propsite_alerte_csum
+      }
+      if ( input$Algorithmes_eval2 == 'MinSan'  ) { 
+        source("minsan.R") 
+        #mydata=preprocessing()
+        X=calculate_minsan(data=mydata,slope_minsan=input$slope_minsan,
+                           year_choice=year(Sys.Date()),
+                           week_choice=ifelse(Sys.Date()-as.Date(paste0(year(Sys.Date()),"-01-01"))<8
+                                              ,1,week(Sys.Date())),
+                           minsan_weekrange=input$minsan_weekrange,
+                           minsan_consecutive_week=input$minsan_consecutive_week,byvar="code")$propsite_alerte_minsan
+        
+      }
+    }
+    
     
     
     #selection by facies:

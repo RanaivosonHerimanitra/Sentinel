@@ -1,22 +1,5 @@
 ############################Main parameters UI ############################
-# sentinel_sites=selectInput(inputId="mysites", 
-#                            label="Choose a site:", 
-#                            choices = c("Farafangana","Ambovombe",
-#                                        "Ambatondrazaka","Antsohihy",
-#                                        "Anjozorobe","Antsirabe",
-#                                        "Belo sur Tsiribihina","Behoririka",
-#                                        "Ambato Boeny","Ambositra",
-#                                        "Cd Andohatapenaka","Diego",
-#                                        "Mandritsara","Edjeda","Fianarantsoa",
-#                                        "Ihosy","Maevatanana","Morondava",
-#                                        "Mahajanga","Miandrivazo",
-#                                        "Manjakaray","Mananjary",
-#                                        "Morombe","Moramanga",
-#                                        "Maroantsetra","Maintirano",
-#                                        "Nosy Be","Sambava","Sainte-Marie",
-#                                        "Tsiroanomandidy","Tolagnaro","Toliary",
-#                                        "Toamasina","Tsaralalana"),
-#                            selected="Farafangana")
+
 ##############################Level of aggregation main parameters #################                           
 myfacies_algo=selectInput(inputId ="Cluster_algo", 
                           label="Data aggregation level (facies)",
@@ -39,18 +22,29 @@ map_choices = radioButtons(inputId = "mapchoice",
                            list("Leaflet"="leaflet","Other"="other")
                            )
 #####################radio button's choices for epidemic threshold's alerts:
-myradio_map= radioButtons(inputId="Algorithmes_eval", 
+#available algorithm when Malaria is displayed
+algo_params1= conditionalPanel(
+  condition = "input.diseases=='Malaria'",
+  radioButtons(inputId="Algorithmes_eval1", 
                           label="Algorithms:",
                           list(  "Percentile" = "Percentile",
                                  "MinSan" = "MinSan",
                                  "C-SUM" = "Csum",
-                                 "RDT+/fever Indicator" = "Ind"))
-                                 
-                                                  
-                                
+                                 "RDT+/fever Indicator" = "Ind")
+                          ))
+#available algorithm when Malaria is displayed
+algo_params2 =conditionalPanel(
+  condition = "input.diseases!='Malaria'",
+  radioButtons(inputId="Algorithmes_eval2", 
+               label="Algorithms:",
+               list(  "Percentile" = "Percentile",
+                      "MinSan" = "MinSan",
+                      "C-SUM" = "Csum")
+  ))                          
+myradio_map = list(algo_params1,algo_params2)                                 
 ########################################################################################
 mycondparam_map_percentile=conditionalPanel(
-  condition = "input.Algorithmes_eval == 'Percentile'",
+  condition = "input.Algorithmes_eval1 == 'Percentile' | input.Algorithmes_eval2 == 'Percentile'",
   tags$hr(),
   tags$p("About this algorithm:"),
   helpText("An alert is triggered when disease cases of the current week exceed 
@@ -71,7 +65,7 @@ mycondparam_map_percentile=conditionalPanel(
   )
 )
 mycondparam_map_minsan= conditionalPanel(
-  condition = "input.Algorithmes_eval == 'MinSan'",
+  condition = "input.Algorithmes_eval1 == 'MinSan' | input.Algorithmes_eval2 == 'MinSan'",
   tags$p(tags$strong("About algorithm")),
   helpText("The Ministry of Health, has defined a method based on slope calculation, by identify a doubling of the number of cases for 3 consecutive weeks. 
            They assume that a rapid multiplication of the number cases from week to week might signal onset of an epidemic."),
@@ -88,7 +82,7 @@ mycondparam_map_minsan= conditionalPanel(
   
 )
 mycondparam_map_cumsum=conditionalPanel(
-  condition = "input.Algorithmes_eval == 'Csum'",
+  condition = "input.Algorithmes_eval1 == 'Csum' | input.Algorithmes_eval2 == 'Csum'",
   tags$hr(),
   tags$p(tags$strong("About algorithm")),
   helpText("The cumulative sum (C-SUM) method for epidemic detection is based on the construction of an average or base year by calculating the expected number of cases using the average for that week (and the previous and following week) during the past 5 years."),
@@ -124,7 +118,7 @@ mycondparam_map_mcases=conditionalPanel(
   selected=("Farafangana"))
 ############## proportion indicator #Malaria/#fiever
 mycondparam_map_ind=  conditionalPanel(
-  condition = "input.Algorithmes_eval == 'Ind' & input.diseases=='Malaria'",
+  condition = "input.Algorithmes_eval1 == 'Ind' & input.diseases=='Malaria'",
   br(),
   sliderInput(inputId = "exp_map", 
               "Malaria cases among fever cases:", 
@@ -144,7 +138,8 @@ mycondparam_map_ind=  conditionalPanel(
 ###########################################################################
 map_parameters=box(status = "primary", solidHeader = TRUE,
                    collapsible = TRUE,title="Parameters",
-                   width=3,myradio_map,
+                   width=3,
+                   myradio_map,
                    mycondparam_map_percentile,
                    mycondparam_map_minsan,
                    mycondparam_map_cumsum,
