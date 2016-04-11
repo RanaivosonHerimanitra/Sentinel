@@ -171,8 +171,7 @@ calculate_percentile=function(data=mydata,
                                    by.x=c("code","facies"),by.y=c("code","facies"))
   rm(Nbsite_withdata);rm(Nbsite_beyond);gc()
   cat('DONE\n')
-  print (percentile_alerte_currentweek[sites %in% c("ejd","tdd")])
- 
+  
   return (list(percentile_alerte=percentile_alerte,
                percentile_alerte_currentweek=percentile_alerte_currentweek,
                propsite_alerte_percentile=propsite_alerte_percentile,

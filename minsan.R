@@ -21,17 +21,18 @@ calculate_minsan=function(data=mydata,
     cat('chosen slope parameter is:',slope_minsan,'\n')
     cat('weeks following this slope parameter:',minsan_weekrange,'\n')
     cat('Are these weeks consecutive? :',minsan_consecutive_week,'\n')
-    
-    S0=data[as.Date(deb_sem)==max_deb_sem,list(code,sites,occurence)]
-    S1=data[as.Date(deb_sem)==max_deb_sem-7,list(sites,occurence)]
-    setnames(S1,"occurence","occurence_1")
+      S0=data[as.Date(deb_sem)==max_deb_sem,list(code,sites,occurence)]
+      S1=data[as.Date(deb_sem)==max_deb_sem-7,list(sites,occurence)]
+      setnames(S1,"occurence","occurence_1")
+      
     cat('merging data for MinSan algorithm...\n')
-    minsan=merge(S0,S1,by.x="sites",by.y="sites")
-    S2=data[as.Date(deb_sem)==max_deb_sem-2*7,list(sites,occurence)]
-    setnames(S2,"occurence","occurence_2")
+      minsan=merge(S0,S1,by.x="sites",by.y="sites")
+      S2=data[as.Date(deb_sem)==max_deb_sem-2*7,list(sites,occurence)]
+      setnames(S2,"occurence","occurence_2")
     cat('merging data for MinSan algorithm...')
-    minsan=merge(minsan,S2,by.x="sites",by.y="sites")
+      minsan=merge(minsan,S2,by.x="sites",by.y="sites")
     cat('DONE\n')
+    
     if ( as.numeric(minsan_weekrange) ==4 )
     {
       S3=data[as.Date(deb_sem)==max(as.Date(deb_sem))-3*7,list(sites,occurence)]
@@ -43,7 +44,6 @@ calculate_minsan=function(data=mydata,
       cat('DONE\n')
      
       cat('detection of alerts per site using MinSan algorithm...\n')
-      
       if ( minsan_consecutive_week==T) 
       {
         cat('consecutive MinSan calculation for 04 weeks...\n')
@@ -60,8 +60,6 @@ calculate_minsan=function(data=mydata,
       cat('remove temporary files...')
       rm(S0);rm(S1);rm(S2);rm(S3)
       cat('DONE\n')
-      
-      
       
     } else {
       cat('merging with PaluConf data...')
@@ -116,7 +114,6 @@ calculate_minsan=function(data=mydata,
   
   
   cat('merge with deb_sem to reorder time series...')
- #
      propsite_alerte_minsan=merge(propsite_alerte_minsan,
                                       data[,list(code,deb_sem,sites,alert_status,East,
                                                  South,High_land,Fringe,excepted_East,
@@ -161,24 +158,22 @@ calculate_minsan=function(data=mydata,
   
   data[alert_status %in% NA | myradius %in% NA , myradius:=5.0]
   
-   # data[,nbsite_alerte:=1.0]; data[,nbsite_normal:=1.0]
-   # data[alert_status=="alert",nbsite_alerte:=sum(occurence,na.rm = T)*1.0,by="sites,code"]
-   # data[alert_status=="normal",nbsite_normal:=sum(occurence,na.rm = T)*1.0,by="sites,code"]
-   # data[alert_status=="normal",myradius:=5*(nbsite_alerte+1)/sqrt(nbsite_normal+1)]
-   # data[alert_status=="alert",myradius:=5*(nbsite_alerte+1)/sqrt(nbsite_normal+1)]
-   # data[alert_status %in% NA, myradius:=10*myradius]
-   # 
+   
   cat('DONE\n')
   
+  #if last week is current week then substract
+  #otherwise keep!
+  if ( max_deb_sem==Sys.Date() )
+  {
+    minsan_alerte_currentweek=data[as.Date(deb_sem)==max_deb_sem-7,list(sites,deb_sem,alert_status,myradius)]
+  } else {
+    minsan_alerte_currentweek=data[as.Date(deb_sem)==max_deb_sem,list(sites,deb_sem,alert_status,myradius)]
+  }
   
-  return (list(minsan_alerte_currentweek=data[as.Date(deb_sem)==max(as.Date(deb_sem))-7,
-                                  list(sites,deb_sem,alert_status,myradius)],
+  return (list(minsan_alerte_currentweek=minsan_alerte_currentweek,
                propsite_alerte_minsan=propsite_alerte_minsan,
                propsite_alerte_minsan_byfacies=propsite_alerte_minsan_byfacies
   ))
   
-#   cat('Handling NA values in Minsan computation...')
-#   #should be no_data instead of normal
-#   data[,alert_status:=ifelse(alert_status %in% NA,"normal",alert_status)]
-#   cat('DONE\n')
+
 }
