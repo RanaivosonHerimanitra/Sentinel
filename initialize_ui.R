@@ -77,17 +77,7 @@ graph_choices= selectInput(inputId="Algorithmes_viz", label="Choose algorithms:"
                            selected = "Percentile"
                    )
 
-Mcases_graph=conditionalPanel(
-  #condition = "input.Algorithmes == 'Mcases'",
-  h6('Malaria cases since 01-01-2015'),
-  showOutput("malariacases", "highcharts"),
-  helpText("Click on the legend to hide/show variables"),
-  helpText("Click and drag on the graph to zoom"),
-  tags$p(tags$strong("Legend")),
-  helpText("RDT+, Number of reported Malaria cases by epidemiological week"), 
-  helpText("Weekly mean (2009-2015)"), 
-  helpText("90th percentile (threshold)"))
-
+#########################################################
 Csum_graph=conditionalPanel(
   #condition = "input.Algorithmes == 'Csum'",
   h4('Cumulative Sum'),
