@@ -120,7 +120,7 @@ calculate_percentile=function(data=mydata,
       #from calculation of alert , otherwise include 
       percentile_alerte_currentweek=percentile_alerte[as.Date(deb_sem)==max_deb_sem-7,]
     } else {
-      percentile_alerte_currentweek=percentile_alerte
+      percentile_alerte_currentweek=percentile_alerte[as.Date(deb_sem)==max_deb_sem,]
     }
     cat("DONE\n")
    
@@ -171,7 +171,7 @@ calculate_percentile=function(data=mydata,
                                    by.x=c("code","facies"),by.y=c("code","facies"))
   rm(Nbsite_withdata);rm(Nbsite_beyond);gc()
   cat('DONE\n')
-  
+  print (percentile_alerte_currentweek[sites %in% c("ejd","tdd")])
  
   return (list(percentile_alerte=percentile_alerte,
                percentile_alerte_currentweek=percentile_alerte_currentweek,
