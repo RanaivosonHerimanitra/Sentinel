@@ -880,7 +880,7 @@ server<-function(input, output,session) {
     # } else {
       #X=X[alert_status=="alert" & get(input$Cluster_algo)==1,]
     #}
-       print(X)
+      
     X=merge(X,sentinel_latlong,by.x="sites",by.y="sites")
     setorder(X,sites,deb_sem)
     plot_ly(X, y = occurence, x=deb_sem,

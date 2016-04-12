@@ -76,64 +76,6 @@ graph_choices= selectInput(inputId="Algorithmes_viz", label="Choose algorithms:"
                                           "RDT+/fever Indicator"),
                            selected = "Percentile"
                    )
-
-#########################################################
-Csum_graph=conditionalPanel(
-  #condition = "input.Algorithmes == 'Csum'",
-  h4('Cumulative Sum'),
-  showOutput("myCsum", "highcharts"),
-  helpText("Click on the legend to hide/show variables"),
-  helpText("Click and drag on the graph to zoom"),
-  tags$p(tags$strong("Legend")),
-  helpText("Alert, is proportion of site in alert across selected facies in the side panel."), 
-  helpText("Rainfall, African Rainfall Estimation (RFE) is produced by NOAA-CPC"), 
-  helpText("NDVI, is a normalized difference vegetation index (NDVI)  produced by MODIS"), 
-  helpText("Temperature, Land Surface temperature is an estimation of near surface temperature, produced by MODIS"),
-  helpText("IRS, proportion of sites that received a IRS "),
-  helpText("LLIN, proportion of sites that received a LLIN "))
-
-MoySd_graph=conditionalPanel(
-  #condition = "input.Algorithmes == 'MoySd'",
-  h4('Mean & Standard deviation'),
-  showOutput("myMoy", "highcharts"),
-  helpText("Click on the legend to hide/show variables"),
-  helpText("Click and drag on the graph to zoom"),
-  tags$p(tags$strong("Legend")),
-  helpText("Alert, is proportion of site in alert across selected facies in the side panel."), 
-  helpText("Rainfall, African Rainfall Estimation (RFE) is produced by NOAA-CPC"), 
-  helpText("NDVI, is a normalized difference vegetation index (NDVI)  produced by MODIS"), 
-  helpText("Temperature, Land Surface temperature is an estimation of near surface temperature, produced by MODIS"),
-  helpText("IRS, proportion of sites that received a IRS "),
-  helpText("LLIN, proportion of sites that received a LLIN "))
-
-Ind_graph=conditionalPanel(
-  #condition = "input.Algorithmes == 'Ind'",
-  h4('Fever indicator'),
-  showOutput("myInd", "highcharts"),
-  helpText("Click on the legend to hide/show variables"),
-  helpText("Click and drag on the graph to zoom"),
-  tags$p(tags$strong("Legend")),
-  helpText("Alert, is proportion of site in alert across selected facies in the side panel."), 
-  helpText("Rainfall, African Rainfall Estimation (RFE) is produced by NOAA-CPC"), 
-  helpText("NDVI, is a normalized difference vegetation index (NDVI)  produced by MODIS"), 
-  helpText("Temperature, Land Surface temperature is an estimation of near surface temperature, produced by MODIS"),
-  helpText("IRS, proportion of sites that received a IRS "),
-  helpText("LLIN, proportion of sites that received a LLIN "))
-
-MinSan_graph=conditionalPanel(
-  #condition = "input.Algorithmes == 'MinSan'",
-  h4('Ministry of Health'),
-  showOutput("myMinSan", "highcharts"),
-  helpText("Click on the legend to hide/show variables"),
-  helpText("Click and drag on the graph to zoom"),
-  tags$p(tags$strong("Legend")),
-  helpText("Alert, is proportion of site in alert across selected facies in the side panel."), 
-  helpText("Rainfall, African Rainfall Estimation (RFE) is produced by NOAA-CPC"), 
-  helpText("NDVI, is a normalized difference vegetation index (NDVI)  produced by MODIS"), 
-  helpText("Temperature, Land Surface temperature is an estimation of near surface temperature, produced by MODIS"),
-  helpText("IRS, proportion of sites that received a IRS "),
-  helpText("LLIN, proportion of sites that received a LLIN "))
-
 #map parameters:
 source("handle_dates.R")
 year_retrospective=selectInput("year_choice", label="Select a year",

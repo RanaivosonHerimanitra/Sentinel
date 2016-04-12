@@ -1,4 +1,11 @@
 ##########################Map UI #############################
+individual_site_legend_details=list(
+  tags$p(tags$strong("Details:")),
+  helpText("90th percentile is used to trigger alert."),
+  helpText("Click on the legend to hide/show variables"),
+  helpText("Click and drag on the graph to zoom on the weeks."),
+  helpText("More options can be found on the corner right of the graph.")
+)
 map_display=list(
   tags$h4("Week:",paste0( year(Sys.Date()) ,"_", week(Sys.Date()) ) ),
   conditionalPanel( condition = "input.mapchoice=='leaflet'", 
@@ -14,5 +21,6 @@ map_display=list(
                     tags$strong("Alert -  Normal  -  No Data")
                    ),
   tags$br(), tags$br(),
-  plotlyOutput("weekly_disease_cases_persite"))
+  plotlyOutput("weekly_disease_cases_persite"),
+  individual_site_legend_details)
 
