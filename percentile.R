@@ -5,7 +5,8 @@ calculate_percentile=function(data=mydata,
 {
 
    max_deb_sem= max(as.Date(data$deb_sem))
-  
+   max_code=paste0(year(max_deb_sem),"_",week(max_deb_sem))
+   
     if (as.numeric(week_length)==4 )
     {
       week1 = Sys.Date()-1*7
@@ -111,19 +112,21 @@ calculate_percentile=function(data=mydata,
 
     
     cat("selected sites for:",code_range,"with alert status\n")
-    percentile_alerte=data[code %in% code_range,list(sites,alert_status,deb_sem,myradius)]
+    percentile_alerte=data[code %in% code_range,list(sites,code,alert_status,deb_sem,myradius)]
     cat('DONE\n')
     
     cat("prepare alert to be displayed on the map (latest finished week)...")
-    if (max_deb_sem==Sys.Date() ) {
+   
+    if (max_code==paste0(year(Sys.Date()),"_",week(Sys.Date())) ) {
       #if max_date == current week then exclude this current week
       #from calculation of alert , otherwise include 
-      percentile_alerte_currentweek=percentile_alerte[as.Date(deb_sem)==max_deb_sem-7,]
+      mycode=paste0(year(Sys.Date()-7),"_",week(Sys.Date()-7))
+      percentile_alerte_currentweek=percentile_alerte[code==mycode,]
     } else {
-      percentile_alerte_currentweek=percentile_alerte[as.Date(deb_sem)==max_deb_sem,]
+      percentile_alerte_currentweek=percentile_alerte[code==max_code,]
     }
     cat("DONE\n")
-   
+    
   cat("calculate weekly prop of sites in alert (all)...")
   
   Nbsite_beyond=data[is.na(occurence)==F & alert_status=="alert",length(unique(sites)),by="code"]

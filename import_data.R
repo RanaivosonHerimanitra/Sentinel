@@ -1,6 +1,6 @@
 #whether to run on local for debugging and development purpose
 #or to pull data directly from the server:
-remote_server=F;writing_to_disk=F
+remote_server=T;writing_to_disk=F
 #load required packages:
 source("libraries.R");source("var_conversion.R")
 if ( exists("PaluConf")==F ) #to speed up things
@@ -23,10 +23,11 @@ if ( exists("PaluConf")==F ) #to speed up things
                             "crosstab_paluconf_format"," WHERE deb_sem>=",
                             max_date
                             ))
-    #transform into data.table:
-    PaluConf_tmp= PaluConf_tmp  %>% data.frame() %>% data.table()
-    if (nrow(PaluConf_tmp)>0)
+    
+    if (dim(PaluConf_tmp)[2]>0)
     {
+      #transform into data.table:
+      PaluConf_tmp= PaluConf_tmp  %>% data.frame() %>% data.table()
       #conversion of variables:
       var_conv(PaluConf,PaluConf_tmp)
       #rbind 02 dataframe:
@@ -42,10 +43,11 @@ if ( exists("PaluConf")==F ) #to speed up things
                        build_sql("SELECT * FROM ",
                                  "crosstab_nxconslttotal_format",
                             " WHERE deb_sem>=",max_date))
-    #transform into data.table:
-    Consultations_tmp= Consultations_tmp  %>% data.frame() %>% data.table()
-    if (nrow(Consultations_tmp)>0)
+    
+    if (dim(Consultations_tmp)[2]>0)
     {
+      #transform into data.table:
+      Consultations_tmp= Consultations_tmp  %>% data.frame() %>% data.table()
       #conversion of variables:
       var_conv(Consultations,Consultations_tmp)
       #rbind 02 dataframe:

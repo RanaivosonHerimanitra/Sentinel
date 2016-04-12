@@ -94,7 +94,7 @@ server<-function(input, output,session) {
   tdrplus_fever_ind = reactive({
     ##############################TDR + / Fever Indicator algorithm###################
     cat('convert Consultations into data.table format...')
-    Consultations=as.data.table(as.data.frame(Consultations))
+    #Consultations=as.data.table(as.data.frame(Consultations))
     Consultations=Consultations[,include,with=F]
     cat('DONE\n')
     
@@ -192,12 +192,18 @@ server<-function(input, output,session) {
      PaluConf_SyndF[alert_status=="normal", myradius:=15.0*malaria_cases/sum_occurence_week,by="sites,code"]
      PaluConf_SyndF[alert_status_hist %in% NA, myradius:=5.0]
    cat('DONE\n')
-   if (max(as.Date(PaluConf_SyndF$deb_sem)) ==Sys.Date() )
-   {
-     tdrplus_ind_currentweek = PaluConf_SyndF[as.Date(deb_sem)==max(as.Date(deb_sem))-7,]
+   
+   max_deb_sem= max(PaluConf_SyndF$deb_sem)
+   max_code=paste0(year(max_deb_sem),"_",week(max_deb_sem))
+   if (max_code==paste0(year(Sys.Date()),"_",week(Sys.Date())) ) {
+     #if max_date == current week then exclude this current week
+     #from calculation of alert , otherwise include 
+     mycode=paste0(year(Sys.Date()-7),"_",week(Sys.Date()-7))
+     tdrplus_ind_currentweek=PaluConf_SyndF[code==mycode,]
    } else {
-     tdrplus_ind_currentweek = PaluConf_SyndF[as.Date(deb_sem)==max(as.Date(deb_sem)),]
+     tdrplus_ind_currentweek=csum_alerte[code==max_code,]
    }
+   
    return(list(mydata=PaluConf_SyndF,
                tdrplus_ind_currentweek =tdrplus_ind_currentweek,
                propsite_alerte_fever=propsite_alerte_fever,
@@ -375,6 +381,7 @@ server<-function(input, output,session) {
         sentinel_latlong=merge(sentinel_latlong,percentile_algorithm()$percentile_alerte_currentweek
                                ,by.x="sites",by.y = "sites")
         
+        
       }
       if (input$Algorithmes_eval1=="MinSan"  ) 
       {
@@ -431,12 +438,12 @@ server<-function(input, output,session) {
       }
      
     }
-      #exclude Haute Terre Centrale (High_land) from the map
-    sentinel_latlong=sentinel_latlong[!(sites%in% High_land)]
-    #DONE
+   
     #feeding leaflet with our data:
+   
     mada_map=leaflet()
-    mada_map=leaflet(sentinel_latlong) 
+    #exclude Haute Terre Centrale (High_land) from the map
+    mada_map=leaflet(sentinel_latlong[!(sites%in% High_land)]) 
     mada_map=mada_map %>% setView(lng = 47.051532 , 
                                               lat =-19.503781 , zoom = 5) 
     mada_map=mada_map %>% addTiles(urlTemplate="http://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}") 

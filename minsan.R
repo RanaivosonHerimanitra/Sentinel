@@ -15,7 +15,8 @@ calculate_minsan=function(data=mydata,
   }
  
   max_deb_sem= max(as.Date(data$deb_sem))
-
+  max_code=paste0(year(max_deb_sem),"_",week(max_deb_sem))
+  
   
   
     cat('chosen slope parameter is:',slope_minsan,'\n')
@@ -163,12 +164,16 @@ calculate_minsan=function(data=mydata,
   
   #if last week is current week then substract
   #otherwise keep!
-  if ( max_deb_sem==Sys.Date() )
-  {
-    minsan_alerte_currentweek=data[as.Date(deb_sem)==max_deb_sem-7,list(sites,deb_sem,alert_status,myradius)]
+  if (max_code==paste0(year(Sys.Date()),"_",week(Sys.Date())) ) {
+    #if max_date == current week then exclude this current week
+    #from calculation of alert , otherwise include 
+    mycode=paste0(year(Sys.Date()-7),"_",week(Sys.Date()-7))
+    minsan_alerte_currentweek=data[code==mycode,list(sites,deb_sem,alert_status,myradius)]
   } else {
-    minsan_alerte_currentweek=data[as.Date(deb_sem)==max_deb_sem,list(sites,deb_sem,alert_status,myradius)]
+    minsan_alerte_currentweek=data[code==max_code,list(sites,deb_sem,alert_status,myradius)]
   }
+  
+  
   
   return (list(minsan_alerte_currentweek=minsan_alerte_currentweek,
                propsite_alerte_minsan=propsite_alerte_minsan,

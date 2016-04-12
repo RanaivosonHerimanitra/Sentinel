@@ -11,6 +11,7 @@ calculate_csum = function (data=mydata,
   #take 52 most recent week in the data:
   #because they will be compared to historical values (week per week)
   max_deb_sem= max(as.Date(data$deb_sem))
+  max_code=paste0(year(max_deb_sem),"_",week(max_deb_sem))
   last52weeks= unique(as.Date(data$deb_sem))[order(unique(as.Date(data$deb_sem)),decreasing = T)[1:52]]
   
   cat('year range during which moving average will be calculated are: ')
@@ -146,13 +147,17 @@ calculate_csum = function (data=mydata,
   rm(Nbsite_withdata);rm(Nbsite_beyond);gc()
   cat("DONE\n")
   
-  #return a list of dataframes; alerts are in `csum_alerte_currentweek`
-  if (max_deb_sem==Sys.Date() )
-  {
-    csum_alerte_currentweek=csum_alerte[as.Date(deb_sem)==max_deb_sem-7,]
+  
+  if (max_code==paste0(year(Sys.Date()),"_",week(Sys.Date())) ) {
+    #if max_date == current week then exclude this current week
+    #from calculation of alert , otherwise include 
+    mycode=paste0(year(Sys.Date()-7),"_",week(Sys.Date()-7))
+    csum_alerte_currentweek=csum_alerte[code==mycode,]
   } else {
-    csum_alerte_currentweek=csum_alerte[as.Date(deb_sem)==max_deb_sem,]
+    csum_alerte_currentweek=csum_alerte[code==max_code,]
   }
+  
+  
   
   return(list(
     csum_alerte_currentweek=csum_alerte_currentweek,
