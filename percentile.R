@@ -128,47 +128,85 @@ calculate_percentile=function(data=mydata,
     cat("DONE\n")
     
   cat("calculate weekly prop of sites in alert (all)...")
-  
-  Nbsite_beyond=data[is.na(occurence)==F & alert_status=="alert",length(unique(sites)),by="code"]
-  setnames(Nbsite_beyond,"V1","eff_beyond")
-  Nbsite_withdata=data[is.na(occurence)==F,length(unique(sites)),by="code"]
-  setnames(Nbsite_withdata,"V1","eff_total")
-  propsite_alerte_percentile=merge(x=Nbsite_withdata,
-                                   y=Nbsite_beyond,
-                                   by.x="code",by.y="code",all.x=T)
-  propsite_alerte_percentile[,prop:=ifelse(is.na(eff_beyond/eff_total)==T,0.0,eff_beyond/eff_total)]
+   Nbsite_beyond=data[is.na(occurence)==F & alert_status=="alert",length(unique(sites)),by="code"]
+   setnames(Nbsite_beyond,"V1","eff_beyond")
+   Nbsite_withdata=data[is.na(occurence)==F,length(unique(sites)),by="code"]
+   setnames(Nbsite_withdata,"V1","eff_total")
+   propsite_alerte_percentile=merge(x=Nbsite_withdata,
+                                    y=Nbsite_beyond,
+                                    by.x="code",by.y="code",all.x=T)
+   propsite_alerte_percentile[,prop:=ifelse(is.na(eff_beyond/eff_total)==T,0.0,eff_beyond/eff_total)]
   cat("DONE\n")
   
  
   
   cat("merge with deb_sem and sites to reorder time series (all)...\n")
-  propsite_alerte_percentile=merge(propsite_alerte_percentile,
+   propsite_alerte_percentile=merge(propsite_alerte_percentile,
                                    data[,list(code,deb_sem,sites,alert_status,East,
                                               South,High_land,Fringe,excepted_East,
                                               excepted_High_land)],
                                    by.x="code",by.y="code")
   
-  rm(Nbsite_withdata);rm(Nbsite_beyond);gc()
+   rm(Nbsite_withdata);rm(Nbsite_beyond);gc()
   cat('DONE\n')
+
+#################new method to handle facies ###################################  
+  list_facies= c("East","South","High_land","Fringe","excepted_East","excepted_High_land")
+  datalist_facies=list()
+  for ( f in list_facies)
+  {
+    cat("calculate weekly prop of sites in alert using percentile in ",f,"...")
+    Nbsite_beyond=data[is.na(occurence)==F & alert_status=="alert" & get(f)==1,length(unique(sites)),by=c("code",f)]
+    setnames(Nbsite_beyond,"V1","eff_beyond")
+    Nbsite_withdata=data[is.na(occurence)==F & get(f)==1,length(unique(sites)),by=c("code",f)]
+    setnames(Nbsite_withdata,"V1","eff_total")
+    myfacies=merge(x=Nbsite_withdata,
+                   y=Nbsite_beyond,
+                   by.x=c("code",f),
+                   by.y=c("code",f),all.x=T)
+    myfacies[,prop:=ifelse(is.na(eff_beyond/eff_total)==T,0.0,eff_beyond/eff_total)]
+    datalist_facies[[f]]=myfacies
+    #append to a single unique dataframe:
+    if ( f==list_facies[1])
+    {
+      propsite_alerte_percentile_byfacies= datalist_facies[[f]]
+      propsite_alerte_percentile_byfacies[,f:=NULL,with=F]
+      propsite_alerte_percentile_byfacies[,eff_total:=NULL]
+      propsite_alerte_percentile_byfacies[,eff_beyond:=NULL]
+      propsite_alerte_percentile_byfacies[,facies:=f]
+    } else {
+      tmp= datalist_facies[[f]]
+      tmp[,f:=NULL,with=F]
+      tmp[,eff_total:=NULL]
+      tmp[,eff_beyond:=NULL]
+      tmp[,facies:=f]
+      propsite_alerte_percentile_byfacies=rbind(propsite_alerte_percentile_byfacies,tmp)
+      rm(tmp);gc()
+    }
+    cat("DONE\n")
+  }
+  
+###############################################################################
   
   
-  cat("calculate weekly prop of sites in alert using percentile algorithm (by facies)...")
-  Nbsite_beyond=data[is.na(occurence)==F & alert_status=="alert",length(unique(sites)),by=c("code","facies")]
-  setnames(Nbsite_beyond,"V1","eff_beyond")
-  Nbsite_withdata=data[is.na(occurence)==F,length(unique(sites)),by=c("code","facies")]
-  setnames(Nbsite_withdata,"V1","eff_total")
-  propsite_alerte_percentile_byfacies=merge(x=Nbsite_withdata,
-                                   y=Nbsite_beyond,
-                                   by.x=c("code","facies"),
-                                   by.y=c("code","facies"),all.x=T)
-  propsite_alerte_percentile_byfacies[,prop:=ifelse(is.na(eff_beyond/eff_total)==T,0.0,eff_beyond/eff_total)]
   
-  cat("DONE\n")
+  # cat("calculate weekly prop of sites in alert using percentile algorithm (by faciès)...")
+  #  Nbsite_beyond=data[is.na(occurence)==F & alert_status=="alert",length(unique(sites)),by=c("code","facies")]
+  #  setnames(Nbsite_beyond,"V1","eff_beyond")
+  #  Nbsite_withdata=data[is.na(occurence)==F,length(unique(sites)),by=c("code","facies")]
+  #  setnames(Nbsite_withdata,"V1","eff_total")
+  #  propsite_alerte_percentile_byfacies=merge(x=Nbsite_withdata,
+  #                                            y=Nbsite_beyond,
+  #                                            by.x=c("code","facies"),
+  #                                            by.y=c("code","facies"),all.x=T)
+  #  propsite_alerte_percentile_byfacies[,prop:=ifelse(is.na(eff_beyond/eff_total)==T,0.0,eff_beyond/eff_total)]
+  # cat("DONE\n")
   
-  cat("merge with deb_sem and sites to reorder time series (by facies)...\n")
+  
+  
+  cat("merge with deb_sem and sites to reorder time series (by faciès)...\n")
   setkeyv(propsite_alerte_percentile_byfacies,c("code","facies"))
   setkeyv(data,c("code","facies"))
-  
   propsite_alerte_percentile_byfacies=merge(propsite_alerte_percentile_byfacies,
                                    unique(data[,list(code,deb_sem,facies)]),
                                    by.x=c("code","facies"),by.y=c("code","facies"))
@@ -179,6 +217,7 @@ calculate_percentile=function(data=mydata,
                percentile_alerte_currentweek=percentile_alerte_currentweek,
                propsite_alerte_percentile=propsite_alerte_percentile,
                propsite_alerte_percentile_byfacies=propsite_alerte_percentile_byfacies,
-               mydata=data
+               mydata=data,
+               datalist_facies=datalist_facies
                ))
 }

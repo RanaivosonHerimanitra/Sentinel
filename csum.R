@@ -1,4 +1,4 @@
-#Need grain fined control of the user interface (todo list)
+
 calculate_csum = function (data=mydata,
                            Csum_year_map=input$Csum_year_map,
                            Csum_week_map=input$Csum_week_map,

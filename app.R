@@ -34,13 +34,13 @@ server<-function(input, output,session) {
     mydata=create_facies(mydata)
     
     cat('merge with different facies...')
-    setkey(mydata,sites)
-    mydata[sites %in% East,East:=1]
-    mydata[sites %in% South,South:=1]
-    mydata[sites %in% High_land,High_land:=1]
-    mydata[sites %in% Fringe,Fringe:=1]
-    mydata[sites %in% excepted_East,excepted_East:=1]
-    mydata[sites %in% excepted_High_land,excepted_High_land:=1]
+     setkey(mydata,sites)
+     mydata[sites %in% East,East:=1]
+     mydata[sites %in% South,South:=1]
+     mydata[sites %in% High_land,High_land:=1]
+     mydata[sites %in% Fringe,Fringe:=1]
+     mydata[sites %in% excepted_East,excepted_East:=1]
+     mydata[sites %in% excepted_High_land,excepted_High_land:=1]
     cat('DONE\n')
     
     cat('Extract weeks and years from PaluConf...')
@@ -232,6 +232,7 @@ server<-function(input, output,session) {
     source("introducing_ndvi.R",local = T) #==>now in hfi
    
     
+    
     source("if_percentile_viz.R",local = T)
     source("if_minsan_viz.R",local = T)
     source("if_csum_viz.R",local = T)
@@ -243,6 +244,7 @@ server<-function(input, output,session) {
         if ( input$Cluster_algo !="Total"  )
         {
           setkeyv( mild , c("code","facies") )
+         
           cat('merging mild data with proportion of sites in alert...')
            myprop=merge(myprop,unique(mild[,list(code,mild_value,facies)]),
                        by.x=c("code","facies"),
@@ -290,6 +292,7 @@ server<-function(input, output,session) {
           cat("DONE\n")
         } else {
           setkey(myprop,"code");setkey(caid,"code")
+          
           cat('merging caid data with proportion of sites in alert...')
           myprop=merge(myprop,caid[,list(code,caid_value)],
                        by.x=c("code"),

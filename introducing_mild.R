@@ -16,6 +16,7 @@ if ( input$Cluster_algo=="Total")
   mild[,mild_value:=100*numerateur/denominateur]
   cat('DONE\n')
 } else {
+  
   mild=create_facies(mild)
   
   cat('calculating proportion of sites that had received intervention in mild by code (date) and by facies...')

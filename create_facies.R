@@ -12,16 +12,16 @@ create_facies = function (data=PaluConf)
   excepted_High_land<-c("abv","abz","ahh","bel","boe","die","dri","ejd","far","iho",
                         "mae","mdv","mhj","mia","mnj","mrb","mrg","mrt","mtn","nsb",
                         "sbv","stm","tdd","tgr","tlr","toa")
-                        
   
-  #cat('create a facies variable...')
-  setkey(data,"sites")
+  
+  #facies are not disjoint:
+  setkey(data,sites)
   data[sites %in% East,facies:="East"]
   data[sites %in% South,facies:="South"]
   data[sites %in% High_land,facies:="High_land"]
   data[sites %in% Fringe,facies:="Fringe"]
   data[sites %in% excepted_East,facies:="excepted_East"]
   data[sites %in% excepted_High_land,facies:="excepted_High_land"]
-  #cat('DONE\n')
+ 
   return(data)
 }
