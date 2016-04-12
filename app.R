@@ -619,9 +619,10 @@ server<-function(input, output,session) {
                  x =deb_sem, 
                  y = prop,name="prop.",
                  line = list(width=line_width))
-    p = p %>% layout(title="%ILI sur Nb.consultations",
-                    xaxis = list(title = "Date"),
-                    legend = list(x = 0, 
+    p = p %>% layout(title="prop of ILI among medical diagnosis",
+                     font=list(size=11),
+                     xaxis = list(title = "Date(Weeks)"),
+                     legend = list(x = 0, 
                                   y = 10)
                     )
     p = p %>% add_trace(x=deb_sem,line = list(width=line_width),
@@ -641,12 +642,12 @@ server<-function(input, output,session) {
     #filter rows:
     myili=tdr_eff[sites %in% sites34 & year(as.Date(deb_sem ))>=2015]
     
-    p <- plot_ly(myili, x = deb_sem, type="bar",y = Synd_g,name="Syndrome Grippal")
+    p <- plot_ly(myili, x = deb_sem, type="bar",y = Synd_g,name="ILI")
     p = p %>% add_trace(x = deb_sem, type="bar",y = ArboSusp, name = "Dengue-Like")
     
     #position legend at top of the graph
     p= p %>% layout(title="ILI & Dengue-LIKE (34 sites)",
-                    xaxis = list(title = "Date"),
+                    xaxis = list(title = "Date(weeks)"),
                     yaxis = list(title = "# Cases"),
                     legend = list(x = 0, y = 40) 
                     )
