@@ -85,18 +85,18 @@ server<-function(input, output,session) {
   })
   tdrplus_fever_ind = reactive({
     ##############################TDR + / Fever Indicator algorithm###################
-    cat('convert Consultations into data.table format...')
+    cat('variables selection in Consultations...')
     #Consultations=as.data.table(as.data.frame(Consultations))
     Consultations=Consultations[,include,with=F]
     cat('DONE\n')
     
-    cat("convert PaluConf table to data.table format...")
-     PaluConf=as.data.table(as.data.frame(PaluConf))
+    cat("variables selection in PaluConf...")
+ #    PaluConf=as.data.table(as.data.frame(PaluConf))
      PaluConf=PaluConf[,include,with=F]
     cat('DONE\n')
     
-    cat("convert SyndF table to data.table format...")
-     SyndF=as.data.table(as.data.frame(SyndF))
+    cat("variables selection in SyndF...")
+     #SyndF=as.data.table(as.data.frame(SyndF))
      SyndF=SyndF[,include,with=F]
     cat('DONE\n')
     
@@ -116,66 +116,116 @@ server<-function(input, output,session) {
                                  value=nb_fievre,-c(code,deb_sem)))
     cat('DONE\n')
     cat("merge PaluConf and SyndF...")
-    PaluConf_SyndF=merge(PaluConf,SyndF[,list(sites,deb_sem,nb_fievre)],by.x=c("sites","deb_sem")
-                        ,by.y=c("sites","deb_sem"))
+    PaluConf_SyndF=merge(PaluConf,
+                         SyndF[,list(sites,deb_sem,nb_fievre)],
+                         by.x=c("sites","deb_sem"),
+                         by.y=c("sites","deb_sem"))
     cat('DONE\n')
    
     cat("merge PaluConf_SyndF and Consultations...")
-    PaluConf_SyndF=merge(PaluConf_SyndF,Consultations[,list(sites,deb_sem,nb_consultation)],by.x=c("sites","deb_sem")
-                        ,by.y=c("sites","deb_sem"))
-   cat('DONE\n')
+     PaluConf_SyndF=merge(PaluConf_SyndF,
+                         Consultations[,list(sites,deb_sem,nb_consultation)],
+                         by.x=c("sites","deb_sem"),
+                         by.y=c("sites","deb_sem"))
+    cat('DONE\n')
    
    cat('Extract weeks and years from PaluConf...')
-   PaluConf_SyndF[,weeks:=as.numeric(substr(code,6,8))]
-   PaluConf_SyndF[,years:=as.numeric(substr(code,1,4))]
+    PaluConf_SyndF[,weeks:=as.numeric(substr(code,6,8))]
+    PaluConf_SyndF[,years:=as.numeric(substr(code,1,4))]
    cat('DONE\n')
    cat("convert site to character...")
-   PaluConf_SyndF[,sites:=as.character(sites)]
+    PaluConf_SyndF[,sites:=as.character(sites)]
    cat("DONE\n")
    
    cat('looking for an alert when Malaria cases among fever cases exceed:',
        input$exp_map,'% or malaria cases among consultation number...',
        input$expC_map,'...')
-   PaluConf_SyndF[,alert_status:=ifelse(100*sum(malaria_cases,na.rm = T)/sum(nb_fievre,na.rm = T)>as.numeric(input$exp_map) &
+    PaluConf_SyndF[,alert_status:=ifelse(100*sum(malaria_cases,na.rm = T)/sum(nb_fievre,na.rm = T)>as.numeric(input$exp_map) &
                                          100*sum(malaria_cases,na.rm = T)/sum(nb_consultation,na.rm = T)>as.numeric(input$expC_map),
                                         "alert","normal"),by="sites"] 
-   PaluConf_SyndF[,alert_status_hist:=ifelse(100*(malaria_cases)/(nb_fievre)>as.numeric(input$exp_map) &
+    PaluConf_SyndF[,alert_status_hist:=ifelse(100*(malaria_cases)/(nb_fievre)>as.numeric(input$exp_map) &
                                           100*(malaria_cases)/(nb_consultation)>as.numeric(input$expC_map),
                                         "alert","normal")]
    cat('DONE\n')
    ###proportion of sites in alert (weekly for all, and weekly by facies)##########
-   cat('calculate weekly proportion of sites in alert using tdr+/fever algorithm...\n')
-   
-   Nbsite_beyond=PaluConf_SyndF[ alert_status_hist=="alert",
+   cat('calculate weekly proportion of sites in alert using tdr+/fever algorithm...')
+    Nbsite_beyond=PaluConf_SyndF[ alert_status_hist=="alert",
                       length(unique(sites)),by="code"]
-   setnames(Nbsite_beyond,"V1","eff_beyond")
-   Nbsite_beyond=merge(Nbsite_beyond,unique(PaluConf_SyndF[,list(code,deb_sem)]),
+    setnames(Nbsite_beyond,"V1","eff_beyond")
+    Nbsite_beyond=merge(Nbsite_beyond,unique(PaluConf_SyndF[,list(code,deb_sem)]),
                        by.x="code",by.y="code") #,all.x=T
-   Nbsite_withdata=PaluConf_SyndF[is.na(alert_status_hist)==F,length(unique(sites)),by="code"]
-   setnames(Nbsite_withdata,"V1","eff_total")
-   propsite_alerte_fever=merge(x=Nbsite_withdata,y=Nbsite_beyond,
+    Nbsite_withdata=PaluConf_SyndF[is.na(alert_status_hist)==F,length(unique(sites)),by="code"]
+    setnames(Nbsite_withdata,"V1","eff_total")
+    propsite_alerte_fever=merge(x=Nbsite_withdata,y=Nbsite_beyond,
                                 by.x="code",by.y="code")
-   propsite_alerte_fever[,prop:=ifelse(is.na(eff_beyond/eff_total)==T,0.0,
+    propsite_alerte_fever[,prop:=ifelse(is.na(eff_beyond/eff_total)==T,0.0,
                                         eff_beyond/eff_total)]
    cat('DONE\n')
    
-   cat('calculate weekly proportion of sites in alert using tdr+/fever algorithm (by facies)...\n')
    source("create_facies.R")
    PaluConf_SyndF=create_facies(data=PaluConf_SyndF)
-   Nbsite_beyond=PaluConf_SyndF[ alert_status_hist=="alert",
-                                 length(unique(sites)),by=c("code","facies")]
-   setnames(Nbsite_beyond,"V1","eff_beyond")
-   Nbsite_beyond=merge(Nbsite_beyond,unique(PaluConf_SyndF[,list(code,deb_sem,facies)]),
-                       by.x=c("code","facies"),by.y=c("code","facies"))
-   Nbsite_withdata=PaluConf_SyndF[is.na(alert_status_hist)==F,
-                                  length(unique(sites)),by=c("code","facies")]
-   setnames(Nbsite_withdata,"V1","eff_total")
-   propsite_alerte_fever_byfacies=merge(x=Nbsite_withdata,y=Nbsite_beyond,
-                               by.x=c("code","facies"),by.y=c("code","facies") )
-   propsite_alerte_fever_byfacies[,prop:=ifelse(is.na(eff_beyond/eff_total)==T,0.0,
-                                       eff_beyond/eff_total)]
-   rm(Nbsite_beyond);rm(Nbsite_withdata);gc()
-   cat('DONE\n')
+   ####################new method to handle facies###################################
+   list_facies= c("East","South","High_land","Fringe","excepted_East","excepted_High_land")
+   datalist_facies=list()
+   for ( f in list_facies)
+   {
+     cat('calculate weekly proportion of sites in alert using RDT+/fever for ',f,'...')
+      Nbsite_beyond=PaluConf_SyndF[ alert_status_hist=="alert" & get(f)==1,
+                                   length(unique(sites)),by=c("code",f)]
+      setnames(Nbsite_beyond,"V1","eff_beyond")
+      Nbsite_beyond=merge(Nbsite_beyond,unique(PaluConf_SyndF[,list(code,deb_sem)]),
+                         by.x=c("code"),by.y=c("code"))
+      Nbsite_withdata=PaluConf_SyndF[is.na(alert_status_hist)==F & get(f)==1,
+                                    length(unique(sites)),by=c("code",f)]
+      setnames(Nbsite_withdata,"V1","eff_total")
+      myfacies=merge(x=Nbsite_withdata,
+                     y=Nbsite_beyond,
+                     by.x=c("code",f),
+                     by.y=c("code",f) )
+      myfacies[,prop:=ifelse(is.na(eff_beyond/eff_total)==T,0.0,
+                                                  eff_beyond/eff_total)]
+      rm(Nbsite_beyond);rm(Nbsite_withdata);gc()
+    cat('DONE\n')
+    datalist_facies[[f]]=myfacies
+    
+    #append to a single and unique dataframe:
+    if ( f==list_facies[1])
+    {
+      propsite_alerte_fever_byfacies= datalist_facies[[f]]
+      propsite_alerte_fever_byfacies[,f:=NULL,with=F]
+      propsite_alerte_fever_byfacies[,eff_total:=NULL]
+      propsite_alerte_fever_byfacies[,eff_beyond:=NULL]
+      propsite_alerte_fever_byfacies[,facies:=f]
+    } else {
+      tmp= datalist_facies[[f]]
+      tmp[,f:=NULL,with=F]
+      tmp[,eff_total:=NULL]
+      tmp[,eff_beyond:=NULL]
+      tmp[,facies:=f]
+      propsite_alerte_fever_byfacies=rbind(propsite_alerte_fever_byfacies,tmp)
+      rm(tmp);gc()
+    }
+    cat("DONE\n")
+    
+   }
+   
+   # cat('calculate weekly proportion of sites in alert using tdr+/fever algorithm (by facies)...\n')
+   # source("create_facies.R")
+   # PaluConf_SyndF=create_facies(data=PaluConf_SyndF)
+   # Nbsite_beyond=PaluConf_SyndF[ alert_status_hist=="alert",
+   #                               length(unique(sites)),by=c("code","facies")]
+   # setnames(Nbsite_beyond,"V1","eff_beyond")
+   # Nbsite_beyond=merge(Nbsite_beyond,unique(PaluConf_SyndF[,list(code,deb_sem,facies)]),
+   #                     by.x=c("code","facies"),by.y=c("code","facies"))
+   # Nbsite_withdata=PaluConf_SyndF[is.na(alert_status_hist)==F,
+   #                                length(unique(sites)),by=c("code","facies")]
+   # setnames(Nbsite_withdata,"V1","eff_total")
+   # propsite_alerte_fever_byfacies=merge(x=Nbsite_withdata,y=Nbsite_beyond,
+   #                             by.x=c("code","facies"),by.y=c("code","facies") )
+   # propsite_alerte_fever_byfacies[,prop:=ifelse(is.na(eff_beyond/eff_total)==T,0.0,
+   #                                     eff_beyond/eff_total)]
+   # rm(Nbsite_beyond);rm(Nbsite_withdata);gc()
+   # cat('DONE\n')
   
    cat('calculate radius for per site for percentile algorithm alert...')
      setkey(PaluConf_SyndF,alert_status_hist)
@@ -193,7 +243,7 @@ server<-function(input, output,session) {
      mycode=paste0(year(Sys.Date()-7),"_",week(Sys.Date()-7))
      tdrplus_ind_currentweek=PaluConf_SyndF[code==mycode,]
    } else {
-     tdrplus_ind_currentweek=csum_alerte[code==max_code,]
+     tdrplus_ind_currentweek=PaluConf_SyndF[code==max_code,]
    }
    
    return(list(mydata=PaluConf_SyndF,
@@ -228,7 +278,7 @@ server<-function(input, output,session) {
     source("if_percentile_viz.R",local = T)
     source("if_minsan_viz.R",local = T)
     source("if_csum_viz.R",local = T)
-    source("if_tdrfiever_viz.R",local = T)  
+    source("if_tdrfever_viz.R",local = T)  
    # print(head(myprop))
    # print(tail(myprop))
    # Sys.sleep(30)
@@ -878,17 +928,17 @@ server<-function(input, output,session) {
                            week_length=input$comet_map,
                            percentile_value=input$Centile_map)$mydata
                            
-    # if (input$Cluster_algo=="Total")
-    # {
+    if (input$Cluster_algo=="Total")
+    {
        X=X[alert_status=="alert" ,]
-    # } else {
-      #X=X[alert_status=="alert" & get(input$Cluster_algo)==1,]
-    #}
+    } else {
+    X=X[alert_status=="alert" & get(input$Cluster_algo)==1,]
+    }
       
     X=merge(X,sentinel_latlong,by.x="sites",by.y="sites")
     setorder(X,sites,deb_sem)
     plot_ly(X, y = occurence, x=deb_sem,
-            color=facies, 
+            color=name, 
             size = log(occurence+1), mode = "markers")
     #type="scatter3d"
   
