@@ -27,6 +27,8 @@ if ( input$diseases=="Malaria")
       cat('You choose to display by:',input$Cluster_algo,"\n")
       mydata=preprocessing()
       myprop=csum_algorithm()$propsite_alerte_csum_byfacies
+      #effectively select facies that has been chosen by user:
+      myprop=myprop[facies==input$Cluster_algo]
     }
     #choose to display >2010
     myprop=myprop[year(deb_sem)>2009]

@@ -27,6 +27,8 @@ if (input$diseases=="Malaria")
       myprop=percentile_algorithm()$propsite_alerte_percentile_byfacies
       #effectively select facies that has been chosen by user:
       myprop=myprop[facies==input$Cluster_algo]
+      #effectively select facies that has been chosen by user:
+      myprop=myprop[facies==input$Cluster_algo]
     }
     #choose to display >2010
     myprop=myprop[year(deb_sem)>2009]

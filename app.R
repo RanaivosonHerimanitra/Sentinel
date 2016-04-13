@@ -939,7 +939,7 @@ server<-function(input, output,session) {
     setorder(X,sites,deb_sem)
     plot_ly(X, y = occurence, x=deb_sem,
             color=name, 
-            size = log(occurence+1), mode = "markers")
+            size = round(log(occurence+1)), mode = "markers")
     #type="scatter3d"
   
   })
