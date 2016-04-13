@@ -33,15 +33,7 @@ server<-function(input, output,session) {
     source("create_facies.R")
     mydata=create_facies(mydata)
     
-    cat('merge with different facies...')
-     setkey(mydata,sites)
-     mydata[sites %in% East,East:=1]
-     mydata[sites %in% South,South:=1]
-     mydata[sites %in% High_land,High_land:=1]
-     mydata[sites %in% Fringe,Fringe:=1]
-     mydata[sites %in% excepted_East,excepted_East:=1]
-     mydata[sites %in% excepted_High_land,excepted_High_land:=1]
-    cat('DONE\n')
+    
     
     cat('Extract weeks and years from PaluConf...')
     mydata[,weeks:=as.numeric(substr(code,6,8))]
@@ -237,83 +229,84 @@ server<-function(input, output,session) {
     source("if_minsan_viz.R",local = T)
     source("if_csum_viz.R",local = T)
     source("if_tdrfiever_viz.R",local = T)  
-    
+   # print(head(myprop))
+   # print(tail(myprop))
+   # Sys.sleep(30)
    
-   
-    
-        if ( input$Cluster_algo !="Total"  )
-        {
-          setkeyv( mild , c("code","facies") )
-         
-          cat('merging mild data with proportion of sites in alert...')
-           myprop=merge(myprop,unique(mild[,list(code,mild_value,facies)]),
-                       by.x=c("code","facies"),
-                       by.y=c("code","facies"), all.x=T)
-          cat('DONE\n')
-          cat('nrow of myprop  after merge with MILD are:',nrow(myprop),"\n")
-          
-          
-          setkeyv( caid , c("code","facies") )
-          cat('merging caid data with proportion of sites in alert...')
-           myprop=merge(myprop,(caid[,list(code,caid_value,facies)]),
-                       by.x=c("code","facies"),
-                       by.y=c("code","facies"), all.x=T)
-          cat('DONE\n')
-          
-          cat('nrow of myprop  after merge with CAID are:',nrow(myprop),"\n")
-           
-          setkeyv( myprop , c("code","facies") );setkeyv( ndvi , c("code","facies") )
-           cat('merging ndvi data with proportion of sites in alert...')
-            myprop=merge(myprop,(ndvi[,list(code,ndvi_value,facies)]),
-                       by.x=c("code","facies"),
-                       by.y=c("code","facies"), all.x=T)
-           cat('DONE\n')
-          
-          cat('nrow of myprop  after merge with ndvi are:',nrow(myprop),"\n")
-          
-          cat('merging temperature data with proportion of sites in alert...')
-           setkeyv( lst , c("code","facies") )
-           myprop=merge(myprop,(lst[,list(code,temperature,facies)]),
-                       by.x=c("code","facies"),
-                       by.y=c("code","facies"), all.x=T)
-          cat('DONE\n')
-          
-          cat('nrow of myprop  after merge with lst are:',nrow(myprop),"\n")
-          
-          cat('merging rainFall data with proportion of sites in alert...')
-           setkeyv( pmm , c("code","facies") )
-           myprop=merge(myprop,(pmm[,list(code,pmm_value,facies)]),
-                       by.x=c("code","facies"),
-                       by.y=c("code","facies"), all.x=T)
-          cat('DONE\n')
-          
-          cat("selection of faciès...")
-           myprop=myprop[facies==input$Cluster_algo]
-          cat("DONE\n")
-        } else {
+    myprop = unique(myprop[,list(code,deb_sem,prop)])
+    print(myprop[code=="2010_02"])
+    # if ( input$Cluster_algo !="Total"  )
+    #     {
+    #       setkeyv( mild , c("code") )
+    #       cat('merging mild data with proportion of sites in alert...')
+    #        myprop=merge(myprop,unique(mild[,list(code,mild_value)]),
+    #                    by.x=c("code"),
+    #                    by.y=c("code"), all.x=T)
+    #       cat('DONE\n')
+    #       cat('nrow of myprop  after merge with MILD are:',nrow(myprop),"\n")
+    #       
+    #       
+    #       setkeyv( caid , c("code","facies") )
+    #       cat('merging caid data with proportion of sites in alert...')
+    #        myprop=merge(myprop,(caid[,list(code,caid_value,facies)]),
+    #                    by.x=c("code","facies"),
+    #                    by.y=c("code","facies"), all.x=T)
+    #       cat('DONE\n')
+    #       
+    #       cat('nrow of myprop  after merge with CAID are:',nrow(myprop),"\n")
+    #        
+    #       setkeyv( myprop , c("code","facies") );setkeyv( ndvi , c("code","facies") )
+    #        cat('merging ndvi data with proportion of sites in alert...')
+    #         myprop=merge(myprop,(ndvi[,list(code,ndvi_value,facies)]),
+    #                    by.x=c("code","facies"),
+    #                    by.y=c("code","facies"), all.x=T)
+    #        cat('DONE\n')
+    #       
+    #       cat('nrow of myprop  after merge with ndvi are:',nrow(myprop),"\n")
+    #       
+    #       cat('merging temperature data with proportion of sites in alert...')
+    #        setkeyv( lst , c("code","facies") )
+    #        myprop=merge(myprop,(lst[,list(code,temperature,facies)]),
+    #                    by.x=c("code","facies"),
+    #                    by.y=c("code","facies"), all.x=T)
+    #       cat('DONE\n')
+    #       
+    #       cat('nrow of myprop  after merge with lst are:',nrow(myprop),"\n")
+    #       
+    #       cat('merging rainFall data with proportion of sites in alert...')
+    #        setkeyv( pmm , c("code","facies") )
+    #        myprop=merge(myprop,(pmm[,list(code,pmm_value,facies)]),
+    #                    by.x=c("code","facies"),
+    #                    by.y=c("code","facies"), all.x=T)
+    #       cat('DONE\n')
+    #       
+    #       cat("selection of faciès...")
+    #        myprop=myprop[facies==input$Cluster_algo]
+    #       cat("DONE\n")
+    #     } else {
           setkey(myprop,"code");setkey(caid,"code")
-          
+         
           cat('merging caid data with proportion of sites in alert...')
-          myprop=merge(myprop,caid[,list(code,caid_value)],
+          myprop=merge(myprop,unique(caid[,list(code,caid_value)]),
                        by.x=c("code"),
                        by.y=c("code"), all.x=T )
           cat('DONE\n')
           setkey(myprop,"code");setkey(mild,"code")
           cat('merging mild data with proportion of sites in alert...')
-          myprop=merge(myprop,mild[,list(code,mild_value)],
+          myprop=merge(myprop,unique(mild[,list(code,mild_value)]),
                        by.x=c("code"),
                        by.y=c("code"), all.x=T )
           cat('DONE\n')
           cat('merging ndvi data with proportion of sites in alert...')
           setkey(myprop,"code");setkey(ndvi,"code")
-          myprop=merge(myprop,ndvi[,list(code,ndvi_value)],
+          myprop=merge(myprop,unique(ndvi[,list(code,ndvi_value)]),
                        by.x=c("code"),
                        by.y=c("code"), all.x=T )
           cat('DONE\n')
           cat('nrow of myprop  after merge with ndvi are:',nrow(myprop),"\n")
           cat('merging temperature data with proportion of sites in alert...')
           setkey(myprop,"code");setkey(lst,"code")
-          myprop=merge(myprop,lst[,list(code,temperature)],
+          myprop=merge(myprop,unique(lst[,list(code,temperature)]),
                        by.x=c("code"),
                        by.y=c("code"), all.x=T )
           cat('DONE\n')
@@ -321,13 +314,13 @@ server<-function(input, output,session) {
           cat('nrow of myprop  after merge with lst are:',nrow(myprop),"\n")
           setkey(myprop,"code");setkey(pmm,code)
           cat('merging rainFall data with proportion of sites in alert...')
-          myprop=merge(myprop,pmm[,list(code,pmm_value)],
+          myprop=merge(myprop,unique(pmm[,list(code,pmm_value)]),
                        by.x=c("code"),
                        by.y=c("code"), all.x=T )
           cat('DONE\n')
-        }
-   
-    
+      #  }
+        print(myprop[code=="2010_02"])
+       
     #using plotly:
     #line width (epaisseur de la ligne):
    

@@ -13,15 +13,24 @@ create_facies = function (data=PaluConf)
                         "mae","mdv","mhj","mia","mnj","mrb","mrg","mrt","mtn","nsb",
                         "sbv","stm","tdd","tgr","tlr","toa")
   
+  #cat('merge with different facies...')
+  setkey(data,sites)
+  data[sites %in% East,East:=1]
+  data[sites %in% South,South:=1]
+  data[sites %in% High_land,High_land:=1]
+  data[sites %in% Fringe,Fringe:=1]
+  data[sites %in% excepted_East,excepted_East:=1]
+  data[sites %in% excepted_High_land,excepted_High_land:=1]
+  #cat('DONE\n')
   
   #facies are not disjoint:
-  setkey(data,sites)
-  data[sites %in% East,facies:="East"]
-  data[sites %in% South,facies:="South"]
-  data[sites %in% High_land,facies:="High_land"]
-  data[sites %in% Fringe,facies:="Fringe"]
-  data[sites %in% excepted_East,facies:="excepted_East"]
-  data[sites %in% excepted_High_land,facies:="excepted_High_land"]
+  # setkey(data,sites)
+  # data[sites %in% East,facies:="East"]
+  # data[sites %in% South,facies:="South"]
+  # data[sites %in% High_land,facies:="High_land"]
+  # data[sites %in% Fringe,facies:="Fringe"]
+  # data[sites %in% excepted_East,facies:="excepted_East"]
+  # data[sites %in% excepted_High_land,facies:="excepted_High_land"]
  
   return(data)
 }

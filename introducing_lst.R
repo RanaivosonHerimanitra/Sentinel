@@ -1,18 +1,3 @@
-# cat('reading temperature and reshaping temperature data...')
-# 
-# #lst=lst[,include,with=F]
-# if (  ("data.table" %in% class(lst))==F )
-# {
-#   include_index= match(include, names(lst) )
-#   lst= lst %>% select(include_index) %>% data.frame()
-# } else {
-#   lst[,code:=paste0(year(as.Date(deb_sem)),"_",week(as.Date(deb_sem)))]
-# }
-# 
-# lst=data.table(gather(lst,key=sites,value=temperature,-c(code,deb_sem)))
-# cat('DONE\n')
-
-
 if ( input$Cluster_algo=="Total")
 {
   setkeyv(lst,c("code"))
@@ -20,9 +5,18 @@ if ( input$Cluster_algo=="Total")
   lst=lst[,mean(temperature,na.rm = T),by="code"];setnames(lst,"V1","temperature")
   cat('DONE\n')
 } else {
-  setkeyv(lst,c("code","facies"))
+  
+  setkeyv(lst,"code")
   lst=create_facies(lst)
   cat('calculating mean of temperature by code (date) and by facies...')
-  lst=lst[,mean(temperature,na.rm = T),by="code,facies"];setnames(lst,"V1","temperature")
+  lst=lst[get(input$Cluster_algo)==1,mean(temperature,na.rm = T),by="code"];
+  setnames(lst,"V1","temperature")
   cat('DONE\n')
+  
+  # setkeyv(lst,c("code","facies"))
+  # lst=create_facies(lst)
+  # cat('calculating mean of temperature by code (date) and by facies...')
+  # lst=lst[,mean(temperature,na.rm = T),by="code,facies"];
+  # setnames(lst,"V1","temperature")
+  # cat('DONE\n')
 }

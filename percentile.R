@@ -166,16 +166,23 @@ calculate_percentile=function(data=mydata,
                    by.y=c("code",f),all.x=T)
     myfacies[,prop:=ifelse(is.na(eff_beyond/eff_total)==T,0.0,eff_beyond/eff_total)]
     datalist_facies[[f]]=myfacies
-    #append to a single unique dataframe:
+
+    #append to a single and unique dataframe:
     if ( f==list_facies[1])
     {
       propsite_alerte_percentile_byfacies= datalist_facies[[f]]
+      # merge with deb_sem:
+      propsite_alerte_percentile_byfacies=merge(propsite_alerte_percentile_byfacies,
+                                                data[get(f)==1,list(code,deb_sem)],
+                                                by.x="code",by.y="code")
       propsite_alerte_percentile_byfacies[,f:=NULL,with=F]
       propsite_alerte_percentile_byfacies[,eff_total:=NULL]
       propsite_alerte_percentile_byfacies[,eff_beyond:=NULL]
       propsite_alerte_percentile_byfacies[,facies:=f]
     } else {
       tmp= datalist_facies[[f]]
+      # merge with deb_sem:
+      tmp=merge(tmp,data[get(f)==1,list(code,deb_sem)],by.x="code",by.y="code")
       tmp[,f:=NULL,with=F]
       tmp[,eff_total:=NULL]
       tmp[,eff_beyond:=NULL]
@@ -185,7 +192,7 @@ calculate_percentile=function(data=mydata,
     }
     cat("DONE\n")
   }
-  
+ 
 ###############################################################################
   
   
@@ -203,21 +210,24 @@ calculate_percentile=function(data=mydata,
   # cat("DONE\n")
   
   
+  ### TODO==>MUST CHECK WHY ONLY 02 FACIES FOR data?????
+  ### because create_facies.R is not valid!!!!
   
-  cat("merge with deb_sem and sites to reorder time series (by faciès)...\n")
-  setkeyv(propsite_alerte_percentile_byfacies,c("code","facies"))
-  setkeyv(data,c("code","facies"))
-  propsite_alerte_percentile_byfacies=merge(propsite_alerte_percentile_byfacies,
-                                   unique(data[,list(code,deb_sem,facies)]),
-                                   by.x=c("code","facies"),by.y=c("code","facies"))
-  rm(Nbsite_withdata);rm(Nbsite_beyond);gc()
-  cat('DONE\n')
+  # cat("merge with deb_sem and sites to reorder time series (by faciès)...")
+  #  setkeyv(propsite_alerte_percentile_byfacies,c("code","facies"))
+  #  setkeyv(data,c("code","facies"))
+  #  propsite_alerte_percentile_byfacies=merge(propsite_alerte_percentile_byfacies,
+  #                                  unique(data[,list(code,deb_sem,facies)]),
+  #                                  by.x=c("code","facies"),by.y=c("code","facies"))
+  #  rm(Nbsite_withdata);rm(Nbsite_beyond);gc()
+  # cat('DONE\n')
+  
+ 
   
   return (list(percentile_alerte=percentile_alerte,
                percentile_alerte_currentweek=percentile_alerte_currentweek,
                propsite_alerte_percentile=propsite_alerte_percentile,
                propsite_alerte_percentile_byfacies=propsite_alerte_percentile_byfacies,
-               mydata=data,
-               datalist_facies=datalist_facies
+               mydata=data
                ))
 }
