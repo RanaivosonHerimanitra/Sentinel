@@ -233,7 +233,7 @@ server<-function(input, output,session) {
    # print(tail(myprop))
    # Sys.sleep(30)
    
-    myprop = unique(myprop[,list(code,deb_sem,prop)])
+    #myprop = unique(myprop[,list(code,deb_sem,prop)])
     print(myprop[code=="2010_02"])
     # if ( input$Cluster_algo !="Total"  )
     #     {
