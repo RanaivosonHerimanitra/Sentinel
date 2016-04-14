@@ -6,7 +6,7 @@ individual_site_legend_details=list(
   tags$p(tags$strong("Legend:")),
   helpText("By default,90th percentile is used to trigger alert."),
   helpText("Rainfall, African Rainfall Estimation (RFE) is produced by NOAA-CPC. It has been divided by 10 to match scale"),
-  helpText("LLIN, proportion of sites that received a LLIN ")
+  helpText("LLIN, selected site that had received a LLIN ")
 )
 map_display=list(
   tags$h4("Week:",paste0( year(Sys.Date()) ,"_", isoweek(Sys.Date()) ) ),
