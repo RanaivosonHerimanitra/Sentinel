@@ -35,7 +35,8 @@ calculate_percentile=function(data=mydata,
      week_range = week1
    }
     cat('retrieve epidemiological weeks corresponding to parameters...')
-      code_range = unique(unlist(lapply(week_range,function(i) paste0( year(i),"_",ifelse(week(i)<10,paste0("0",week(i)),week(i)) ) )))[1:week_length]
+      code_range = unique(unlist(lapply(week_range,function(i) paste0( year(i),"_",
+                                                                       ifelse(isoweek(i)<10,paste0("0",isoweek(i)),isoweek(i)) ) )))[1:week_length]
     cat('DONE\n')
     cat("code range defined by user encompasses:",code_range,"\n")
     
