@@ -797,6 +797,9 @@ server<-function(input, output,session) {
        mild_tmp=mild[,c("deb_sem",selected_site_leaflet()),with=F]
        mild_tmp[,code:=paste0(year(as.Date(deb_sem)),"_",isoweek(as.Date(deb_sem)))]
        setnames(mild_tmp,old=selected_site_leaflet(),new="mild_value")
+       #for graphical display purpose only(to get a bar chart that cover all vertical):
+       max_val= max(mydata$occurence,na.rm = T)
+       mild_tmp[,mild_value:=ifelse(is.na(mild_value)==T,NA,max_val)]
       cat(' DONE\n')
     }
     
