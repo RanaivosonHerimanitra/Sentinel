@@ -825,8 +825,8 @@ server<-function(input, output,session) {
                         line = list(width=line_width,color = "#84a6df"),
                         name = "rainfall/10",visible='legendonly')
    
-    p = p %>% add_trace(x = Semaine, y = mild_value, name = "mild",
-                        color="Mild",
+    p = p %>% add_trace(x = Semaine, y = mild_value, name = "LLIN",
+                        color="LLIN",
                         opacity=0.5,
                         colors="#132B43",
                         type="bar",

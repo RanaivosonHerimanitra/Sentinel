@@ -14,7 +14,7 @@ legend_details=list(
 conditionalPanel(
   condition = "input.diseases == 'Malaria'",
   helpText("IRS, proportion of sites that received a IRS "),
-  helpText("LLIN, proportion of sites that received a LLIN ")))
+  helpText("LLIN, for the selected site that had received a LLIN ")))
 #
 algoviz_display=tabItem(tabName="myalgoviz",
                         conditionalPanel(condition = "input.diseases=='ILI'",
