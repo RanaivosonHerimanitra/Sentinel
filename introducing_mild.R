@@ -1,5 +1,5 @@
 cat('reading mild and reshaping mild data...')
- mild[,code:=paste0(year(as.Date(deb_sem)),"_",week(as.Date(deb_sem)))]
+ mild[,code:=paste0(year(as.Date(deb_sem)),"_",isoweek(as.Date(deb_sem)))]
  mild=mild[,include,with=F]
  mild=as.data.table(gather(mild,key=sites,value=mild_value,-c(code,deb_sem)))
 cat('DONE\n')

@@ -787,11 +787,21 @@ server<-function(input, output,session) {
       #
       cat("DONE\n")
     }
+    #handle case where no site hasn't yet been selected !
+    if ( length(selected_site_leaflet())==0 ) 
+    {
+      source("introducing_mild.R",local = T)
+      mild_tmp=mild
+    } else {
+      cat('selection of LLIN corresponding to: ',selected_site_leaflet() )
+       mild_tmp=mild[,c("deb_sem",selected_site_leaflet()),with=F]
+       mild_tmp[,code:=paste0(year(as.Date(deb_sem)),"_",isoweek(as.Date(deb_sem)))]
+       setnames(mild_tmp,old=selected_site_leaflet(),new="mild_value")
+      cat(' DONE\n')
+    }
     
-    #merge mild with 
-    source("introducing_mild.R",local = T)
-    # merge with mydata
-    mydata=merge(mydata,mild[,list(code,mild_value)],
+    
+    mydata=merge(mydata,mild_tmp[,list(code,mild_value)],
                  by.x=c("code"),by.y=c("code"),all.x=T)
     #
     #
