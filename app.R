@@ -23,8 +23,8 @@ server<-function(input, output,session) {
     ####################################data preprocessing############
     cat("keep only sites that already have historical values...\n")
     include_index= match(include,names(mydata)) #introduce dplyr
-    #mydata=mydata[,include,with=F]
-    mydata= mydata %>% select(include_index) %>% as.data.frame()
+    mydata=mydata[,include,with=F]
+    #mydata= mydata %>% select(include_index) %>% as.data.frame()
     
     cat('reshape PaluConf...')
     mydata=as.data.table(gather(mydata,key=sites,value=occurence,-c(code,deb_sem)))
@@ -236,11 +236,11 @@ server<-function(input, output,session) {
    cat('DONE\n')
    
    max_deb_sem= max(PaluConf_SyndF$deb_sem)
-   max_code=paste0(year(max_deb_sem),"_",week(max_deb_sem))
-   if (max_code==paste0(year(Sys.Date()),"_",week(Sys.Date())) ) {
+   max_code=paste0(year(max_deb_sem),"_",isoweek(max_deb_sem))
+   if (max_code==paste0(year(Sys.Date()),"_",isoweek(Sys.Date())) ) {
      #if max_date == current week then exclude this current week
      #from calculation of alert , otherwise include 
-     mycode=paste0(year(Sys.Date()-7),"_",week(Sys.Date()-7))
+     mycode=paste0(year(Sys.Date()-7),"_",isoweek(Sys.Date()-7))
      tdrplus_ind_currentweek=PaluConf_SyndF[code==mycode,]
    } else {
      tdrplus_ind_currentweek=PaluConf_SyndF[code==max_code,]
@@ -284,7 +284,7 @@ server<-function(input, output,session) {
    # Sys.sleep(30)
    
     #myprop = unique(myprop[,list(code,deb_sem,prop)])
-    print(myprop[code=="2010_02"])
+    #print(myprop[code=="2010_02"])
     # if ( input$Cluster_algo !="Total"  )
     #     {
     #       setkeyv( mild , c("code") )
@@ -369,7 +369,7 @@ server<-function(input, output,session) {
                        by.y=c("code"), all.x=T )
           cat('DONE\n')
       #  }
-        print(myprop[code=="2010_02"])
+        #print(myprop[code=="2010_02"])
        
     #using plotly:
     #line width (epaisseur de la ligne):
@@ -630,31 +630,54 @@ server<-function(input, output,session) {
   
   #render Proportion of ILI sur Nombre de consultant
   output$propili = renderPlotly({
-    #preprocess data:
-    tdr_eff[,Synd_g:=GrippSusp + AutrVirResp]
-    #34 sites we need:
-    sites34= toupper(include[-c(1:2)])
-    propili_2015 = tdr_eff[sites %in% sites34 & Annee>2014]
-    stat_ili= tdr_eff[sites %in% sites34 & Annee <2015]
-    #remove:
     
+   
+    ############################### new way to handle ILI ##################
+    sites34= include[-c(1:2)]
+    tdr_eff=as.data.table(gather(ili,key=sites,value=Synd_g,-c(code,deb_sem)))
     
-    #filter rows:
-    cat("calculating prop of ILI on Nb consultation...")
-     propili_2015[,prop := 100*sum(Synd_g,na.rm = T)/sum(NxConsltTotal,na.rm=T) ,by="deb_sem"]
-     propili_2015= unique(propili_2015[,list(deb_sem,prop)])
-     propili_2015[,weekOfday:=week(deb_sem)] #create a key to merge later 
-     gc()
-    cat("DONE\n")
+    #print(head(tdr_eff))
+    #print(sites34)
+    
+    propili_2015 = tdr_eff[sites %in% sites34 & year(deb_sem)>2014]
+    stat_ili= tdr_eff[sites %in% sites34 & year(deb_sem) <2015]
+    
+    Consultations=as.data.table(gather(Consultations,
+                                       key=sites,value=NxConsltTotal,-c(code,deb_sem)))
+    #print(head(Consultations));Sys.sleep(25)
+    propili_2015=merge(propili_2015,Consultations,
+                       by.x=c("code","sites","deb_sem"),
+                       by.y=c("code","sites","deb_sem"))
+    
+    propili_2015[,prop := 100*sum(Synd_g,na.rm = T)/sum(NxConsltTotal,na.rm=T) ,by="deb_sem"]
+    propili_2015= unique(propili_2015[,list(deb_sem,prop)])
+    propili_2015[,weekOfday:=week(deb_sem)] #create a key to merge later 
+    gc()
+  
+    #########################################################################
+    # #preprocess data:
+    # tdr_eff[,Synd_g:=GrippSusp + AutrVirResp]
+    # #34 sites we need:
+    # sites34= toupper(include[-c(1:2)])
+    # propili_2015 = tdr_eff[sites %in% sites34 & Annee>2014]
+    # stat_ili= tdr_eff[sites %in% sites34 & Annee <2015]
+    # #remove:
+    # 
+    # 
+    # #filter rows:
+    # cat("calculating prop of ILI on Nb consultation...")
+    #  propili_2015[,prop := 100*sum(Synd_g,na.rm = T)/sum(NxConsltTotal,na.rm=T) ,by="deb_sem"]
+    #  propili_2015= unique(propili_2015[,list(deb_sem,prop)])
+    #  propili_2015[,weekOfday:=week(deb_sem)] #create a key to merge later 
+    #  gc()
+    # cat("DONE\n")
     
   
     cat("calculating mean and max for historical ILI data...")
-     setnames(stat_ili,"Semaine","weekOfday")
-     stat_ili[,weekOfday:=as.numeric(weekOfday)]
+     stat_ili[,weekOfday:=week(deb_sem)]
      stat_ili[,mymax:=max(Synd_g,na.rm = T),by="weekOfday"]
      stat_ili[,mymean:=mean(Synd_g,na.rm = T),by="weekOfday"]
      stat_ili= unique(stat_ili[,list(weekOfday,mymax,mymean)])
-    
      #create a key to merge later 
     cat("DONE\n")
     gc()
@@ -688,10 +711,18 @@ server<-function(input, output,session) {
   })
   #render Syndrome Grippal, Syndrom Dengue-Like
   output$ili_graph = renderPlotly({
+    
+    tdr_eff=as.data.table(gather(ili,key=sites,value=Synd_g,-c(code,deb_sem)))
+    arbosusp=as.data.table(gather(ili,key=sites,value=ArboSusp,-c(code,deb_sem)))
+    tdr_eff=merge(tdr_eff,arbosusp,
+                  by.x=c("code","sites","deb_sem"),
+                  by.y=c("code","sites","deb_sem"))
     #data processing:
-    tdr_eff[,Synd_g := GrippSusp + AutrVirResp ]
+    # tdr_eff[,Synd_g := GrippSusp + AutrVirResp ]
+    tdr_eff=unique(tdr_eff)
+
     #34 sites we need:
-    sites34= toupper(include[-c(1:2)])
+    sites34= include[-c(1:2)]
     #filter rows:
     myili=tdr_eff[sites %in% sites34 & year(as.Date(deb_sem ))>=2015]
     
@@ -791,7 +822,7 @@ server<-function(input, output,session) {
     
     p = p %>% add_trace(x = Semaine, 
                         y = rainFall/10, 
-                        line = list(width=line_width,color = "rgb(0, 204, 0)"),
+                        line = list(width=line_width,color = "#84a6df"),
                         name = "rainfall/10",visible='legendonly')
    
     p = p %>% add_trace(x = Semaine, y = mild_value, name = "mild",

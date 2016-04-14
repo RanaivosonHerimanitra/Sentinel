@@ -11,7 +11,7 @@ preprocessing_disease = function (select_htc=FALSE)
     #cat("Disease:",j,"\n")
     data=select_disease(disease=j)
     #cat("convert data table to data.table format...")
-    data=as.data.table(as.data.frame(data))
+    #data=as.data.table(as.data.frame(data))
     
     #sites for the display
     include<-c("deb_sem","code","abv","abz","ahh","ajb","atb","bel","bhk","boe","bos",

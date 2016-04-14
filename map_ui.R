@@ -7,7 +7,7 @@ individual_site_legend_details=list(
   helpText("More options can be found on the corner right of the graph.")
 )
 map_display=list(
-  tags$h4("Week:",paste0( year(Sys.Date()) ,"_", week(Sys.Date()) ) ),
+  tags$h4("Week:",paste0( year(Sys.Date()) ,"_", isoweek(Sys.Date()) ) ),
   conditionalPanel( condition = "input.mapchoice=='leaflet'", 
                     leafletOutput("madagascar_map"),
                     includeHTML("www/legende.html"), #cool that works!

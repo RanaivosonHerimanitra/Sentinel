@@ -61,6 +61,7 @@ X$deb_sem=as.Date(X$deb_sem)
  d= d + scale_color_manual(values=c("#CC6666", "#9999CC"))
  d= d + ggtitle(label="Cas de Paludisme (autochtone vs Importé)")
  d= d + xlab("Date") + ylab("Nb. Cas")
+ d= d + scale_x_date(labels = date_format("%m-%Y"))
 print(d)
 ```
 

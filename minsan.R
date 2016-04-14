@@ -2,7 +2,7 @@ calculate_minsan=function(data=mydata,
                           slope_minsan=input$slope_minsan,
                           year_choice=year(Sys.Date()),
                           week_choice=ifelse(Sys.Date()-as.Date(paste0(year(Sys.Date()),"-01-01"))<8
-                                             ,1,week(Sys.Date())),
+                                             ,1,isoweek(Sys.Date())),
                           minsan_weekrange=input$minsan_weekrange,
                           minsan_consecutive_week=input$minsan_consecutive_week,
                           byvar="code") 
@@ -15,7 +15,7 @@ calculate_minsan=function(data=mydata,
   }
  
   max_deb_sem= max(as.Date(data$deb_sem))
-  max_code=paste0(year(max_deb_sem),"_",week(max_deb_sem))
+  max_code=paste0(year(max_deb_sem),"_",isoweek(max_deb_sem))
   
   
   
@@ -113,8 +113,13 @@ calculate_minsan=function(data=mydata,
   cat('DONE\n')
 
   
+  #print(head(propsite_alerte_minsan))
+  #Sys.sleep(30)
   
   cat('merge with deb_sem to reorder time series...')
+  # propsite_alerte_minsan=merge(propsite_alerte_minsan,
+  #                              data[,list(code,deb_sem)],
+  #                              by.x="code",by.y="code")
      propsite_alerte_minsan=merge(propsite_alerte_minsan,
                                       data[,list(code,deb_sem,sites,alert_status,East,
                                                  South,High_land,Fringe,excepted_East,
@@ -158,15 +163,16 @@ calculate_minsan=function(data=mydata,
     if ( f==list_facies[1])
     {
       propsite_alerte_minsan_byfacies= datalist_facies[[f]]
-      propsite_alerte_minsan_byfacies[,f:=NULL,with=F]
-      propsite_alerte_minsan_byfacies[,eff_total:=NULL]
-      propsite_alerte_minsan_byfacies[,eff_beyond:=NULL]
+      #propsite_alerte_minsan_byfacies[,f:=NULL,with=F]
+      #propsite_alerte_minsan_byfacies[,eff_total:=NULL]
+      #propsite_alerte_minsan_byfacies[,eff_beyond:=NULL]
       propsite_alerte_minsan_byfacies[,facies:=f]
     } else {
       tmp= datalist_facies[[f]]
-      tmp[,f:=NULL,with=F]
-      tmp[,eff_total:=NULL]
-      tmp[,eff_beyond:=NULL]
+     
+      #tmp[,f:=NULL,with=F]
+      #tmp[,eff_total:=NULL]
+      #tmp[,eff_beyond:=NULL]
       tmp[,facies:=f]
       propsite_alerte_minsan_byfacies=rbind(propsite_alerte_minsan_byfacies,tmp)
       rm(tmp);gc()
@@ -216,10 +222,10 @@ calculate_minsan=function(data=mydata,
   
   #if last week is current week then substract
   #otherwise keep!
-  if (max_code==paste0(year(Sys.Date()),"_",week(Sys.Date())) ) {
+  if (max_code==paste0(year(Sys.Date()),"_",isoweek(Sys.Date())) ) {
     #if max_date == current week then exclude this current week
     #from calculation of alert , otherwise include 
-    mycode=paste0(year(Sys.Date()-7),"_",week(Sys.Date()-7))
+    mycode=paste0(year(Sys.Date()-7),"_",isoweek(Sys.Date()-7))
     minsan_alerte_currentweek=data[code==mycode,list(sites,deb_sem,alert_status,myradius)]
   } else {
     minsan_alerte_currentweek=data[code==max_code,list(sites,deb_sem,alert_status,myradius)]

@@ -101,7 +101,7 @@ mymax=range(as.integer(X$occurence)[is.na(as.integer(X$occurence))==F])
 mymax[2]=ifelse(mymax[2]<10,10,mymax[2])
 #
        d = d + scale_y_continuous(breaks= seq.int(from=0,to=mymax[2],by=1) ) 
-      #d= d + ylim (mymax)
+      d= d + scale_x_date(labels = date_format("%m-%Y"))
       print(d)
     }
 ```

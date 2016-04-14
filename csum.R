@@ -4,14 +4,14 @@ calculate_csum = function (data=mydata,
                            Csum_week_map=input$Csum_week_map,
                            Sd_csum_map=input$Sd_csum_map,
                            week_choice=ifelse(Sys.Date()-as.Date(paste0(year(Sys.Date()),"-01-01"))<8
-                                              ,1,week(Sys.Date())),
+                                              ,1,isoweek(Sys.Date())),
                            week_Csum_map=input$week_Csum_map,
                            year_choice=year(Sys.Date()),byvar="code")
 {
   #take 52 most recent week in the data:
   #because they will be compared to historical values (week per week)
   max_deb_sem= max(as.Date(data$deb_sem))
-  max_code=paste0(year(max_deb_sem),"_",week(max_deb_sem))
+  max_code=paste0(year(max_deb_sem),"_",isoweek(max_deb_sem))
   last52weeks= unique(as.Date(data$deb_sem))[order(unique(as.Date(data$deb_sem)),decreasing = T)[1:52]]
   
   cat('year range during which moving average will be calculated are: ')
@@ -199,10 +199,10 @@ calculate_csum = function (data=mydata,
   # cat("DONE\n")
   
   
-  if (max_code==paste0(year(Sys.Date()),"_",week(Sys.Date())) ) {
+  if (max_code==paste0(year(Sys.Date()),"_",isoweek(Sys.Date())) ) {
     #if max_date == current week then exclude this current week
     #from calculation of alert , otherwise include 
-    mycode=paste0(year(Sys.Date()-7),"_",week(Sys.Date()-7))
+    mycode=paste0(year(Sys.Date()-7),"_",isoweek(Sys.Date()-7))
     csum_alerte_currentweek=csum_alerte[code==mycode,]
   } else {
     csum_alerte_currentweek=csum_alerte[code==max_code,]

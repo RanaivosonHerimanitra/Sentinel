@@ -5,7 +5,7 @@ calculate_percentile=function(data=mydata,
 {
 
    max_deb_sem= max(as.Date(data$deb_sem))
-   max_code=paste0(year(max_deb_sem),"_",week(max_deb_sem))
+   max_code=paste0(year(max_deb_sem),"_",isoweek(max_deb_sem))
    
     if (as.numeric(week_length)==4 )
     {
@@ -41,7 +41,7 @@ calculate_percentile=function(data=mydata,
     
     cat('calculate ',percentile_value,'-th percentile for all the data except for the current week...')
     setkey(data,deb_sem)
-    if (max_deb_sem==Sys.Date() ) {
+    if (max_code==paste0(year(Sys.Date()),"_",isoweek(Sys.Date())) ) {
       #if max_date == current week then exclude this current week
       #from calculation of alert , otherwise include 
       mypercentile=data[as.Date(deb_sem)<max_deb_sem,
@@ -51,7 +51,8 @@ calculate_percentile=function(data=mydata,
     } 
     setnames(mypercentile,old="V1",new="n_percentile")
     cat("DONE\n")
-
+   
+    
     cat("merge",percentile_value,"-percentile with all the data(selected disease)...")
     setkey(data,sites);setkey(mypercentile,sites)
     data=merge(data,mypercentile,by.x="sites",by.y="sites")
@@ -115,14 +116,17 @@ calculate_percentile=function(data=mydata,
     percentile_alerte=data[code %in% code_range,list(sites,code,alert_status,deb_sem,myradius)]
     cat('DONE\n')
     
-    cat("prepare alert to be displayed on the map (latest finished week)...")
+    #cat("prepare alert to be displayed on the map (latest finished week)...")
    
-    if (max_code==paste0(year(Sys.Date()),"_",week(Sys.Date())) ) {
+    
+    if (max_code==paste0(year(Sys.Date()),"_",isoweek(Sys.Date())) ) {
       #if max_date == current week then exclude this current week
       #from calculation of alert , otherwise include 
-      mycode=paste0(year(Sys.Date()-7),"_",week(Sys.Date()-7))
+      mycode=paste0(year(max_deb_sem-7),"_",isoweek(max_deb_sem-7))
+     
       percentile_alerte_currentweek=percentile_alerte[code==mycode,]
     } else {
+      
       percentile_alerte_currentweek=percentile_alerte[code==max_code,]
     }
     cat("DONE\n")
@@ -222,7 +226,7 @@ calculate_percentile=function(data=mydata,
   #  rm(Nbsite_withdata);rm(Nbsite_beyond);gc()
   # cat('DONE\n')
   
- 
+  print(percentile_alerte_currentweek[sites=="ejd"]); 
   
   return (list(percentile_alerte=percentile_alerte,
                percentile_alerte_currentweek=percentile_alerte_currentweek,
