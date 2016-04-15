@@ -8,65 +8,66 @@ myradio2= radioButtons(inputId="Algorithmes_viz", label="Algorithms:",
 
 source("heatmap_ui.R",local = T)
 
-mycondparam_cumsum=conditionalPanel(
-  condition = "input.Algorithmes == 'Csum'",
-  tags$hr(),
-  tags$p(tags$strong("Please select data aggregation level (by facies)")),
-  selectInput("Cluster_csum", "",
-              list("National" = "Total","East"="East","South"="South", "Central High Land"="High_land","Fringe"="Fringe","National except East"="excepted_East","National except Central High Land"="excepted_High_land")),
-  tags$hr(),
-  sliderInput("Csum_year", 
-              "Years number:", 
-              min = 1,
-              max = 6, 
-              value = 5
-  ),
-  tags$hr(),
-  sliderInput("Csum_week", "Weeks number:", 
-              min = 1,
-              max = 26, 
-              value = 3),
-  tags$hr(),
-  sliderInput("Sd_csum", "standard deviation:", 
-              min = 1,
-              max = 10,
-              step=0.01,
-              value = 2),
-  tags$hr(),
-  tags$p("This option is intended to improve the specificity of the alert system"),
-  radioButtons("week_Csum", "Number of consecutive weeks above threshold:",
-               c("1"="0","2"="1","3" = "2")),
-  br(),
-  helpText("The cumulative sum (C-SUM) method for epidemic detection is based on the construction of an average or base year by calculating the expected number of cases using the average for that week (and the previous and following week) during the past 5 years.")
-)
+# mycondparam_cumsum=conditionalPanel(
+#   #condition = "input.Algorithmes == 'Csum'",
+#   condition = "input.Algorithmes_eval1 == 'Csum' | input.Algorithmes_eval2 == 'Csum'",
+#   tags$hr(),
+#   tags$p(tags$strong("Please select data aggregation level (by facies)")),
+#   selectInput("Cluster_csum", "",
+#               list("National" = "Total","East"="East","South"="South", "Central High Land"="High_land","Fringe"="Fringe","National except East"="excepted_East","National except Central High Land"="excepted_High_land")),
+#   tags$hr(),
+#   sliderInput("Csum_year", 
+#               "Years number:", 
+#               min = 1,
+#               max = 6, 
+#               value = 5
+#   ),
+#   tags$hr(),
+#   sliderInput("Csum_week", "Weeks number:", 
+#               min = 1,
+#               max = 26, 
+#               value = 3),
+#   tags$hr(),
+#   sliderInput("Sd_csum", "standard deviation:", 
+#               min = 1,
+#               max = 10,
+#               step=0.01,
+#               value = 2),
+#   tags$hr(),
+#   tags$p("This option is intended to improve the specificity of the alert system"),
+#   radioButtons("week_Csum", "Number of consecutive weeks above threshold:",
+#                c("1"="0","2"="1","3" = "2")),
+#   br(),
+#   helpText("The cumulative sum (C-SUM) method for epidemic detection is based on the construction of an average or base year by calculating the expected number of cases using the average for that week (and the previous and following week) during the past 5 years.")
+# )
 
-mycondparam_ind=conditionalPanel(
-  condition = "input.Algorithmes == 'Ind'",
-  tags$hr(),
-  tags$p(("Please select data aggregation level (by facies)")),
-  selectInput("Cluster_ind", "",
-              list("National" = "Total","East"="East","South"="South", "Central High Land"="High_land","Fringe"="Fringe","excepted East"="excepted_East","excepted Central High Land"="excepted_High_land")),
-  sliderInput("exp", 
-              "Malaria cases among fever cases:", 
-              min = 0,
-              max = 100, 
-              value = 40
-  ),
-  sliderInput("expC", 
-              "malaria cases among total consultations:", 
-              min = 0,
-              max = 100, 
-              value = 10
-  ),
-  br(),
-  sliderInput("daterange_ind", 
-              "Number of years to display:", 
-              min = 1,
-              max = 7, 
-              value = 6),
-  br(),
-  helpText("Malaria cases among fever cases. Indicator is considered, as high when ratio is greater than 40%, and malaria cases among consultants number is greater than 10%.")     
-)
+# mycondparam_ind=conditionalPanel(
+#   condition = "input.Algorithmes == 'Ind'",
+#   tags$hr(),
+#   tags$p(("Please select data aggregation level (by facies)")),
+#   selectInput("Cluster_ind", "",
+#               list("National" = "Total","East"="East","South"="South", "Central High Land"="High_land","Fringe"="Fringe","excepted East"="excepted_East","excepted Central High Land"="excepted_High_land")),
+#   sliderInput("exp", 
+#               "Malaria cases among fever cases:", 
+#               min = 0,
+#               max = 100, 
+#               value = 40
+#   ),
+#   sliderInput("expC", 
+#               "malaria cases among total consultations:", 
+#               min = 0,
+#               max = 100, 
+#               value = 10
+#   ),
+#   br(),
+#   sliderInput("daterange_ind", 
+#               "Number of years to display:", 
+#               min = 1,
+#               max = 7, 
+#               value = 6),
+#   br(),
+#   helpText("Malaria cases among fever cases. Indicator is considered, as high when ratio is greater than 40%, and malaria cases among consultants number is greater than 10%.")     
+# )
 ####################################Visualization############################
 graph_choices= selectInput(inputId="Algorithmes_viz", label="Choose algorithms:",
                                 choices=c("Malaria cases",
@@ -96,11 +97,11 @@ choose_disease_report= box(title="Reporting",
                            status = "primary", 
                            solidHeader = TRUE,
                            collapsible = TRUE,
-                    tags$p("This report includes historical alerts about Malaria and diarrhea. Algorithm used is 90th percentile.
-                           It also contains information about lack of data and RDT compared to reported number of fiever's consultation."),
-                    
-                    downloadButton('downloadReport',
-                                   'Download',class="primary"),width=8)
+                           tags$p("This report includes historical alerts about Malaria and diarrhea. Algorithm used is 90th percentile.
+                                   It also contains information about lack of data and RDT compared to reported number of fiever's consultation."),
+                           downloadButton('downloadReport','Download',class="primary")
+                           ,width=8)
+                                   
 source("map_ui.R",local = T)
 algoviz_parameters=box(status = "primary", solidHeader = TRUE,
                        collapsible = TRUE,title="Parameters")

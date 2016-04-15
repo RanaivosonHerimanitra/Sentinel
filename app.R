@@ -75,7 +75,7 @@ server<-function(input, output,session) {
     cat('DONE\n')
     mylist= calculate_csum(data=mydata,
                            Csum_year_map=input$Csum_year_map,
-                           Csum_week_map=input$Csum_week_map,
+                           #Csum_week_map=input$Csum_week_map,
                            Sd_csum_map=input$Sd_csum_map,
                            week_Csum_map=input$week_Csum_map
                            ,byvar="code")
@@ -866,7 +866,7 @@ server<-function(input, output,session) {
         source("csum.R") 
         X=calculate_csum(data=mydata,
                          Csum_year_map=input$Csum_year_map,
-                         Csum_week_map=input$Csum_week_map,
+                         #Csum_week_map=input$Csum_week_map,
                          Sd_csum_map=input$Sd_csum_map,
                          week_choice=ifelse(Sys.Date()-as.Date(paste0(year(Sys.Date()),"-01-01"))<8
                                             ,1,week(Sys.Date())),
@@ -904,7 +904,7 @@ server<-function(input, output,session) {
         source("csum.R") 
         X=calculate_csum(data=mydata,
                          Csum_year_map=input$Csum_year_map,
-                         Csum_week_map=input$Csum_week_map,
+                         #Csum_week_map=input$Csum_week_map,
                          Sd_csum_map=input$Sd_csum_map,
                          week_choice=ifelse(Sys.Date()-as.Date(paste0(year(Sys.Date()),"-01-01"))<8
                                             ,1,week(Sys.Date())),
@@ -1062,13 +1062,43 @@ server<-function(input, output,session) {
     }
     p
   })
+  
+  #handle conflict between radio button's input,
+  #for algorithm's selection:
+  observe({
+    x=input$Algorithmes_eval1
+    if ( x=="Ind") { x="" }
+    updateRadioButtons(session,"Algorithmes_eval2",
+                       label="Algorithms:",
+                       choices=list("Percentile" = "Percentile",
+                                    "MinSan" = "MinSan",
+                                    "C-SUM" = "Csum"),
+                       selected = x)
+  })
+  
+  observe({
+    x=input$Algorithmes_eval2
+    updateRadioButtons(session,"Algorithmes_eval1",
+                       label="Algorithms:",
+                       choices=list(  "Percentile" = "Percentile",
+                                      "MinSan" = "MinSan",
+                                      "C-SUM" = "Csum",
+                                      "RDT+/fever Indicator" = "Ind"),
+                       selected = x)
+  })
+  # observeEvent(input$Algorithmes_eval1,{
+  #   reset(input$Algorithmes_eval2)
+  # })
+  # 
+  # observeEvent(input$Algorithmes_eval2,{
+  #   reset(input$Algorithmes_eval1)
+  # })
 }
 
 ##############################################User interface ##############
 #skeleton of the user interface:
 source('initialize_ui.R')
 ui = list(dashboardPage(skin = "blue",
-                            
   dashboardHeader(title="Sentinel surveillance",titleWidth="233"),
   dashboardSidebar(
     sidebarMenu(
@@ -1084,12 +1114,13 @@ ui = list(dashboardPage(skin = "blue",
                tabName="myforecast", 
                icon = icon("line-chart"))
   )), 
-  dashboardBody(tabItems(
+  dashboardBody(shinyjs::useShinyjs(),tabItems(
                          tabbox_item,
                          disease_item,
                          forecast_item
                          ))
 ),
+
 tags$body(includeHTML("www/gears.html")),
 tags$head(HTML("<link rel='stylesheet' href='www/css/mycss.css'/>")),
 tags$head(HTML("<script type='text/javascript' src='js/myjs.js'></script>"))

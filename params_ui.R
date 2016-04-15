@@ -24,22 +24,25 @@ map_choices = radioButtons(inputId = "mapchoice",
 #####################radio button's choices for epidemic threshold's alerts:
 #available algorithm when Malaria is displayed
 algo_params1= conditionalPanel(
+  #id="myalgo_params1",
   condition = "input.diseases=='Malaria'",
   radioButtons(inputId="Algorithmes_eval1", 
                           label="Algorithms:",
-                          list(  "Percentile" = "Percentile",
+                          choices=list(  "Percentile" = "Percentile",
                                  "MinSan" = "MinSan",
                                  "C-SUM" = "Csum",
                                  "RDT+/fever Indicator" = "Ind")
                           ))
 #available algorithm when Malaria is displayed
 algo_params2 =conditionalPanel(
+  #id="myalgo_params2",
   condition = "input.diseases!='Malaria'",
   radioButtons(inputId="Algorithmes_eval2", 
                label="Algorithms:",
                list(  "Percentile" = "Percentile",
                       "MinSan" = "MinSan",
-                      "C-SUM" = "Csum")
+                      "C-SUM" = "Csum"),
+               selected = ""
   ))                          
 myradio_map = list(algo_params1,algo_params2)                                 
 ########################################################################################

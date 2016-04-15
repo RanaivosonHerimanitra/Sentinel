@@ -1,7 +1,7 @@
 
 calculate_csum = function (data=mydata,
                            Csum_year_map=input$Csum_year_map,
-                           Csum_week_map=input$Csum_week_map,
+                           #Csum_week_map=input$Csum_week_map,
                            Sd_csum_map=input$Sd_csum_map,
                            week_choice=ifelse(Sys.Date()-as.Date(paste0(year(Sys.Date()),"-01-01"))<8
                                               ,1,isoweek(Sys.Date())),
@@ -17,17 +17,17 @@ calculate_csum = function (data=mydata,
   cat('year range during which moving average will be calculated are: ')
   year_range= (as.numeric(year_choice)-Csum_year_map):(as.numeric(year_choice)-1)
   cat(year_range,"DONE\n")
-  
-    if ( (Csum_week_map %% 2)==0 ) #if Odd number
+  week_Csum_map=as.numeric(week_Csum_map)
+    if ( (week_Csum_map %% 2)==0 ) #if Odd number
     {
       alignement="right"
-      Lright= round((Csum_week_map - 1)/2)
+      Lright= round((week_Csum_map - 1)/2)
       Lleft = Lright -1
     } else {
       alignement="center" 
       #define L (lag to right and left)
-      Lright= (Csum_week_map - 1)/2
-      Lleft= (Csum_week_map - 1)/2
+      Lright= (week_Csum_map - 1)/2
+      Lleft= (week_Csum_map - 1)/2
     }
   
   #sites and weeks for the last 52 weeks:
