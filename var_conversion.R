@@ -1,7 +1,8 @@
 ######################Variables conversion during importation ####
 var_conv= function(df1,df2)
 {
-  for ( k in names(df1) ) {
+  for ( k in names(df1) ) 
+  {
     myclass= class(df1[1,get(k)])
     if ( myclass!=class(df2[1,get(k)]) )
     {

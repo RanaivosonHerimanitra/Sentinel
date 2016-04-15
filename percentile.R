@@ -111,7 +111,7 @@ calculate_percentile=function(data=mydata,
     
     cat('DONE\n')
   
-
+   
     
     cat("selected sites for:",code_range,"with alert status\n")
     percentile_alerte=data[code %in% code_range,list(sites,code,alert_status,deb_sem,myradius)]
@@ -227,7 +227,7 @@ calculate_percentile=function(data=mydata,
   #  rm(Nbsite_withdata);rm(Nbsite_beyond);gc()
   # cat('DONE\n')
   
-  print(percentile_alerte_currentweek[sites=="ejd"]); 
+  
   
   return (list(percentile_alerte=percentile_alerte,
                percentile_alerte_currentweek=percentile_alerte_currentweek,
