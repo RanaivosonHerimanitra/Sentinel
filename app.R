@@ -640,9 +640,9 @@ server<-function(input, output,session) {
     
     #print(head(tdr_eff))
     #print(sites34)
-    
-    propili_2015 = tdr_eff[sites %in% sites34 & year(deb_sem)>2014]
-    stat_ili= tdr_eff[sites %in% sites34 & year(deb_sem) <2015]
+   
+    propili_2015 = tdr_eff[sites %in% sites34 & year(as.Date(deb_sem,origin="1970-01-01"))>2014]
+    stat_ili= tdr_eff[sites %in% sites34 & year(as.Date(deb_sem,origin="1970-01-01")) <2015]
     
     Consultations=as.data.table(gather(Consultations,
                                        key=sites,value=NxConsltTotal,-c(code,deb_sem)))
@@ -653,7 +653,7 @@ server<-function(input, output,session) {
     
     propili_2015[,prop := 100*sum(Synd_g,na.rm = T)/sum(NxConsltTotal,na.rm=T) ,by="deb_sem"]
     propili_2015= unique(propili_2015[,list(deb_sem,prop)])
-    propili_2015[,weekOfday:=week(deb_sem)] #create a key to merge later 
+    propili_2015[,weekOfday:=week(as.Date(deb_sem,origin="1970-01-01"))] #create a key to merge later 
     gc()
   
     #########################################################################
@@ -676,7 +676,7 @@ server<-function(input, output,session) {
     
   
     cat("calculating mean and max for historical ILI data...")
-     stat_ili[,weekOfday:=week(deb_sem)]
+     stat_ili[,weekOfday:=week(as.Date(deb_sem,origin="1970-01-01"))]
      stat_ili[,mymax:=max(Synd_g,na.rm = T),by="weekOfday"]
      stat_ili[,mymean:=mean(Synd_g,na.rm = T),by="weekOfday"]
      stat_ili= unique(stat_ili[,list(weekOfday,mymax,mymean)])

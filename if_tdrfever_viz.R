@@ -11,6 +11,6 @@ if ( input$diseases=="Malaria")
       myprop=myprop[facies==input$Cluster_algo]
     }
     #choose to display >2010
-    myprop=myprop[year(deb_sem)>2009]
+    myprop=myprop[year(as.Date(deb_sem,origin="1970-01-01"))>2009]
   }
 } 
