@@ -1,6 +1,6 @@
 #whether to run on local for debugging and development purpose
 #or to pull data directly from the server:
-remote_server=T;writing_to_disk=F
+remote_server=F;writing_to_disk=F
 #load required packages:
 source("libraries.R");source("var_conversion.R")
 if ( exists("PaluConf")==F ) #to speed up things

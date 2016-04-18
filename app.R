@@ -396,7 +396,7 @@ server<-function(input, output,session) {
     }
    
     p = p %>% add_trace(x = deb_sem, y = 100*ndvi_value, name = "NDVI",
-                        line = list(width=line_width),visible='legendonly')
+                        line = list(width=line_width,color="#11d938"),visible='legendonly')
     p = p %>% add_trace(x = deb_sem, y = pmm_value, name = "Rainfall(mm)",
                         line = list(width=line_width,color="#307ff0"),
                         visible='legendonly')
