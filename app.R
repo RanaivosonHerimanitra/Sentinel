@@ -745,11 +745,16 @@ server<-function(input, output,session) {
     
     #mydata=preprocessing()
     mydata=percentile_algorithm()$mydata
-   # mydata[sites==input$diseases]
-    #recupere date d'alerte  pour chaque site
+ 
+    
+    #recupere date d'alerte percentile (seuleument pour cet algo) pour chaque site
     #cree une nouvelle variable = valeur de cette alerte
-    mydata[,myalerte:=0]
-    mydata[,myalerte:=ifelse(alert_status=="alert",occurence,NA)]
+    if (input$Algorithmes_eval1=="Percentile" | input$Algorithmes_eval2=="Percentile")
+    {
+      mydata[,myalerte:=0]
+      mydata[,myalerte:=ifelse(alert_status=="alert",occurence,NA)]
+      
+    }
     
     
     setkey(mydata,sites)
@@ -813,7 +818,7 @@ server<-function(input, output,session) {
     mydata[,deb_sem:=as.Date(deb_sem)]
     mydata=mydata[order(deb_sem),]
     setnames(mydata,"deb_sem","Semaine")
-    #handle title programmatically (depends on user choice)
+    #handle title programmatically (depends on user choice of disease, site)
      mytitle=paste0("Weekly ",input$diseases," cases number in ",sentinel_latlong[sites==selected_site_leaflet(),get("name")])
     #
     line_width=1
@@ -830,9 +835,11 @@ server<-function(input, output,session) {
                      xaxis =list(title="Weeks"),
                      yaxis =list(title="#Cases")
                      )
-    p = p %>% add_trace(x=Semaine,y=myalerte,line=list(color="rgb(165,41,157)"),
+    if (input$Algorithmes_eval1=="Percentile" | input$Algorithmes_eval2=="Percentile")
+    {
+      p = p %>% add_trace(x=Semaine,y=myalerte,line=list(color="rgb(165,41,157)"),
                         name="percentile alerte")
-    
+    }
     p = p %>% add_trace(x = Semaine, 
                         y = rainFall/10, 
                         line = list(width=line_width,color = "#84a6df"),
