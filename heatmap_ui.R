@@ -18,5 +18,6 @@ heatmap_display = list(sliderInput(inputId = "nbyear",
                                   ),
                        myheatmap,
                        includeHTML("www/legende_heatmap.html"),
-                       tags$strong("Alert-Normal-No Data"),
+                       #tags$strong("Normal"),
+                       #tags$strong("Alert-Normal-No Data"),
                        heatmap_legend_details)

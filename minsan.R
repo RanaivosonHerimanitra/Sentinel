@@ -180,28 +180,7 @@ calculate_minsan=function(data=mydata,
     cat("DONE\n")
     
   }
-  ###################################by facies ###############################
-  # cat("Weekly number of sites in alert using MinSan (by facies)...\n")
-  # Nbsite_beyond=data[is.na(occurence)==F & alert_status=="alert",
-  #                    length(unique(sites)),by=c(byvar,"facies")]
-  # setnames(Nbsite_beyond,"V1","eff_beyond")
-  # cat("Weekly number of sites that had given data (by facies)...\n")
-  # Nbsite_withdata=data[is.na(occurence)==F,length(unique(sites)),by=c(byvar,"facies")]
-  # setnames(Nbsite_withdata,"V1","eff_total")
-  # cat('MERGE to give proportion of sites beyond n_percentile per week (by facies)...')
-  # propsite_alerte_minsan_byfacies=merge(x=Nbsite_withdata,y=Nbsite_beyond,
-  #                              by.x=c(byvar,"facies"),by.y=c(byvar,"facies"),all.x=T)
-  # cat('DONE\n')
-  # cat('calculate prop and change NA to zero...')
-  # propsite_alerte_minsan_byfacies[,prop:=ifelse(is.na(eff_beyond/eff_total)==T,0.0,
-  #                                      eff_beyond/eff_total)]
-  # cat('DONE\n')
-  # cat('merge with deb_sem to reorder time series...')
-  # propsite_alerte_minsan_byfacies=merge(unique(propsite_alerte_minsan_byfacies[,list(code,prop,facies)]),
-  #                              unique(data[,list(code,deb_sem,facies)]),
-  #                              by.x=c(byvar,"facies"),by.y=c(byvar,"facies"))
-  # cat('DONE\n')
-  # rm(Nbsite_withdata);rm(Nbsite_beyond);gc()
+ 
   
 ##########################################################################
   cat('calculate radius for per site for percentile algorithm alert...')

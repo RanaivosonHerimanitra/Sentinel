@@ -10,7 +10,7 @@ calculate_csum = function (data=mydata,
 {
   #take 52 most recent week in the data:
   #because they will be compared to historical values (week per week)
-  max_deb_sem= max(as.Date(data$deb_sem))
+  max_deb_sem= max(as.Date(data$deb_sem,origin=as.Date("1970-01-01")))
   max_code=paste0(year(max_deb_sem),"_",isoweek(max_deb_sem))
   last52weeks= unique(as.Date(data$deb_sem))[order(unique(as.Date(data$deb_sem)),decreasing = T)[1:52]]
   

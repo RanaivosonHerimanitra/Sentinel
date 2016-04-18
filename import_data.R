@@ -358,6 +358,7 @@ if ( exists("PaluConf")==F ) #to speed up things
   } else {
     setwd('/media/herimanitra/DONNEES/IPM_sentinelle/sentinel_hrmntr 291115/Sentinel')
     PaluConf=fread("data/PaluConf.csv")
+   
     Consultations=fread("data/Consultations.csv")
     SyndF=fread("data/SyndF.csv")
     Diarrh=fread("data/Diarrh.csv")
@@ -370,7 +371,7 @@ if ( exists("PaluConf")==F ) #to speed up things
     ili=fread("data/ili.csv")
     pfa=fread("data/pfa.csv")
     palu_autoch=fread("data/palu_autoch.csv")
-    tdr_eff=fread("data/tdr_eff.csv");
+    tdr_eff=fread("data/tdr_eff.csv")
     hfi=fread("data/hfi.csv")
   }
   

@@ -235,6 +235,8 @@ server<-function(input, output,session) {
      PaluConf_SyndF[alert_status_hist %in% NA, myradius:=5.0]
    cat('DONE\n')
    
+   PaluConf_SyndF[,deb_sem:=as.Date(deb_sem,origin="1970-01-01")]
+  
    max_deb_sem= max(PaluConf_SyndF$deb_sem)
    max_code=paste0(year(max_deb_sem),"_",isoweek(max_deb_sem))
    if (max_code==paste0(year(Sys.Date()),"_",isoweek(Sys.Date())) ) {
@@ -749,13 +751,22 @@ server<-function(input, output,session) {
     
     #recupere date d'alerte percentile (seuleument pour cet algo) pour chaque site
     #cree une nouvelle variable = valeur de cette alerte
-    if (input$Algorithmes_eval1=="Percentile" | input$Algorithmes_eval2=="Percentile")
+    if ( length(input$Algorithmes_eval1)>0 )
     {
+      if (input$Algorithmes_eval1=="Percentile")
+      {
+        mydata[,myalerte:=0]
+        mydata[,myalerte:=ifelse(alert_status=="alert",occurence,NA)]
+      }
+    }
+    if ( length(input$Algorithmes_eval2)>0 )
+    {
+     if ( input$Algorithmes_eval2=="Percentile")
+     {
       mydata[,myalerte:=0]
       mydata[,myalerte:=ifelse(alert_status=="alert",occurence,NA)]
-      
+     }
     }
-    
     
     setkey(mydata,sites)
     cat("reshape HFI to extract rainFall...")
@@ -835,17 +846,19 @@ server<-function(input, output,session) {
                      xaxis =list(title="Weeks"),
                      yaxis =list(title="#Cases")
                      )
-    if (input$Algorithmes_eval1=="Percentile" | input$Algorithmes_eval2=="Percentile")
-    {
-      p = p %>% add_trace(x=Semaine,y=myalerte,line=list(color="rgb(165,41,157)"),
-                        name="percentile alerte")
-    }
-    p = p %>% add_trace(x = Semaine, 
+    
+      if (input$Algorithmes_eval1=="Percentile" | input$Algorithmes_eval2=="Percentile" )
+      {
+        p = p %>% add_trace(x=Semaine,y=myalerte,line=list(color="rgb(165,41,157)"),
+                            name="percentile alerte")
+      }
+    
+        p = p %>% add_trace(x = Semaine, 
                         y = rainFall/10, 
                         line = list(width=line_width,color = "#84a6df"),
                         name = "rainfall/10",visible='legendonly')
    
-    p = p %>% add_trace(x = Semaine, y = mild_value, name = "LLIN",
+      p = p %>% add_trace(x = Semaine, y = mild_value, name = "LLIN",
                         color="LLIN",
                         opacity=0.5,
                         colors="#132B43",
@@ -891,13 +904,10 @@ server<-function(input, output,session) {
                            minsan_consecutive_week=input$minsan_consecutive_week,byvar="code")$propsite_alerte_minsan
         
       }
-      #MUST EXIST!!
       if ( input$Algorithmes_eval1 == 'Ind') 
         { 
-        X= tdrplus_fever_ind()$mydata
-        #print(X)
-        #Sys.sleep(25)
-        }
+        X= tdrplus_fever_ind()$mydata 
+      }
     } else {
       if ( input$Algorithmes_eval2 == 'Percentile' ) { 
         #mydata=preprocessing()
@@ -942,26 +952,23 @@ server<-function(input, output,session) {
     }
     
     cat('recode alert status...')
-    setkey(X,alert_status)
-    X[is.na(alert_status)==T,alert_status2:=0]
-    X[alert_status=="normal",alert_status2:=1]
-    X[alert_status=="alert",alert_status2:=2]
+     setkey(X,alert_status)
+     X[is.na(alert_status)==T,alert_status2:=0]
+     X[alert_status=="normal",alert_status2:=1]
+     X[alert_status=="alert",alert_status2:=2]
     cat('DONE\n')
+    
+    #print(class(X$deb_sem))
+    #print(unique(X$deb_sem)[1:2])
+    
     cat('spreading data...')
-    X[,years:=year(deb_sem)]
-    
-    
-    X=merge(X,sentinel_latlong[,list(sites,name)],by.x="sites",by.y="sites")
-    
-   
-    X=X[years %in% (2016-as.numeric(input$nbyear)):2016,]
-    
-    #try selection using dplyr so then avoid data.frame conversion!
-    #as.data.frame otherwise It won't work
-    myz= as.data.frame(spread(unique(X[,list(name,deb_sem,alert_status2)]),
+     X[,years:=year(as.Date(deb_sem,origin="1970-01-01"))]
+     X=merge(X,sentinel_latlong[,list(sites,name)],by.x="sites",by.y="sites")
+     X=X[years %in% (2016-as.numeric(input$nbyear)):2016,]
+     #try selection using dplyr so then avoid data.frame conversion!
+     #as.data.frame otherwise It won't work
+     myz= as.data.frame(spread(unique(X[,list(name,deb_sem,alert_status2)]),
                               deb_sem,alert_status2))
-   
-    #
     cat("DONE\n")
    
     row.names(myz) <- myz$name

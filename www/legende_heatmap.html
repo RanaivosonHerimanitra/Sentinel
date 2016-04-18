@@ -1,5 +1,47 @@
-<br><br>
-<div class="svg_by_hand">
+<script type="text/javascript">
+window.onload = function() {
+	 var canvas = document.getElementById("mycanvas");
+        cred = canvas.getContext("2d")
+        cred.fillStyle="red"
+        cred.fillRect(0,0,canvas.width,canvas.height)
+        cred.beginPath();
+        cred.moveTo(25,0)
+        cred.font="11px Helvetica Bold";
+        cred.fillStyle="Black";
+        cred.fillText("Alert",0,10)
+
+        var canvas2 = document.getElementById("mycanvas2");
+        cred = canvas2.getContext("2d")
+        cred.fillStyle="green"
+        cred.fillRect(0,0,canvas2.width,canvas2.height)
+        cred.beginPath();
+        cred.moveTo(25,0)
+        cred.font="9px Helvetica Bold";
+        cred.fillStyle="Black";
+        cred.fillText("Normal",0,10)
+
+        var canvas3 = document.getElementById("mycanvas3");
+        cred = canvas3.getContext("2d")
+        cred.fillStyle="grey"
+        cred.fillRect(0,0,canvas3.width,canvas3.height)
+        cred.beginPath();
+        cred.moveTo(25,0)
+        cred.font="9px Helvetica Bold";
+        cred.fillStyle="Black";
+        cred.fillText("No data",0,10)
+       
+  }
+</script>
+<br>
+<canvas id="mycanvas" width="35" height="35">
+</canvas>
+<canvas id="mycanvas2" width="35" height="35">
+</canvas>
+
+<canvas id="mycanvas3" width="35" height="35">
+</canvas>
+<!--<div class="svg_by_hand">
+
  			<svg width="50" height="50">
  				<rect width="15" height="15" fill="red"></rect>
  			</svg>
@@ -9,4 +51,4 @@
  			<svg width="50" height="50">
  				<rect width="15" height="15" fill="grey"></rect>
  			</svg>
- </div>
+ </div>-->
