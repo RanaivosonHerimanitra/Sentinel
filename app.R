@@ -390,7 +390,7 @@ server<-function(input, output,session) {
                           colors="#dfb678",
                           visible='legendonly')
       p = p %>% add_trace(x = deb_sem, y = mild_value, name = "LLIN",
-                          color="Mild",
+                          color="LLIN",
                           opacity=0.5,
                           colors="#132B43",
                           type="bar",
@@ -856,7 +856,7 @@ server<-function(input, output,session) {
         p = p %>% add_trace(x = Semaine, 
                         y = rainFall/10, 
                         line = list(width=line_width,color = "#84a6df"),
-                        name = "rainfall/10",visible='legendonly')
+                        name = "Rainfall/10",visible='legendonly')
    
       p = p %>% add_trace(x = Semaine, y = mild_value, name = "LLIN",
                         color="LLIN",
