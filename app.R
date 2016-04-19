@@ -1110,10 +1110,15 @@ server<-function(input, output,session) {
 }
 
 ##############################################User interface ##############
+#
+mydashheader=dashboardHeader(title="Sentinel surveillance",titleWidth="233")
+# mydashheader$children[[2]]$children <-  tags$div(class="media",
+#                                                  tags$a(href="http://pasteur.mg",
+#   tags$img(class="media-object img-thumbnail" ,height='90',width='90',src="logo.png" ,alt="logo")))
 #skeleton of the user interface:
 source('initialize_ui.R')
 ui = list(dashboardPage(skin = "blue",
-  dashboardHeader(title="Sentinel surveillance",titleWidth="233"),
+          mydashheader,
   dashboardSidebar(
     sidebarMenu(
       menuItem(text="Main",tabName="mytabbox", 
@@ -1126,7 +1131,12 @@ ui = list(dashboardPage(skin = "blue",
                icon = icon("building")),
       menuItem(text=list("Forecasting", tags$small(class="media-heading",tags$span(class="label label-danger", "beta release"))),
                tabName="myforecast", 
-               icon = icon("line-chart"))
+               icon = icon("line-chart")),
+      tags$div(class="media",
+          tags$div(class="media-left media-middle",
+               tags$a(href="http://pasteur.mg",
+                      tags$img(class="media-object img-rounded" ,height='100',width='230',src="logo2.png" ,alt="logo")
+                      )))
   )), 
   dashboardBody(shinyjs::useShinyjs(),tabItems(
                          tabbox_item,
