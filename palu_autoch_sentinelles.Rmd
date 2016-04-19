@@ -1,7 +1,7 @@
 ---
 title: "Surveillance Paludisme Autochtone HTC"
 author: "Institut Pasteur de Madagascar"
-date: "`r format(Sys.time(), '%d %B, %Y')`"
+date: "`r Sys.Date()`"
 output: pdf_document
 ---
 
@@ -126,13 +126,10 @@ knitr::kable(last6_palu_autoch[, c("Centre","6 semaines précédentes","Semaine 
 mydata= preprocessing_disease(select_htc=TRUE)[["Malaria"]]
 setnames(mydata,"occurence","palu")
 myname = as.character(unique(mydata$sites))
-mydata=mydata[as.Date(deb_sem)>=as.Date("2015-06-01"),]
-#code_label = fread('data/sentinel_codes.csv')
+mydata=mydata[as.Date(deb_sem,origin="1970-01-01")>=as.Date("2015-06-01"),]
 for ( p in myname )
        {
-  #cat(p)
-  #cat('\n')
-  #code_label[tolower(Code)==tolower(p),get("Centre")]
+  
         disease1=mydata[sites==p,list(sites,deb_sem,palu)]
         disease1[is.na(palu)==T,palu:=0]
         disease1[,Légende:="Importe"]
@@ -152,7 +149,7 @@ for ( p in myname )
         setnames(disease2,"autoch","value")
         disease2[,Légende:="autoch"]
         X=rbind(disease2, disease1)
-        X$deb_sem=as.Date(X$deb_sem)
+        X$deb_sem=as.Date(as.numeric(X$deb_sem),origin="1970-01-01")
         setnames(X,"deb_sem","Date")
         d = ggplot(data=X,aes(x=Date,y=value,fill=Légende,colour=Légende)) 
         #set ylim to 10 if <10

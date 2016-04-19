@@ -1,7 +1,7 @@
 ---
 title: "ILI dans le réseau sentinelle"
 author: "Institut Pasteur de Madagascar"
-date: "`r format(Sys.time(), '%d %B, %Y')`"
+date: "`r Sys.Date()`"
 output: pdf_document
 ---
 

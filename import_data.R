@@ -2,7 +2,7 @@
 #or to pull data directly from the server:
 remote_server=F;writing_to_disk=F
 #whether to run report or to run shiny:
-reporting =F;
+reporting =T;
 #load required packages:
 source("libraries.R");source("var_conversion.R")
 if ( exists("PaluConf")==F ) #to speed up things
