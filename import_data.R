@@ -1,6 +1,8 @@
 #whether to run on local for debugging and development purpose
 #or to pull data directly from the server:
 remote_server=F;writing_to_disk=F
+#whether to run report or to run shiny:
+reporting =F;
 #load required packages:
 source("libraries.R");source("var_conversion.R")
 if ( exists("PaluConf")==F ) #to speed up things
@@ -29,7 +31,7 @@ if ( exists("PaluConf")==F ) #to speed up things
     arbosusp=fread("data/arbosusp.csv")
     #tdr_eff=fread("data/tdr_eff.csv")
     ################################################################"
-    max_date=max(PaluConf$deb_sem)
+    max_date=max(as.Date(PaluConf$deb_sem,origin="1970-01-01"))
     #should accelerate extraction:
     PaluConf_tmp= tbl(sentinel,
                   build_sql("SELECT * FROM ",
@@ -42,12 +44,12 @@ if ( exists("PaluConf")==F ) #to speed up things
      
       #transform into data.table:
       PaluConf_tmp= PaluConf_tmp  %>% data.frame() %>% data.table()
-      PaluConf_tmp[,deb_sem:=as.character(deb_sem)]
+      #PaluConf_tmp[,deb_sem:=as.character(deb_sem)]
       fwrite(PaluConf_tmp,"data/PaluConf_tmp.csv")
-      PaluConf_tmp=fread("data/PaluConf_tmp.csv",colClasses = c(deb_sem="character"))
+      PaluConf_tmp=fread("data/PaluConf_tmp.csv")
       PaluConf=PaluConf[deb_sem<max_date,]
       PaluConf=rbind(PaluConf,PaluConf_tmp)
-      PaluConf[,deb_sem:=as.Date(deb_sem)]
+      PaluConf[,deb_sem:=as.Date(deb_sem,origin="1970-01-01")]
       setorder(PaluConf,-deb_sem)
       
       # #conversion of variables:
@@ -58,7 +60,7 @@ if ( exists("PaluConf")==F ) #to speed up things
       # setorder(PaluConf,-deb_sem)
     }
     ######################################
-    max_date=max(Consultations$deb_sem)
+    max_date=max(as.Date(Consultations$deb_sem,origin="1970-01-01"))
     Consultations_tmp= tbl(sentinel,
                        build_sql("SELECT * FROM ",
                                  "crosstab_nxconslttotal_format",
@@ -68,12 +70,12 @@ if ( exists("PaluConf")==F ) #to speed up things
     {
       #transform into data.table:
       Consultations_tmp= Consultations_tmp  %>% data.frame() %>% data.table()
-      Consultations_tmp[,deb_sem:=as.character(deb_sem)]
+      #Consultations_tmp[,deb_sem:=as.character(deb_sem)]
       fwrite(Consultations_tmp,"data/Consultations_tmp.csv")
-      Consultations_tmp=fread("data/Consultations_tmp.csv",colClasses = c(deb_sem="character"))
+      Consultations_tmp=fread("data/Consultations_tmp.csv")
       Consultations=Consultations[deb_sem<max_date,]
       Consultations=rbind(Consultations,Consultations_tmp)
-      Consultations[,deb_sem:=as.Date(deb_sem)]
+      Consultations[,deb_sem:=as.Date(deb_sem,origin="1970-01-01")]
       setorder(Consultations,-deb_sem)
       # #conversion of variables:
       # var_conv(Consultations,Consultations_tmp)
@@ -83,7 +85,7 @@ if ( exists("PaluConf")==F ) #to speed up things
       # setorder(Consultations,-deb_sem)
     }
     ############################################################
-    max_date=max(SyndF$deb_sem)
+    max_date=max(as.Date(SyndF$deb_sem,origin="1970-01-01"))
     SyndF_tmp=tbl(sentinel,
               build_sql("SELECT * FROM ",
                         "crosstab_syndf_format",
@@ -92,12 +94,12 @@ if ( exists("PaluConf")==F ) #to speed up things
     if ( dim(SyndF_tmp)[2]>0 )
     {
       SyndF_tmp= SyndF_tmp  %>% data.frame() %>% data.table()
-      SyndF_tmp[,deb_sem:=as.character(deb_sem)]
+      #SyndF_tmp[,deb_sem:=as.character(deb_sem)]
       fwrite(SyndF_tmp,"data/SyndF_tmp.csv")
-      SyndF_tmp=fread("data/SyndF_tmp.csv",colClasses = c(deb_sem="character"))
+      SyndF_tmp=fread("data/SyndF_tmp.csv")
       SyndF=SyndF[deb_sem<max_date,]
       SyndF=rbind(SyndF,SyndF_tmp)
-      SyndF[,deb_sem:=as.Date(deb_sem)]
+      SyndF[,deb_sem:=as.Date(deb_sem,origin="1970-01-01")]
       setorder(SyndF,-deb_sem)
       
       # #transform into data.table:
@@ -109,37 +111,11 @@ if ( exists("PaluConf")==F ) #to speed up things
       # SyndF=(rbind(SyndF,SyndF_tmp))
       # setorder(SyndF,-deb_sem)
     }
-    ###########################################################
-    #palu autochtone:
-   
-    max_date=max(palu_autoch$deb_sem)
-    palu_autoch_tmp=tbl(sentinel,
-                        build_sql("SELECT * FROM ",
-                                  "crosstab_autoch_format"," WHERE deb_sem>=",
-                                  max_date))
     
-    if (dim(palu_autoch_tmp)[2]>0 )
-    {
-      palu_autoch_tmp= palu_autoch_tmp  %>% data.frame() %>% data.table()
-      palu_autoch_tmp[,deb_sem:=as.character(deb_sem)]
-      fwrite(palu_autoch_tmp,"data/palu_autoch_tmp.csv")
-      palu_autoch_tmp=fread("data/palu_autoch_tmp.csv",colClasses = c(deb_sem="character"))
-      palu_autoch=palu_autoch[deb_sem<max_date,]
-      palu_autoch=rbind(palu_autoch,palu_autoch_tmp)
-      palu_autoch[,deb_sem:=as.Date(deb_sem)]
-      setorder(palu_autoch,-deb_sem)
-      
-      # #transform into data.table:
-      # palu_autoch_tmp= palu_autoch_tmp  %>% data.frame() %>% data.table()
-      # #conversion of variables:
-      # var_conv(palu_autoch,palu_autoch_tmp)
-      # #rbind 02 dataframe:
-      # palu_autoch=unique(rbind(palu_autoch,palu_autoch_tmp))
-      # setorder(palu_autoch,-deb_sem)
-    }
+    
     ################################################################
     
-    max_date=max(Diarrh$deb_sem)
+    max_date=max(as.Date(Diarrh$deb_sem,origin="1970-01-01"))
     Diarrh_tmp=tbl(sentinel,
                build_sql("SELECT * FROM ",
                          "crosstab_diarrh_format",
@@ -148,12 +124,12 @@ if ( exists("PaluConf")==F ) #to speed up things
     if ( dim(Diarrh_tmp)[2]>0 )
     {
       Diarrh_tmp= Diarrh_tmp  %>% data.frame() %>% data.table()
-      Diarrh_tmp[,deb_sem:=as.character(deb_sem)]
+      #Diarrh_tmp[,deb_sem:=as.character(deb_sem)]
       fwrite(Diarrh_tmp,"data/Diarrh_tmp.csv")
-      Diarrh_tmp=fread("data/Diarrh_tmp.csv",colClasses = c(deb_sem="character"))
+      Diarrh_tmp=fread("data/Diarrh_tmp.csv")
       Diarrh=Diarrh[deb_sem<max_date,]
       Diarrh=rbind(Diarrh,Diarrh_tmp)
-      Diarrh[,deb_sem:=as.Date(deb_sem)]
+      Diarrh[,deb_sem:=as.Date(deb_sem,origin="1970-01-01")]
       setorder(Diarrh,-deb_sem)
       
       # #transform into data.table:
@@ -169,7 +145,7 @@ if ( exists("PaluConf")==F ) #to speed up things
     
     ##########################################################"
    
-    max_date= max(Diarrh_feb$deb_sem)
+    max_date= max(as.Date(Diarrh_feb$deb_sem,origin="1970-01-01"))
     Diarrh_feb_tmp=tbl(sentinel,
                build_sql("SELECT * FROM ",
                          "crosstab_diarrhfeb_format",
@@ -178,12 +154,12 @@ if ( exists("PaluConf")==F ) #to speed up things
     if ( dim(Diarrh_feb_tmp)[2]>0 )
     {
       Diarrh_feb_tmp= Diarrh_feb_tmp  %>% data.frame() %>% data.table()
-      Diarrh_feb_tmp[,deb_sem:=as.character(deb_sem)]
+      #Diarrh_feb_tmp[,deb_sem:=as.character(deb_sem)]
       fwrite(Diarrh_feb_tmp,"data/Diarrh_feb_tmp.csv")
-      Diarrh_feb_tmp=fread("data/Diarrh_feb_tmp.csv",colClasses = c(deb_sem="character"))
+      Diarrh_feb_tmp=fread("data/Diarrh_feb_tmp.csv")
       Diarrh_feb=Diarrh_feb[deb_sem<max_date,]
       Diarrh_feb=rbind(Diarrh_feb,Diarrh_feb_tmp)
-      Diarrh_feb[,deb_sem:=as.Date(deb_sem)]
+      Diarrh_feb[,deb_sem:=as.Date(deb_sem,origin="1970-01-01")]
       setorder(Diarrh_feb,-deb_sem)
       
       # #transform into data.table:
@@ -195,58 +171,20 @@ if ( exists("PaluConf")==F ) #to speed up things
       # Diarrh_feb=unique(rbind(Diarrh_feb,Diarrh_feb_tmp))
       # setorder(Diarrh_feb,-deb_sem)
     }
-    ##################################################################
-    #Paralysie flasque aigue
-   
-    max_date=max(pfa$deb_sem)
-    pfa_tmp= tbl(sentinel,
-             build_sql("SELECT * FROM ",
-                       "crosstab_pfa_format",
-                       " WHERE deb_sem>=",max_date))
-    
-    if (dim(pfa_tmp)[2]>0)
-    {
-      pfa_tmp= pfa_tmp  %>% data.frame() %>% data.table()
-      pfa_tmp[,deb_sem:=as.character(deb_sem)]
-      fwrite(pfa_tmp,"data/pfa_tmp.csv")
-      pfa_tmp=fread("data/pfa_tmp.csv",colClasses = c(deb_sem="character"))
-      pfa=pfa[deb_sem<max_date,]
-      pfa=rbind(pfa,pfa_tmp)
-      pfa[,deb_sem:=as.Date(deb_sem)]
-      setorder(pfa,-deb_sem)
-      # #conversion of dataframe:
-      # pfa_tmp = pfa_tmp %>% data.frame() %>% data.table()
-      # #conversion of variables
-      # var_conv(pfa,pfa_tmp)
-      # #rbind 02 dataframe:
-      # pfa= pfa[deb_sem<max_date,]
-      # pfa=(rbind(pfa,pfa_tmp))
-      # setorder(pfa,-deb_sem)
-    }
-    
-    max_date=max(arbosusp$deb_sem)
+   max_date=max(as.Date(arbosusp$deb_sem,origin="1970-01-01"))
     # Arbosusp
      arbosusp_tmp=tbl(sentinel,build_sql("SELECT * FROM ","crosstab_arbosusp_format",
                                      " WHERE deb_sem>=",max_date))
      if (dim(arbosusp_tmp)[2]>0)
      {
        arbosusp_tmp= arbosusp_tmp  %>% data.frame() %>% data.table()
-       arbosusp_tmp[,deb_sem:=as.character(deb_sem)]
+       #arbosusp_tmp[,deb_sem:=as.character(deb_sem)]
        fwrite(arbosusp_tmp,"data/arbosusp_tmp.csv")
-       arbosusp_tmp=fread("data/arbosusp_tmp.csv",colClasses = c(deb_sem="character"))
+       arbosusp_tmp=fread("data/arbosusp_tmp.csv")
        arbosusp=arbosusp[deb_sem<max_date,]
        arbosusp=rbind(arbosusp,arbosusp_tmp)
-       arbosusp[,deb_sem:=as.Date(deb_sem)]
+       arbosusp[,deb_sem:=as.Date(deb_sem,origin="1970-01-01")]
        setorder(arbosusp,-deb_sem)
-       
-       # #conversion of dataframe:
-       # arbosusp_tmp = arbosusp_tmp %>% data.frame() %>% data.table()
-       # #conversion of variables
-       # var_conv(pfa,arbosusp_tmp)
-       # #rbind 02 dataframe:
-       # arbosusp= arbosusp[deb_sem<max_date,]
-       # arbosusp=rbind(arbosusp,arbosusp_tmp)
-       # setorder(arbosusp,-deb_sem)
      }
     
     #
@@ -267,9 +205,8 @@ if ( exists("PaluConf")==F ) #to speed up things
     #   tdr_eff=(rbind(tdr_eff,tdr_eff_tmp))
     #   setorder(tdr_eff,-deb_sem)
     # }
-    #définir taille de cercle f(Nb total diarrhée) dans map
     
-    max_date = max(ili$deb_sem)
+    max_date = max(as.Date(ili$deb_sem,origin="1970-01-01"))
     ili_tmp=tbl(sentinel,
         build_sql("SELECT * FROM ",
                   "crosstab_grippsusp_autrvirresp_format",
@@ -278,22 +215,13 @@ if ( exists("PaluConf")==F ) #to speed up things
     if (dim(ili_tmp)[2]>0)
     {
       ili_tmp= ili_tmp  %>% data.frame() %>% data.table()
-      ili_tmp[,deb_sem:=as.character(deb_sem)]
+      #ili_tmp[,deb_sem:=as.character(deb_sem)]
       fwrite(ili_tmp,"data/ili_tmp.csv")
-      ili_tmp=fread("data/ili_tmp.csv",colClasses = c(deb_sem="character"))
+      ili_tmp=fread("data/ili_tmp.csv")
       ili=ili[deb_sem<max_date,]
       ili=rbind(ili,ili_tmp)
-      ili[,deb_sem:=as.Date(deb_sem)]
+      ili[,deb_sem:=as.Date(deb_sem,origin="1970-01-01")]
       setorder(ili,-deb_sem)
-      
-      # #conversion of dataframe:
-      # ili_tmp = ili_tmp %>% data.frame() %>% data.table()
-      # #conversion of variables:
-      # var_conv(ili,ili_tmp)
-      # #rbind 02 dataframe:
-      # ili=ili[deb_sem<max_date]
-      # ili=(rbind(ili,ili_tmp))
-      # setorder(ili,-deb_sem)
     }
     
     
@@ -304,7 +232,7 @@ if ( exists("PaluConf")==F ) #to speed up things
     
     #empilement des HFi:
     hfi=fread("data/hfi.csv")
-    max_date=max(hfi$deb_sem)
+    max_date=max(as.Date(hfi$deb_sem,origin="1970-01-01"))
     conn_hfi <- src_postgres(dbname="data_iri",
                              host = "172.16.0.230", 
                              user = "cnx_user",
@@ -316,22 +244,57 @@ if ( exists("PaluConf")==F ) #to speed up things
      if ( dim(hfi_tmp)[2]>0 )
      {
        hfi_tmp= hfi_tmp  %>% data.frame() %>% data.table()
-       hfi_tmp[,deb_sem:=as.character(deb_sem)]
+       #hfi_tmp[,deb_sem:=as.character(deb_sem)]
        fwrite(hfi_tmp,"data/hfi_tmp.csv")
-       hfi_tmp=fread("data/hfi_tmp.csv",colClasses = c(deb_sem="character"))
+       hfi_tmp=fread("data/hfi_tmp.csv")
        hfi=hfi[deb_sem<max_date,]
        hfi=rbind(hfi,hfi_tmp)
-       hfi[,deb_sem:=as.Date(deb_sem)]
+       hfi[,deb_sem:=as.Date(deb_sem,origin="1970-01-01")]
        setorder(hfi,-deb_sem)
-       # #conversion of dataframe:
-       # hfi_tmp = hfi_tmp %>% data.frame() %>% data.table()
-       # #append only if non empty datatable 
-       # #conversion of variables:
-       # var_conv(hfi,hfi_tmp)
-       # #rbind 02 dataframe:
-       # hfi= hfi[deb_sem<max_date,]
-       # hfi=(rbind(hfi,hfi_tmp))
-       # setorder(hfi,-deb_sem)
+      
+     }
+     ########################Datasets that are part of
+     ########################the reporting set#########
+     #palu autochtone:
+     if (reporting ==T)
+     {
+       max_date=max(as.Date(palu_autoch$deb_sem,origin="1970-01-01"))
+       palu_autoch_tmp=tbl(sentinel,
+                           build_sql("SELECT * FROM ",
+                                     "crosstab_autoch_format"," WHERE deb_sem>=",
+                                     max_date))
+       
+       if (dim(palu_autoch_tmp)[2]>0 )
+       {
+         palu_autoch_tmp= palu_autoch_tmp  %>% data.frame() %>% data.table()
+         #palu_autoch_tmp[,deb_sem:=as.character(deb_sem)]
+         fwrite(palu_autoch_tmp,"data/palu_autoch_tmp.csv")
+         palu_autoch_tmp=fread("data/palu_autoch_tmp.csv")
+         palu_autoch=palu_autoch[deb_sem<max_date,]
+         palu_autoch=rbind(palu_autoch,palu_autoch_tmp)
+         palu_autoch[,deb_sem:=as.Date(deb_sem,origin="1970-01-01")]
+         setorder(palu_autoch,-deb_sem)
+       }
+       ##################################################################
+       #Paralysie flasque aigue
+       max_date=max(as.Date(pfa$deb_sem,origin="1970-01-01"))
+       pfa_tmp= tbl(sentinel,
+                    build_sql("SELECT * FROM ",
+                              "crosstab_pfa_format",
+                              " WHERE deb_sem>=",max_date))
+       
+       if (dim(pfa_tmp)[2]>0)
+       {
+         pfa_tmp= pfa_tmp  %>% data.frame() %>% data.table()
+         #pfa_tmp[,deb_sem:=as.character(deb_sem)]
+         fwrite(pfa_tmp,"data/pfa_tmp.csv")
+         pfa_tmp=fread("data/pfa_tmp.csv")
+         pfa=pfa[deb_sem<max_date,]
+         pfa=rbind(pfa,pfa_tmp)
+         pfa[,deb_sem:=as.Date(deb_sem,origin="1970-01-01")]
+         setorder(pfa,-deb_sem)
+       }
+       
      }
     if (writing_to_disk==T )
     {
@@ -347,7 +310,7 @@ if ( exists("PaluConf")==F ) #to speed up things
       fwrite(pfa,"data/pfa.csv",sep=";")
       fwrite(palu_autoch,"data/palu_autoch.csv",sep=";")
       fwrite(hfi,"data/hfi.csv",sep=";")
-      fwrite(arbosusp_tmp,"data/arbosusp.csv",sep=";")
+      fwrite(arbosusp,"data/arbosusp.csv",sep=";")
       #cat('DONE\n')
     }
     
@@ -361,6 +324,8 @@ if ( exists("PaluConf")==F ) #to speed up things
    
     Consultations=fread("data/Consultations.csv")
     SyndF=fread("data/SyndF.csv")
+    #SyndF[,deb_sem:=as.character((as.Date(deb_sem,origin="1970-01-01")))]
+    
     Diarrh=fread("data/Diarrh.csv")
     Diarrh_feb=fread("data/Diarrh_feb.csv")
     lst=fread("data/lst.csv")
@@ -369,6 +334,8 @@ if ( exists("PaluConf")==F ) #to speed up things
     caid=fread("data/caid.csv")
     mild=fread("data/mild_export.csv")
     ili=fread("data/ili.csv")
+    #ili[,deb_sem:=as.character((as.Date(deb_sem,origin="1970-01-01")))]
+    
     pfa=fread("data/pfa.csv")
     palu_autoch=fread("data/palu_autoch.csv")
     tdr_eff=fread("data/tdr_eff.csv")

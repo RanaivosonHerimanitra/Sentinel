@@ -208,6 +208,13 @@ calculate_csum = function (data=mydata,
     csum_alerte_currentweek=csum_alerte[code==max_code,]
   }
   
+   
+   #convert to usual date format:
+   csum_alerte_currentweek[,deb_sem:=as.character((as.Date(deb_sem,origin="1970-01-01")))]
+   csum_alerte[,deb_sem:=as.character((as.Date(deb_sem,origin="1970-01-01")))]
+   propsite_alerte_csum[,deb_sem:=as.character((as.Date(deb_sem,origin="1970-01-01")))]
+   propsite_alerte_csum_byfacies[,deb_sem:=as.character((as.Date(deb_sem,origin="1970-01-01")))]
+   #
   
   
   return(list(

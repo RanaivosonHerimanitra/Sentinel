@@ -198,35 +198,7 @@ calculate_percentile=function(data=mydata,
     cat("DONE\n")
   }
  
-###############################################################################
-  
-  
-  
-  # cat("calculate weekly prop of sites in alert using percentile algorithm (by faciès)...")
-  #  Nbsite_beyond=data[is.na(occurence)==F & alert_status=="alert",length(unique(sites)),by=c("code","facies")]
-  #  setnames(Nbsite_beyond,"V1","eff_beyond")
-  #  Nbsite_withdata=data[is.na(occurence)==F,length(unique(sites)),by=c("code","facies")]
-  #  setnames(Nbsite_withdata,"V1","eff_total")
-  #  propsite_alerte_percentile_byfacies=merge(x=Nbsite_withdata,
-  #                                            y=Nbsite_beyond,
-  #                                            by.x=c("code","facies"),
-  #                                            by.y=c("code","facies"),all.x=T)
-  #  propsite_alerte_percentile_byfacies[,prop:=ifelse(is.na(eff_beyond/eff_total)==T,0.0,eff_beyond/eff_total)]
-  # cat("DONE\n")
-  
-  
-  ### TODO==>MUST CHECK WHY ONLY 02 FACIES FOR data?????
-  ### because create_facies.R is not valid!!!!
-  
-  # cat("merge with deb_sem and sites to reorder time series (by faciès)...")
-  #  setkeyv(propsite_alerte_percentile_byfacies,c("code","facies"))
-  #  setkeyv(data,c("code","facies"))
-  #  propsite_alerte_percentile_byfacies=merge(propsite_alerte_percentile_byfacies,
-  #                                  unique(data[,list(code,deb_sem,facies)]),
-  #                                  by.x=c("code","facies"),by.y=c("code","facies"))
-  #  rm(Nbsite_withdata);rm(Nbsite_beyond);gc()
-  # cat('DONE\n')
-  
+
   
   
   return (list(percentile_alerte=percentile_alerte,

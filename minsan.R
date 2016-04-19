@@ -210,7 +210,11 @@ calculate_minsan=function(data=mydata,
     minsan_alerte_currentweek=data[code==max_code,list(sites,deb_sem,alert_status,myradius)]
   }
   
-  
+  #convert to usual date format
+  minsan_alerte_currentweek[,deb_sem:=as.character((as.Date(deb_sem,origin="1970-01-01")))]
+  propsite_alerte_minsan[,deb_sem:=as.character((as.Date(deb_sem,origin="1970-01-01")))]
+  propsite_alerte_minsan_byfacies[,deb_sem:=as.character((as.Date(deb_sem,origin="1970-01-01")))]
+  #
   
   return (list(minsan_alerte_currentweek=minsan_alerte_currentweek,
                propsite_alerte_minsan=propsite_alerte_minsan,
