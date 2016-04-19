@@ -8,8 +8,9 @@ output: pdf_document
 
 
 ```{r,echo=F,fig.width=10, out.extra='',comment='', message=FALSE , warning=FALSE}
+setwd("/media/herimanitra/DONNEES/IPM_sentinelle/sentinel_hrmntr 291115/Sentinel")
 #load source code:
-source("import_data.R");source("preprocessing.R");require(ggplot2); require(gridExtra)
+source("./import_data.R");source("./preprocessing.R");require(ggplot2); require(gridExtra)
 #source("var_conversion.R")
 
 mydata= preprocessing_disease()[["Diarrhea"]] #Diarrhée

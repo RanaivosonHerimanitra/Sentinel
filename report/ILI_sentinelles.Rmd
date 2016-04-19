@@ -1,0 +1,110 @@
+---
+title: "ILI dans le réseau sentinelle"
+author: "Institut Pasteur de Madagascar"
+date: "`r Sys.Date()`"
+output: pdf_document
+---
+
+
+
+```{r,echo=F, fig.width=10, out.extra='',comment='', message=FALSE , warning=FALSE}
+setwd("/media/herimanitra/DONNEES/IPM_sentinelle/sentinel_hrmntr 291115/Sentinel")
+source("./import_data.R");source("./preprocessing.R");require(ggplot2); require(gridExtra)
+#Retrieve ILI
+mydata= preprocessing_disease()[["ILI"]] #ensure this is the same as in #diseases_control.R
+
+#aggregate occurence by week:
+mydata$occurence=as.numeric(mydata$occurence)
+mydata[,occurence:=sum(occurence,na.rm = T),by="code"]
+
+mydata$deb_sem=as.Date(mydata$deb_sem)
+mydata[,weeks:=week(deb_sem)]
+d=ggplot(unique(mydata[,list(deb_sem,occurence)]), 
+         aes(x=deb_sem, y=occurence), fill=occurence) 
+d= d + geom_bar(stat = "identity",fill="blue") 
+
+d= d + ggtitle(label="ILI dans le réseau sentinelle")
+d= d + xlab("Date(ligne orange=1er janvier)") + ylab("Nb. Cas")
+ 
+debut_annee=as.numeric(unique(mydata[weeks==1,deb_sem]))
+debut_annee=c(min(debut_annee)-365, as.Date("2013-01-01"), debut_annee)
+      
+d= d + geom_vline(xintercept = debut_annee,linetype=4,colour="orange")
+                        
+print(d)
+
+```
+
+```{r,echo=F,out.extra='',comment='', message=FALSE , warning=FALSE}
+setwd("/media/herimanitra/DONNEES/IPM_sentinelle/sentinel_hrmntr 291115/Sentinel")
+mydata= preprocessing_disease()[["ILI"]]
+semaine=array()
+max_deb_sem=max(as.Date(mydata$deb_sem))
+semaine[6]= max_deb_sem-2*7 
+p=1
+for ( k in 2:6 )
+{
+  semaine[p]=semaine[6]-(k-1)*7
+  p=p+1
+}
+#select last 07 seven weeks for each disease:
+
+#ILI selection for last 6 weeks before current week:
+X=mydata[as.Date(deb_sem) %in% semaine,list(deb_sem,sites,occurence)]
+#transform NA into XX
+X$occurence=as.character(X$occurence)
+X[,occurence:=ifelse(is.na(occurence)==T,"na",occurence)]
+X[,occurence:=ifelse(nchar(occurence)<2,paste0("0",occurence),occurence)]
+#inline historical occurence:
+X[,vals:=paste(occurence,collapse = "-"),by="sites"]
+#append latest week per site:
+X[,occurence:=NULL]
+lastweek=unique(mydata[as.Date(deb_sem)==max_deb_sem-7, list(sites,occurence)])
+lastweek$occurence=as.character(lastweek$occurence)
+lastweek[is.na(occurence)==T,occurence:="na"]                        
+X= merge(unique(X[,list(sites,vals)]),lastweek, by.x="sites", by.y="sites")
+               
+               
+X= merge(X,sentinel_latlong[,list(name,sites)],by.x="sites",by.y="sites")
+X[,sites:=NULL]; 
+setnames(X,c("name","vals","occurence"),
+                 c("Sites","6 semaines précédentes","Semaine dernière"))
+#generate tables:
+knitr::kable(X[,c("Sites","6 semaines précédentes","Semaine dernière"),with=F],
+             caption="ILI dans le réseau sentinel")
+
+```
+
+```{r,echo=F, fig.show = "hold" ,out.width = '50%', out.extra='',comment='', message=FALSE , warning=FALSE}
+setwd("/media/herimanitra/DONNEES/IPM_sentinelle/sentinel_hrmntr 291115/Sentinel")
+    #merge with sentinel_latlong:
+    mydata=merge(mydata,sentinel_latlong, by.x="sites",by.y="sites")
+    L=length(unique(mydata$name))
+    myname = unique(mydata$name)
+    for ( p in 1:L )
+    {
+      X= mydata[name==myname[p],list(code,deb_sem,occurence)]
+      X$deb_sem=as.Date(X$deb_sem)
+      X[,weeks:=week(deb_sem)]
+      setnames(X,"deb_sem","Date")
+      d= ggplot(data=X,aes(x=Date,y=occurence)) 
+      d=d + geom_line(color='darkblue') 
+      debut_annee= c(as.numeric(as.Date("2007-01-01")),
+                      as.numeric(as.Date("2008-01-01")),
+                      as.numeric(as.Date("2009-01-01")),
+                      as.numeric(as.Date("2010-01-01")),
+                      as.numeric(as.Date("2011-01-01")),
+                      as.numeric(as.Date("2012-01-01")),
+                      as.numeric(as.Date("2013-01-01")),
+                      as.numeric(as.Date("2014-01-01")),
+                      as.numeric(as.Date("2015-01-01")),
+                      as.numeric(as.Date("2016-01-01")))
+                     
+       
+      d= d + geom_vline(xintercept = debut_annee,
+                        linetype=4,colour="orange")
+      d=d + ggtitle(label=paste(myname[p]))
+      d=d + xlab("Date (ligne orange=1er janvier)") + ylab("Nb. Cas")
+      print(d)
+    }
+```

@@ -129,8 +129,8 @@ for ( j in mycode )
 
 
 cat("Writing document to a word document...")
-writeDoc(doc, file = "report.docx")
+writeDoc(doc, file = "report/report.docx")
 #sudo apt-get install unoconv
-system("doc2pdf report.docx") #write in pdf using cli command
+system("doc2pdf report/report.docx") #write in pdf using cli command
 cat('DONE\n')
 

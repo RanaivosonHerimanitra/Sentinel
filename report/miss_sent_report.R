@@ -18,7 +18,7 @@ horizontal_text= cellProperties(text.direction = "lrtb",
 
 cat("load data and preprocess missing sent..")
 require(data.table)
-missing_sent= fread("data/missing_sent.csv")
+missing_sent= fread("./data/missing_sent.csv")
 missing_sent[,code:=paste0(substr(Annee,3,4),"/",Semaine)]
 cat("DONE\n")
 
@@ -27,7 +27,7 @@ X=table(missing_sent$code,missing_sent$Centre)
 cat("DONE\n")
 
 cat("load sentinel lat/long define 34sites vs other...")
-sentinel_latlong = fread("data/sentinel.csv")
+sentinel_latlong = fread("./data/sentinel.csv")
 sites34 = which( tolower(colnames(X)) %in% tolower(c("CSBU MANANJARY MNJ",
                                     "TSIMADILO",
                                     sentinel_latlong$centre) ))
@@ -99,7 +99,7 @@ doc = addFlexTable( doc, mytable1 )
 doc = addParagraph(doc, "        ")
 doc = addFlexTable( doc, mytable2 )
 
-writeDoc(doc, file = "missing_sent.docx")
+writeDoc(doc, file = "report/missing_sent.docx")
 #sudo apt-get install unoconv
-system("doc2pdf missing_sent.docx") #write in pdf using cli command
+system("doc2pdf report/missing_sent.docx") #write in pdf using cli command
 cat('DONE\n')

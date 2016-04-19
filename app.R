@@ -1005,7 +1005,7 @@ server<-function(input, output,session) {
   output$downloadReport <- downloadHandler(
     filename = "report.pdf",
     content = function(file) {
-      file.copy('report.pdf', file)
+      file.copy('report/report.pdf', file)
     }
   )
   

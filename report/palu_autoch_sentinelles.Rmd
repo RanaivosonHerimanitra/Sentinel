@@ -12,8 +12,9 @@ output: pdf_document
 
 
 ```{r,echo=F,fig.width=10, out.extra='',comment='', message=FALSE , warning=FALSE}
-source("import_data.R");
-source("preprocessing.R");require(ggplot2); require(gridExtra)
+setwd("/media/herimanitra/DONNEES/IPM_sentinelle/sentinel_hrmntr 291115/Sentinel")
+source("./import_data.R");
+source("./preprocessing.R");require(ggplot2); require(gridExtra)
 #Retrieve Malaria (TDR+ ~~PaluConf) for HTC sites
 mydata= preprocessing_disease(select_htc=TRUE)[["Malaria"]]
 setnames(mydata,"occurence","palu")
@@ -66,7 +67,7 @@ print(d)
 ```
 
 ```{r,echo=F,out.extra='',comment='', message=FALSE , warning=FALSE}
-
+setwd("/media/herimanitra/DONNEES/IPM_sentinelle/sentinel_hrmntr 291115/Sentinel")
 semaine=array()
 max_deb_sem=max(as.Date(palu_autoch$deb_sem))
 semaine[6]= max_deb_sem-2*7 
@@ -121,7 +122,7 @@ knitr::kable(last6_palu_autoch[, c("Centre","6 semaines précédentes","Semaine 
 ```
 
 ```{r,echo=F, fig.show = "hold"  ,out.width ='50%',out.extra='',comment='',message=FALSE , warning=FALSE}
-
+setwd("/media/herimanitra/DONNEES/IPM_sentinelle/sentinel_hrmntr 291115/Sentinel")
 #loop and plot:
 mydata= preprocessing_disease(select_htc=TRUE)[["Malaria"]]
 setnames(mydata,"occurence","palu")

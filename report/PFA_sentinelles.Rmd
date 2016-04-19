@@ -1,41 +1,42 @@
 ---
-title: "ILI dans le réseau sentinelle"
+title: "PFA dans le réseau sentinelle"
 author: "Institut Pasteur de Madagascar"
 date: "`r Sys.Date()`"
 output: pdf_document
 ---
 
-
-
 ```{r,echo=F, fig.width=10, out.extra='',comment='', message=FALSE , warning=FALSE}
-source("import_data.R");source("preprocessing.R");require(ggplot2); require(gridExtra)
-#Retrieve ILI
-mydata= preprocessing_disease()[["ILI"]] #ensure this is the same as in #diseases_control.R
+setwd("/media/herimanitra/DONNEES/IPM_sentinelle/sentinel_hrmntr 291115/Sentinel")
+source("./import_data.R");source("./preprocessing.R");require(ggplot2); require(gridExtra)
+#Retrieve PFA for HTC sites
+mydata= preprocessing_disease(select_htc=F)[["PFA"]]
 
-#aggregate occurence by week:
-mydata$occurence=as.numeric(mydata$occurence)
+#aggregate occurence by week: 100*because rare disease!
 mydata[,occurence:=sum(occurence,na.rm = T),by="code"]
-
 mydata$deb_sem=as.Date(mydata$deb_sem)
 mydata[,weeks:=week(deb_sem)]
-d=ggplot(unique(mydata[,list(deb_sem,occurence)]), 
-         aes(x=deb_sem, y=occurence), fill=occurence) 
+mydata=mydata[as.Date(deb_sem,origin="1970-01-01")>=as.Date("2015-06-01"),]
+d=ggplot(unique(mydata[,list(deb_sem,occurence)]), aes(x=deb_sem, y=occurence),
+         fill=occurence) 
 d= d + geom_bar(stat = "identity",fill="blue") 
-
-d= d + ggtitle(label="ILI dans le réseau sentinelle")
-d= d + xlab("Date(ligne orange=1er janvier)") + ylab("Nb. Cas")
- 
+d= d + ggtitle(label="PFA dans le réseau sentinelle")
+d= d + xlab("Date") + ylab("Nb. Cas")
 debut_annee=as.numeric(unique(mydata[weeks==1,deb_sem]))
-debut_annee=c(min(debut_annee)-365, as.Date("2013-01-01"), debut_annee)
-      
 d= d + geom_vline(xintercept = debut_annee,linetype=4,colour="orange")
-                        
+ d= d + scale_x_date(labels = date_format("%m-%Y"))
+#set ylim to 10 if <10
+mymax=range(as.numeric(mydata$occurence)[is.na(as.numeric(mydata$occurence))==F])
+mymax[2]=ifelse(mymax[2]<10,10,mymax[2])
+#
+       d = d + scale_y_continuous(breaks= seq.int(from=1,to=mymax[2],by=2) ) 
+#
 print(d)
 
 ```
 
 ```{r,echo=F,out.extra='',comment='', message=FALSE , warning=FALSE}
-mydata= preprocessing_disease()[["ILI"]]
+setwd("/media/herimanitra/DONNEES/IPM_sentinelle/sentinel_hrmntr 291115/Sentinel")
+mydata= preprocessing_disease()[["PFA"]]
 semaine=array()
 max_deb_sem=max(as.Date(mydata$deb_sem))
 semaine[6]= max_deb_sem-2*7 
@@ -47,7 +48,7 @@ for ( k in 2:6 )
 }
 #select last 07 seven weeks for each disease:
 
-#ILI selection for last 6 weeks before current week:
+#PFA selection for last 6 weeks before current week:
 X=mydata[as.Date(deb_sem) %in% semaine,list(deb_sem,sites,occurence)]
 #transform NA into XX
 X$occurence=as.character(X$occurence)
@@ -57,11 +58,11 @@ X[,occurence:=ifelse(nchar(occurence)<2,paste0("0",occurence),occurence)]
 X[,vals:=paste(occurence,collapse = "-"),by="sites"]
 #append latest week per site:
 X[,occurence:=NULL]
-lastweek=unique(mydata[as.Date(deb_sem)==max_deb_sem-7, list(sites,occurence)])
-lastweek$occurence=as.character(lastweek$occurence)
-lastweek[is.na(occurence)==T,occurence:="na"]                        
-X= merge(unique(X[,list(sites,vals)]),lastweek, by.x="sites", by.y="sites")
-               
+lastweek=unique(mydata[as.Date(deb_sem)==max_deb_sem-7,list(sites,occurence)])
+lastweek[,occurence:=as.character(occurence)]
+lastweek[is.na(occurence)==T,occurence:="na"]                             
+X= merge(unique(X[,list(sites,vals)]),lastweek,by.x="sites", by.y="sites")
+              
                
 X= merge(X,sentinel_latlong[,list(name,sites)],by.x="sites",by.y="sites")
 X[,sites:=NULL]; 
@@ -69,11 +70,13 @@ setnames(X,c("name","vals","occurence"),
                  c("Sites","6 semaines précédentes","Semaine dernière"))
 #generate tables:
 knitr::kable(X[,c("Sites","6 semaines précédentes","Semaine dernière"),with=F],
-             caption="ILI dans le réseau sentinel")
+             caption="PFA dans le réseau sentinel")
 
 ```
 
+
 ```{r,echo=F, fig.show = "hold" ,out.width = '50%', out.extra='',comment='', message=FALSE , warning=FALSE}
+setwd("/media/herimanitra/DONNEES/IPM_sentinelle/sentinel_hrmntr 291115/Sentinel")
     #merge with sentinel_latlong:
     mydata=merge(mydata,sentinel_latlong, by.x="sites",by.y="sites")
     L=length(unique(mydata$name))
@@ -85,23 +88,23 @@ knitr::kable(X[,c("Sites","6 semaines précédentes","Semaine dernière"),with=F
       X[,weeks:=week(deb_sem)]
       setnames(X,"deb_sem","Date")
       d= ggplot(data=X,aes(x=Date,y=occurence)) 
-      d=d + geom_line(color='darkblue') 
-      debut_annee= c(as.numeric(as.Date("2007-01-01")),
-                      as.numeric(as.Date("2008-01-01")),
-                      as.numeric(as.Date("2009-01-01")),
-                      as.numeric(as.Date("2010-01-01")),
-                      as.numeric(as.Date("2011-01-01")),
-                      as.numeric(as.Date("2012-01-01")),
-                      as.numeric(as.Date("2013-01-01")),
-                      as.numeric(as.Date("2014-01-01")),
-                      as.numeric(as.Date("2015-01-01")),
-                      as.numeric(as.Date("2016-01-01")))
-                     
+      d=d + geom_bar(stat = "identity",fill='darkblue')
+        
        
+        
+      debut_annee=c(as.numeric(unique(X[weeks==1,Date])))
       d= d + geom_vline(xintercept = debut_annee,
                         linetype=4,colour="orange")
       d=d + ggtitle(label=paste(myname[p]))
-      d=d + xlab("Date (ligne orange=1er janvier)") + ylab("Nb. Cas")
+      d=d + xlab("Date (ligne verte=1er janvier)") + ylab("Nb. Cas")
+      
+      
+      #set ylim to 10 if <10
+mymax=range(as.integer(X$occurence)[is.na(as.integer(X$occurence))==F])
+mymax[2]=ifelse(mymax[2]<10,10,mymax[2])
+#
+       d = d + scale_y_continuous(breaks= seq.int(from=0,to=mymax[2],by=1) ) 
+      d= d + scale_x_date(labels = date_format("%m-%Y"))
       print(d)
     }
 ```
