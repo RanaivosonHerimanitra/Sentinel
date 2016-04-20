@@ -54,7 +54,7 @@ doc=addParagraph( doc, value = alert_parameter, stylename="BulletList")
 require(tidyr);source("import_data.R");source("percentile.R");
 source("tdrplus.R");source("preprocessing.R");
 mydata=preprocessing_disease()
-PaluConf_tdr= tdr_malaria()
+PaluConf_tdr= tdr_malaria(); PaluConf_tdr=unique(PaluConf_tdr)
 Malaria=mydata[["Malaria"]]
 diarrh=mydata[["Diarrhea"]]
 
@@ -70,13 +70,21 @@ percentile_palu_alerte=merge(percentile_palu_alerte,sentinel_latlong,
                              by.x=c("sites"),by.y=c("sites"))
 percentile_diar_alerte=merge(percentile_diar_alerte,sentinel_latlong,
                              by.x=c("sites"),by.y=c("sites"))
-PaluConf_tdr=merge(PaluConf_tdr,sentinel_latlong,
-                   by.x=c("sites"),by.y=c("sites"))
 
 PaluConf_tdr[,SyndF:=sum(SyndF,na.rm=T),by="sites,code"]
 PaluConf_tdr[,TestPalu:=sum(TestPalu,na.rm=T),by="sites,code"]
-PaluConf_tdr[,manque_tdr:=sum(manque_tdr,na.rm=T),by="sites,code"]
-PaluConf_tdr=unique(PaluConf_tdr[,list(sites,name,code,deb_sem,SyndF,TestPalu,manque_tdr)])
+
+#new: (evaluate whether lack of TDR)
+PaluConf_tdr[,manque_tdr:=malaria_cases - TestPalu]
+#only select those with possible lack of TDR (RDT)
+PaluConf_tdr = PaluConf_tdr[manque_tdr>0]
+PaluConf_tdr=unique(PaluConf_tdr,by=NULL)
+PaluConf_tdr=merge(PaluConf_tdr,sentinel_latlong[,list(sites,name)],
+                    by.x=c("sites"),by.y=c("sites"),all.x = T)
+
+#previous
+#PaluConf_tdr[,manque_tdr:=sum(manque_tdr,na.rm=T),by="sites,code"]
+#PaluConf_tdr=unique(PaluConf_tdr[,list(sites,name,code,deb_sem,SyndF,TestPalu,manque_tdr)])
 
 setorder(PaluConf_tdr,sites,-deb_sem)
 

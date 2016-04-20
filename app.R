@@ -152,7 +152,7 @@ server<-function(input, output,session) {
     Nbsite_beyond=PaluConf_SyndF[ alert_status_hist=="alert",
                       length(unique(sites)),by="code"]
     setnames(Nbsite_beyond,"V1","eff_beyond")
-    Nbsite_beyond=merge(Nbsite_beyond,unique(PaluConf_SyndF[,list(code,deb_sem)]),
+    Nbsite_beyond=merge(Nbsite_beyond,unique(PaluConf_SyndF[,list(code,deb_sem)],by=NULL),
                        by.x="code",by.y="code") #,all.x=T
     Nbsite_withdata=PaluConf_SyndF[is.na(alert_status_hist)==F,length(unique(sites)),by="code"]
     setnames(Nbsite_withdata,"V1","eff_total")
@@ -173,7 +173,7 @@ server<-function(input, output,session) {
       Nbsite_beyond=PaluConf_SyndF[ alert_status_hist=="alert" & get(f)==1,
                                    length(unique(sites)),by=c("code",f)]
       setnames(Nbsite_beyond,"V1","eff_beyond")
-      Nbsite_beyond=merge(Nbsite_beyond,unique(PaluConf_SyndF[,list(code,deb_sem)]),
+      Nbsite_beyond=merge(Nbsite_beyond,unique(PaluConf_SyndF[,list(code,deb_sem)],by=NULL),
                          by.x=c("code"),by.y=c("code"))
       Nbsite_withdata=PaluConf_SyndF[is.na(alert_status_hist)==F & get(f)==1,
                                     length(unique(sites)),by=c("code",f)]
@@ -339,26 +339,26 @@ server<-function(input, output,session) {
           setkey(myprop,"code");setkey(caid,"code")
          
           cat('merging caid data with proportion of sites in alert...')
-          myprop=merge(myprop,unique(caid[,list(code,caid_value)]),
+          myprop=merge(myprop,unique(caid[,list(code,caid_value)],by=NULL),
                        by.x=c("code"),
                        by.y=c("code"), all.x=T )
           cat('DONE\n')
           setkey(myprop,"code");setkey(mild,"code")
           cat('merging mild data with proportion of sites in alert...')
-          myprop=merge(myprop,unique(mild[,list(code,mild_value)]),
+          myprop=merge(myprop,unique(mild[,list(code,mild_value)],by=NULL),
                        by.x=c("code"),
                        by.y=c("code"), all.x=T )
           cat('DONE\n')
           cat('merging ndvi data with proportion of sites in alert...')
           setkey(myprop,"code");setkey(ndvi,"code")
-          myprop=merge(myprop,unique(ndvi[,list(code,ndvi_value)]),
+          myprop=merge(myprop,unique(ndvi[,list(code,ndvi_value)],by=NULL),
                        by.x=c("code"),
                        by.y=c("code"), all.x=T )
           cat('DONE\n')
           cat('nrow of myprop  after merge with ndvi are:',nrow(myprop),"\n")
           cat('merging temperature data with proportion of sites in alert...')
           setkey(myprop,"code");setkey(lst,"code")
-          myprop=merge(myprop,unique(lst[,list(code,temperature)]),
+          myprop=merge(myprop,unique(lst[,list(code,temperature)],by=NULL),
                        by.x=c("code"),
                        by.y=c("code"), all.x=T )
           cat('DONE\n')
@@ -366,7 +366,7 @@ server<-function(input, output,session) {
           cat('nrow of myprop  after merge with lst are:',nrow(myprop),"\n")
           setkey(myprop,"code");setkey(pmm,code)
           cat('merging rainFall data with proportion of sites in alert...')
-          myprop=merge(myprop,unique(pmm[,list(code,pmm_value)]),
+          myprop=merge(myprop,unique(pmm[,list(code,pmm_value)],by=NULL),
                        by.x=c("code"),
                        by.y=c("code"), all.x=T )
           cat('DONE\n')
@@ -652,7 +652,7 @@ server<-function(input, output,session) {
                        by.y=c("code","sites","deb_sem"))
     
     propili_2015[,prop := 100*sum(Synd_g,na.rm = T)/sum(NxConsltTotal,na.rm=T) ,by="deb_sem"]
-    propili_2015= unique(propili_2015[,list(deb_sem,prop)])
+    propili_2015= unique(propili_2015[,list(deb_sem,prop)],by=NULL)
     propili_2015[,weekOfday:=week(as.Date(deb_sem,origin="1970-01-01"))] #create a key to merge later 
     gc()
   
@@ -679,7 +679,7 @@ server<-function(input, output,session) {
      stat_ili[,weekOfday:=week(as.Date(deb_sem,origin="1970-01-01"))]
      stat_ili[,mymax:=max(Synd_g,na.rm = T),by="weekOfday"]
      stat_ili[,mymean:=mean(Synd_g,na.rm = T),by="weekOfday"]
-     stat_ili= unique(stat_ili[,list(weekOfday,mymax,mymean)])
+     stat_ili= unique(stat_ili[,list(weekOfday,mymax,mymean)],by=NULL)
      #create a key to merge later 
     cat("DONE\n")
     gc()
@@ -721,12 +721,12 @@ server<-function(input, output,session) {
                   by.y=c("code","sites","deb_sem"))
     #data processing:
     # tdr_eff[,Synd_g := GrippSusp + AutrVirResp ]
-    tdr_eff=unique(tdr_eff)
+    tdr_eff=unique(tdr_eff,by=NULL)
 
     #34 sites we need:
     sites34= include[-c(1:2)]
     #filter rows:
-    myili=tdr_eff[sites %in% sites34 & year(as.Date(deb_sem ))>=2015]
+    myili=tdr_eff[sites %in% sites34 & year(as.Date(deb_sem ,origin="1970-01-01"))>=2015]
     
     p <- plot_ly(myili, x = deb_sem, type="bar",y = Synd_g,name="ILI")
     p = p %>% add_trace(x = deb_sem, type="bar",y = ArboSusp, name = "Dengue-Like")
@@ -958,8 +958,7 @@ server<-function(input, output,session) {
      X[alert_status=="alert",alert_status2:=2]
     cat('DONE\n')
     
-    #print(class(X$deb_sem))
-    #print(unique(X$deb_sem)[1:2])
+    
     
     cat('spreading data...')
      X[,years:=year(as.Date(deb_sem,origin="1970-01-01"))]
@@ -967,7 +966,7 @@ server<-function(input, output,session) {
      X=X[years %in% (2016-as.numeric(input$nbyear)):2016,]
      #try selection using dplyr so then avoid data.frame conversion!
      #as.data.frame otherwise It won't work
-     myz= as.data.frame(spread(unique(X[,list(name,deb_sem,alert_status2)]),
+     myz= as.data.frame(spread(unique(X[,list(name,deb_sem,alert_status2)],by=NULL),
                               deb_sem,alert_status2))
     cat("DONE\n")
    
