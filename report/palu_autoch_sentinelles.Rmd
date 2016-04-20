@@ -163,7 +163,7 @@ for ( p in myname )
         
         d = d + ggtitle(label=last6_palu_autoch[Sites==p,get("Centre")])
         d = d + xlab("Date") + ylab("Nb. Cas")
-        
+        d= d + scale_x_date(labels = date_format("%m-%Y"))
       print(d)
   }
   
