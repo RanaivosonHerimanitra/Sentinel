@@ -152,8 +152,8 @@ calculate_minsan=function(data=mydata,
                                                   eff_beyond/eff_total)]
     cat('DONE\n')
     cat('merge with deb_sem to reorder time series...')
-    myfacies=merge(unique(myfacies[,list(code,prop)]),
-                                    unique(data[,list(code,deb_sem)]),
+    myfacies=merge(unique(myfacies[,list(code,prop)],by=NULL),
+                                    unique(data[,list(code,deb_sem)],by=NULL),
                                     by.x=c(byvar),
                                     by.y=c(byvar))
     cat('DONE\n')

@@ -43,7 +43,7 @@ for ( k in 2:6 )
 #select last 07 seven weeks for each disease:
 
 #Malaria selection for last 6 weeks before current week:
-malaria=unique(mydata[as.Date(deb_sem) %in% semaine,list(deb_sem,sites,malaria_cases)])
+malaria=unique(mydata[as.Date(deb_sem) %in% semaine,list(deb_sem,sites,malaria_cases)],by=NULL)
 
 #transform NA
 malaria$malaria_cases=as.character(malaria$malaria_cases)
@@ -81,10 +81,10 @@ malaria[,vals:=paste(malaria_cases,collapse = "-"),by="sites"]
 #append latest week per site:
 malaria[,malaria_cases:=NULL]
 
-lastweek = unique(mydata[as.Date(deb_sem)==max_deb_sem-7,list(sites,malaria_cases)])
+lastweek = unique(mydata[as.Date(deb_sem)==max_deb_sem-7,list(sites,malaria_cases)],by=NULL)
 lastweek[,malaria_cases:=as.character(malaria_cases)]
 lastweek[is.na(malaria_cases)==T,malaria_cases:="na"]
-malaria= merge(unique(malaria[,list(sites,vals)]),lastweek, 
+malaria= merge(unique(malaria[,list(sites,vals)],by=NULL),lastweek, 
                by.x="sites", by.y="sites")
 #merge with sentinel_latlong to display name
 malaria=merge(malaria,sentinel_latlong[,list(sites,name)],
@@ -98,7 +98,7 @@ setnames(malaria,c("name","vals","malaria_cases"),
 #Fiever selection for last 6 weeks before current week:
 fievre=mydata[as.Date(deb_sem) %in% semaine,list(deb_sem,sites,SyndF)]
 fievre=fievre[,SyndF:=sum(SyndF,na.rm = T),by="deb_sem,sites"]
-fievre=unique(fievre)
+fievre=unique(fievre,by=NULL)
 #transform NA into XX
 fievre$SyndF=as.character(fievre$SyndF)
 fievre[is.na(SyndF)==T,SyndF:="na"]
@@ -131,13 +131,13 @@ fievre[,vals:=paste(SyndF,collapse = "-"),by="sites"]
 
 #append latest week per site:
 fievre[,SyndF:=NULL]
-lastweek= unique(mydata[as.Date(deb_sem)==max_deb_sem-7, list(sites,SyndF)])
+lastweek= unique(mydata[as.Date(deb_sem)==max_deb_sem-7, list(sites,SyndF)],by=NULL)
 lastweek[,SyndF:=sum(SyndF),by="sites"]
-lastweek=unique(lastweek)
+lastweek=unique(lastweek,by=NULL)
 
 lastweek[,SyndF:=as.character(SyndF)]
 lastweek[is.na(SyndF)==T,SyndF:="na"]                           
-fievre= merge(unique(fievre[,list(sites,vals)]),
+fievre= merge(unique(fievre[,list(sites,vals)],by=NULL),
               lastweek , by.x="sites", by.y="sites")
 #merge with sentinel_latlong to display name
 fievre=merge(fievre,sentinel_latlong[,list(sites,name)],

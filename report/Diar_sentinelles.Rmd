@@ -56,10 +56,10 @@ Diarrh_feb[,diarh_feb:=ifelse(nchar(diarh_feb)<2,paste0("0",diarh_feb),diarh_feb
 Diarrh_feb[,vals:=paste(diarh_feb,collapse = "-"),by="sites"]
 #append latest week per site:
 Diarrh_feb[,diarh_feb:=NULL]
-lastweek=unique(mydata[as.Date(deb_sem)==max_deb_sem-7,list(sites,diarh_feb)])
+lastweek=unique(mydata[as.Date(deb_sem)==max_deb_sem-7,list(sites,diarh_feb)],by=NULL)
 lastweek[,diarh_feb:=as.character(diarh_feb)]
 lastweek[is.na(diarh_feb)==T,diarh_feb:="na"]
-Diarrh_feb= merge(unique(Diarrh_feb[,list(sites,vals)]), 
+Diarrh_feb= merge(unique(Diarrh_feb[,list(sites,vals)],by=NULL), 
                   lastweek, by.x="sites", by.y="sites")
               
 Diarrh_feb= merge(Diarrh_feb,sentinel_latlong[,list(name,sites)],
@@ -80,10 +80,10 @@ Diarrh[,diarh:=ifelse(nchar(diarh)<2,paste0("0",diarh),diarh)]
 Diarrh[,vals:=paste(diarh,collapse = "-"),by="sites"]
 #append latest week per site:
 Diarrh[,diarh:=NULL]
-lastweek=unique(mydata[as.Date(deb_sem)==max_deb_sem-7,list(sites,diarh)])
+lastweek=unique(mydata[as.Date(deb_sem)==max_deb_sem-7,list(sites,diarh)],by=NULL)
 lastweek$diarh= as.character(lastweek$diarh)
 lastweek[is.na(diarh)==T,diarh:="na"]
-Diarrh= merge(unique(Diarrh[,list(sites,vals)]), 
+Diarrh= merge(unique(Diarrh[,list(sites,vals)],by=NULL), 
                lastweek,
                by.x="sites", by.y="sites")
 #merge with sentinel_latlong:

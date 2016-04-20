@@ -170,33 +170,6 @@ calculate_csum = function (data=mydata,
      
    }
    
-  ##############################prop by facies#######################################
-  # cat("Weekly number of sites in alert using C-sum algorithm (by facies)...")
-  # Nbsite_beyond=csum_alerte[ is.na(occurence)==F & alert_status=="alert",
-  #                           length(unique(sites)),by=c(byvar,"facies")]
-  # cat("DONE\n")
-  # setnames(Nbsite_beyond,"V1","eff_beyond")
-  # cat("Weekly number of sites that had given data (by facies)...")
-  # Nbsite_withdata=csum_alerte[is.na(occurence)==F,
-  #                             length(unique(sites)),by=c(byvar,"facies")]
-  # setnames(Nbsite_withdata,"V1","eff_total")
-  # cat("DONE\n")
-  # cat("MERGE to give proportion of sites...")
-  # propsite_alerte_csum_byfacies=merge(x=Nbsite_withdata,
-  #                                     y=Nbsite_beyond,
-  #                                     by.x=c(byvar,"facies"),
-  #                                     by.y=c(byvar,"facies"),all.x=T)
-  # cat("DONE\n")
-  # cat("calculate prop and change NA to zero...")
-  # propsite_alerte_csum_byfacies[,prop:=ifelse(is.na(eff_beyond/eff_total)==T,0.0,
-  #                                    eff_beyond/eff_total)]
-  # cat("DONE\n")
-  # cat("merge with deb_sem to reorder time series...")
-  # propsite_alerte_csum_byfacies=merge(propsite_alerte_csum_byfacies,
-  #                                     data[,list(code,facies,deb_sem)],
-  #                            by.x=c(byvar,"facies"),by.y=c(byvar,"facies"))
-  # rm(Nbsite_withdata);rm(Nbsite_beyond);gc()
-  # cat("DONE\n")
   
   
   if (max_code==paste0(year(Sys.Date()),"_",isoweek(Sys.Date())) ) {

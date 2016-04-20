@@ -30,7 +30,7 @@ palu_autoch=as.data.table(gather(palu_autoch,
                                  key=sites,value=autoch,-c(code,deb_sem)))
 # sum autoch by deb_sem and sites
 palu_autoch[,autoch:=sum(autoch),by="deb_sem,sites"]
-palu_autoch=unique(palu_autoch)
+palu_autoch=unique(palu_autoch,by=NULL)
 #Merge autochtone & Palu (all)
 mydata=merge(mydata,palu_autoch[,list(code,sites,autoch)],
              by.x=c("code","sites"),by.y=c("code","sites"),all.x=T,all.y=T)
@@ -47,10 +47,10 @@ X[is.na(palu_importe)==T,palu_importe:=0]
 X[,autoch:=sum(autoch),by="code"]
 X[,palu_importe:=sum(palu_importe),by="code"]
 
-Z1=unique(X[,list(deb_sem,autoch)]); setnames(Z1,"autoch","vals")
+Z1=unique(X[,list(deb_sem,autoch)],by=NULL); setnames(Z1,"autoch","vals")
 Z1[,Légende:="Palu autochtone"]
 
-Z2=unique(X[,list(deb_sem,palu_importe)]); setnames(Z2,"palu_importe","vals")
+Z2=unique(X[,list(deb_sem,palu_importe)],by=NULL); setnames(Z2,"palu_importe","vals")
 Z2[,Légende:="Palu importé"]
 
 X= rbind (Z1,Z2); rm(Z1);rm(Z2)
@@ -99,7 +99,7 @@ lastweek[is.na(autoch)==T,autoch:="na"]
 
 #knitr::kable(lastweek)
 
-last6_palu_autoch=merge(unique(last6_palu_autoch[,list(sites,vals)]),lastweek, by.x="sites", by.y="sites")
+last6_palu_autoch=merge(unique(last6_palu_autoch[,list(sites,vals)],by=NULL),lastweek, by.x="sites", by.y="sites")
              
 # merge with sentinel_code :
 sentinel_code=fread('data/sentinel_codes.csv')
