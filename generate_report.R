@@ -54,7 +54,15 @@ doc=addParagraph( doc, value = alert_parameter, stylename="BulletList")
 require(tidyr);source("import_data.R");source("percentile.R");
 source("tdrplus.R");source("preprocessing.R");
 mydata=preprocessing_disease()
-PaluConf_tdr= tdr_malaria(); PaluConf_tdr=unique(PaluConf_tdr)
+PaluConf_tdr= tdr_malaria(); 
+#remove unused variables
+PaluConf_tdr[,ArboSusp:=NULL]
+PaluConf_tdr[,GrippSusp:=NULL]
+PaluConf_tdr[,AutrVirResp:=NULL]
+PaluConf_tdr[,NxConsltTotal:=NULL]
+PaluConf_tdr[,manque_tdr:=NULL]
+#
+PaluConf_tdr=unique(PaluConf_tdr,by=NULL)
 Malaria=mydata[["Malaria"]]
 diarrh=mydata[["Diarrhea"]]
 
@@ -75,7 +83,7 @@ PaluConf_tdr[,SyndF:=sum(SyndF,na.rm=T),by="sites,code"]
 PaluConf_tdr[,TestPalu:=sum(TestPalu,na.rm=T),by="sites,code"]
 
 #new: (evaluate whether lack of TDR)
-PaluConf_tdr[,manque_tdr:=malaria_cases - TestPalu]
+PaluConf_tdr[,manque_tdr:=SyndF - TestPalu]
 #only select those with possible lack of TDR (RDT)
 PaluConf_tdr = PaluConf_tdr[manque_tdr>0]
 PaluConf_tdr=unique(PaluConf_tdr,by=NULL)
