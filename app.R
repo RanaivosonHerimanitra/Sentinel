@@ -119,14 +119,14 @@ server<-function(input, output,session) {
     PaluConf_SyndF=merge(PaluConf,
                          SyndF[,list(sites,deb_sem,nb_fievre)],
                          by.x=c("sites","deb_sem"),
-                         by.y=c("sites","deb_sem"))
+                         by.y=c("sites","deb_sem"),all.x=T)
     cat('DONE\n')
    
     cat("merge PaluConf_SyndF and Consultations...")
      PaluConf_SyndF=merge(PaluConf_SyndF,
                          Consultations[,list(sites,deb_sem,nb_consultation)],
                          by.x=c("sites","deb_sem"),
-                         by.y=c("sites","deb_sem"))
+                         by.y=c("sites","deb_sem"),all.x=T)
     cat('DONE\n')
    
    cat('Extract weeks and years from PaluConf...')
@@ -153,11 +153,11 @@ server<-function(input, output,session) {
                       length(unique(sites)),by="code"]
     setnames(Nbsite_beyond,"V1","eff_beyond")
     Nbsite_beyond=merge(Nbsite_beyond,unique(PaluConf_SyndF[,list(code,deb_sem)],by=NULL),
-                       by.x="code",by.y="code") #,all.x=T
+                       by.x="code",by.y="code",all.x=T) #,all.x=T
     Nbsite_withdata=PaluConf_SyndF[is.na(alert_status_hist)==F,length(unique(sites)),by="code"]
     setnames(Nbsite_withdata,"V1","eff_total")
     propsite_alerte_fever=merge(x=Nbsite_withdata,y=Nbsite_beyond,
-                                by.x="code",by.y="code")
+                                by.x="code",by.y="code",all.x=T)
     propsite_alerte_fever[,prop:=ifelse(is.na(eff_beyond/eff_total)==T,0.0,
                                         eff_beyond/eff_total)]
    cat('DONE\n')
@@ -174,14 +174,14 @@ server<-function(input, output,session) {
                                    length(unique(sites)),by=c("code",f)]
       setnames(Nbsite_beyond,"V1","eff_beyond")
       Nbsite_beyond=merge(Nbsite_beyond,unique(PaluConf_SyndF[,list(code,deb_sem)],by=NULL),
-                         by.x=c("code"),by.y=c("code"))
+                         by.x=c("code"),by.y=c("code"),all.x=T)
       Nbsite_withdata=PaluConf_SyndF[is.na(alert_status_hist)==F & get(f)==1,
                                     length(unique(sites)),by=c("code",f)]
       setnames(Nbsite_withdata,"V1","eff_total")
       myfacies=merge(x=Nbsite_withdata,
                      y=Nbsite_beyond,
                      by.x=c("code",f),
-                     by.y=c("code",f) )
+                     by.y=c("code",f),all.x=T )
       myfacies[,prop:=ifelse(is.na(eff_beyond/eff_total)==T,0.0,
                                                   eff_beyond/eff_total)]
       rm(Nbsite_beyond);rm(Nbsite_withdata);gc()
@@ -427,7 +427,7 @@ server<-function(input, output,session) {
         setkey(sentinel_latlong,sites)
         setkey(percentile_algorithm()$percentile_alerte_currentweek,sites)
         sentinel_latlong=merge(sentinel_latlong,percentile_algorithm()$percentile_alerte_currentweek
-                               ,by.x="sites",by.y = "sites")
+                               ,by.x="sites",by.y = "sites",all.x=T)
         
         
       }
@@ -438,7 +438,7 @@ server<-function(input, output,session) {
         setkey(sentinel_latlong,sites);
         setkey(minsan_algorithm()$minsan_alerte_currentweek,sites)
         sentinel_latlong=merge(sentinel_latlong,minsan_algorithm()$minsan_alerte_currentweek
-                               ,by.x="sites",by.y = "sites")
+                               ,by.x="sites",by.y = "sites",all.x=T)
       }
       if (input$Algorithmes_eval1=="Csum"  ) 
       {
@@ -446,14 +446,14 @@ server<-function(input, output,session) {
         setkey(sentinel_latlong,sites);
         setkey(csum_algorithm()$csum_alerte,sites)
         sentinel_latlong=merge(sentinel_latlong,csum_algorithm()$csum_alerte_currentweek
-                               ,by.x="sites",by.y = "sites")
+                               ,by.x="sites",by.y = "sites",all.x=T)
       }
       if (input$Algorithmes_eval1=="Ind" ) 
       {
         setkey(sentinel_latlong,sites);
         setkey(tdrplus_fever_ind()$tdrplus_ind_currentweek,sites)
         sentinel_latlong=merge(sentinel_latlong,tdrplus_fever_ind()$tdrplus_ind_currentweek
-                               ,by.x="sites",by.y = "sites")
+                               ,by.x="sites",by.y = "sites",all.x=T)
         cat("display alert status into the map using a simple indicator...\n")
       }
     } else {
@@ -464,7 +464,7 @@ server<-function(input, output,session) {
         setkey(sentinel_latlong,sites)
         setkey(percentile_algorithm()$percentile_alerte_currentweek,sites)
         sentinel_latlong=merge(sentinel_latlong,percentile_algorithm()$percentile_alerte_currentweek
-                               ,by.x="sites",by.y = "sites")
+                               ,by.x="sites",by.y = "sites",all.x=T)
         
       }
       if (input$Algorithmes_eval2=="MinSan"  ) 
@@ -474,7 +474,7 @@ server<-function(input, output,session) {
         setkey(sentinel_latlong,sites);
         setkey(minsan_algorithm()$minsan_alerte_currentweek,sites)
         sentinel_latlong=merge(sentinel_latlong,minsan_algorithm()$minsan_alerte_currentweek
-                               ,by.x="sites",by.y = "sites")
+                               ,by.x="sites",by.y = "sites",all.x=T)
       }
       if (input$Algorithmes_eval2=="Csum"  ) 
       {
@@ -482,7 +482,7 @@ server<-function(input, output,session) {
         setkey(sentinel_latlong,sites);
         setkey(csum_algorithm()$csum_alerte,sites)
         sentinel_latlong=merge(sentinel_latlong,csum_algorithm()$csum_alerte_currentweek
-                               ,by.x="sites",by.y = "sites")
+                               ,by.x="sites",by.y = "sites",all.x=T)
       }
      
     }
@@ -518,7 +518,7 @@ server<-function(input, output,session) {
         setkey(sentinel_latlong,sites)
         setkey(percentile_algorithm()$percentile_alerte_currentweek,sites)
         sentinel_latlong=merge(sentinel_latlong,percentile_algorithm()$percentile_alerte_currentweek
-                               ,by.x="sites",by.y = "sites")
+                               ,by.x="sites",by.y = "sites",all.x=T)
         
       }
       if (input$Algorithmes_eval1=="MinSan" ) 
@@ -527,7 +527,7 @@ server<-function(input, output,session) {
         setkey(sentinel_latlong,sites);
         setkey(minsan_algorithm()$minsan_alerte_currentweek,sites)
         sentinel_latlong=merge(sentinel_latlong,minsan_algorithm()$minsan_alerte_currentweek
-                               ,by.x="sites",by.y = "sites")
+                               ,by.x="sites",by.y = "sites",all.x=T)
       }
       if (input$Algorithmes_eval1=="Csum" ) 
       {
@@ -535,14 +535,14 @@ server<-function(input, output,session) {
         setkey(sentinel_latlong,sites);
         setkey(csum_algorithm()$csum_alerte,sites)
         sentinel_latlong=merge(sentinel_latlong,csum_algorithm()$csum_alerte_currentweek
-                               ,by.x="sites",by.y = "sites")
+                               ,by.x="sites",by.y = "sites",all.x=T)
       }
       if (input$Algorithmes_eval1=="Ind" ) 
       {
         setkey(sentinel_latlong,sites);
         setkey(tdrplus_fever_ind()$tdrplus_ind_currentweek,sites)
         sentinel_latlong=merge(sentinel_latlong,tdrplus_fever_ind()$tdrplus_ind_currentweek
-                               ,by.x="sites",by.y = "sites")
+                               ,by.x="sites",by.y = "sites",all.x=T)
         cat("display alert status into the map using a simple indicator...\n")
       }
     } else {
@@ -553,7 +553,7 @@ server<-function(input, output,session) {
         setkey(sentinel_latlong,sites)
         setkey(percentile_algorithm()$percentile_alerte_currentweek,sites)
         sentinel_latlong=merge(sentinel_latlong,percentile_algorithm()$percentile_alerte_currentweek
-                               ,by.x="sites",by.y = "sites")
+                               ,by.x="sites",by.y = "sites",all.x=T)
         
       }
       if (input$Algorithmes_eval2=="MinSan" ) 
@@ -562,7 +562,7 @@ server<-function(input, output,session) {
         setkey(sentinel_latlong,sites);
         setkey(minsan_algorithm()$minsan_alerte_currentweek,sites)
         sentinel_latlong=merge(sentinel_latlong,minsan_algorithm()$minsan_alerte_currentweek
-                               ,by.x="sites",by.y = "sites")
+                               ,by.x="sites",by.y = "sites",all.x=T)
       }
       if (input$Algorithmes_eval2=="Csum" ) 
       {
@@ -570,7 +570,7 @@ server<-function(input, output,session) {
         setkey(sentinel_latlong,sites);
         setkey(csum_algorithm()$csum_alerte,sites)
         sentinel_latlong=merge(sentinel_latlong,csum_algorithm()$csum_alerte_currentweek
-                               ,by.x="sites",by.y = "sites")
+                               ,by.x="sites",by.y = "sites",all.x=T)
       }
       
     }
@@ -630,7 +630,7 @@ server<-function(input, output,session) {
    return(sentinel_latlong[Z$selected_,get("sites")])
  })
   
-  #render Proportion of ILI sur Nombre de consultant
+  #render mean ILI
   output$propili = renderPlotly({
     
    
@@ -638,42 +638,26 @@ server<-function(input, output,session) {
     sites34= include[-c(1:2)]
     tdr_eff=as.data.table(gather(ili,key=sites,value=Synd_g,-c(code,deb_sem)))
     
-    #print(head(tdr_eff))
-    #print(sites34)
+    ################################
    
     propili_2015 = tdr_eff[sites %in% sites34 & year(as.Date(deb_sem,origin="1970-01-01"))>2014]
     stat_ili= tdr_eff[sites %in% sites34 & year(as.Date(deb_sem,origin="1970-01-01")) <2015]
     
     Consultations=as.data.table(gather(Consultations,
-                                       key=sites,value=NxConsltTotal,-c(code,deb_sem)))
-    #print(head(Consultations));Sys.sleep(25)
+                                       key=sites,value=NxConsltTotal,
+                                       -c(code,deb_sem)))
+    
     propili_2015=merge(propili_2015,Consultations,
                        by.x=c("code","sites","deb_sem"),
-                       by.y=c("code","sites","deb_sem"))
+                       by.y=c("code","sites","deb_sem"),all.x=T)
     
     propili_2015[,prop := 100*sum(Synd_g,na.rm = T)/sum(NxConsltTotal,na.rm=T) ,by="deb_sem"]
-    propili_2015= unique(propili_2015[,list(deb_sem,prop)],by=NULL)
-    propili_2015[,weekOfday:=week(as.Date(deb_sem,origin="1970-01-01"))] #create a key to merge later 
-    gc()
-  
-    #########################################################################
-    # #preprocess data:
-    # tdr_eff[,Synd_g:=GrippSusp + AutrVirResp]
-    # #34 sites we need:
-    # sites34= toupper(include[-c(1:2)])
-    # propili_2015 = tdr_eff[sites %in% sites34 & Annee>2014]
-    # stat_ili= tdr_eff[sites %in% sites34 & Annee <2015]
-    # #remove:
-    # 
-    # 
-    # #filter rows:
-    # cat("calculating prop of ILI on Nb consultation...")
-    #  propili_2015[,prop := 100*sum(Synd_g,na.rm = T)/sum(NxConsltTotal,na.rm=T) ,by="deb_sem"]
-    #  propili_2015= unique(propili_2015[,list(deb_sem,prop)])
-    #  propili_2015[,weekOfday:=week(deb_sem)] #create a key to merge later 
-    #  gc()
-    # cat("DONE\n")
+    #propili_2015[,mean_ili := 100*mean(Synd_g,na.rm = T),by="deb_sem"]
     
+    propili_2015= unique(propili_2015[,list(deb_sem,prop)],by=NULL)
+    #create a key to merge later:
+    propili_2015[,weekOfday:=week(as.Date(deb_sem,origin="1970-01-01"))]  
+    gc()
   
     cat("calculating mean and max for historical ILI data...")
      stat_ili[,weekOfday:=week(as.Date(deb_sem,origin="1970-01-01"))]
@@ -718,7 +702,7 @@ server<-function(input, output,session) {
     arbosusp=as.data.table(gather(ili,key=sites,value=ArboSusp,-c(code,deb_sem)))
     tdr_eff=merge(tdr_eff,arbosusp,
                   by.x=c("code","sites","deb_sem"),
-                  by.y=c("code","sites","deb_sem"))
+                  by.y=c("code","sites","deb_sem"),all.x=T)
     #data processing:
     # tdr_eff[,Synd_g := GrippSusp + AutrVirResp ]
     tdr_eff=unique(tdr_eff,by=NULL)
@@ -787,7 +771,7 @@ server<-function(input, output,session) {
        pmm = hfi[type_val=="PRECIPITATION" & sites %in% sites_list];
        setnames(pmm,old="myvalue",new="rainFall")
        # merge with mydata
-       mydata=merge(mydata,pmm,by.x=c("code"),by.y=c("code"))
+       mydata=merge(mydata,pmm,by.x=c("code"),by.y=c("code"),all.x=T)
        #
       cat("DONE\n")
       
@@ -963,7 +947,7 @@ server<-function(input, output,session) {
     
     cat('spreading data...')
      X[,years:=year(as.Date(deb_sem,origin="1970-01-01"))]
-     X=merge(X,sentinel_latlong[,list(sites,name)],by.x="sites",by.y="sites")
+     X=merge(X,sentinel_latlong[,list(sites,name)],by.x="sites",by.y="sites",all.x=T)
      X=X[years %in% (2016-as.numeric(input$nbyear)):2016,]
      #try selection using dplyr so then avoid data.frame conversion!
      #as.data.frame otherwise It won't work
@@ -993,7 +977,7 @@ server<-function(input, output,session) {
     X=X[alert_status=="alert" & get(input$Cluster_algo)==1,]
     }
       
-    X=merge(X,sentinel_latlong,by.x="sites",by.y="sites")
+    X=merge(X,sentinel_latlong,by.x="sites",by.y="sites",all.x=T)
     setorder(X,sites,deb_sem)
     plot_ly(X, y = occurence, x=deb_sem,
             color=name, 
