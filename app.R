@@ -748,7 +748,7 @@ server<-function(input, output,session) {
     #mydata=preprocessing()
     mydata=percentile_algorithm()$mydata
  
-    
+     
     #recupere date d'alerte percentile (seuleument pour cet algo) pour chaque site
     #cree une nouvelle variable = valeur de cette alerte
     if ( length(input$Algorithmes_eval1)>0 )
@@ -799,10 +799,11 @@ server<-function(input, output,session) {
        setnames(pmm,old="myvalue",new="rainFall")
        # merge with mydata
        pmm[,deb_sem:=NULL]
-       mydata=merge(mydata,pmm,by.x=c("code"),by.y=c("code"))
+       mydata=merge(mydata,pmm,by.x=c("code"),by.y=c("code"),all.x=T)
       #
       cat("DONE\n")
     }
+    
     #handle case where no site hasn't yet been selected !
     if ( length(selected_site_leaflet())==0 ) 
     {
