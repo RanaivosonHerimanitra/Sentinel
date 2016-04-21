@@ -281,61 +281,7 @@ server<-function(input, output,session) {
     source("if_minsan_viz.R",local = T)
     source("if_csum_viz.R",local = T)
     source("if_tdrfever_viz.R",local = T)  
-   # print(head(myprop))
-   # print(tail(myprop))
-   # Sys.sleep(30)
    
-    #myprop = unique(myprop[,list(code,deb_sem,prop)])
-    #print(myprop[code=="2010_02"])
-    # if ( input$Cluster_algo !="Total"  )
-    #     {
-    #       setkeyv( mild , c("code") )
-    #       cat('merging mild data with proportion of sites in alert...')
-    #        myprop=merge(myprop,unique(mild[,list(code,mild_value)]),
-    #                    by.x=c("code"),
-    #                    by.y=c("code"), all.x=T)
-    #       cat('DONE\n')
-    #       cat('nrow of myprop  after merge with MILD are:',nrow(myprop),"\n")
-    #       
-    #       
-    #       setkeyv( caid , c("code","facies") )
-    #       cat('merging caid data with proportion of sites in alert...')
-    #        myprop=merge(myprop,(caid[,list(code,caid_value,facies)]),
-    #                    by.x=c("code","facies"),
-    #                    by.y=c("code","facies"), all.x=T)
-    #       cat('DONE\n')
-    #       
-    #       cat('nrow of myprop  after merge with CAID are:',nrow(myprop),"\n")
-    #        
-    #       setkeyv( myprop , c("code","facies") );setkeyv( ndvi , c("code","facies") )
-    #        cat('merging ndvi data with proportion of sites in alert...')
-    #         myprop=merge(myprop,(ndvi[,list(code,ndvi_value,facies)]),
-    #                    by.x=c("code","facies"),
-    #                    by.y=c("code","facies"), all.x=T)
-    #        cat('DONE\n')
-    #       
-    #       cat('nrow of myprop  after merge with ndvi are:',nrow(myprop),"\n")
-    #       
-    #       cat('merging temperature data with proportion of sites in alert...')
-    #        setkeyv( lst , c("code","facies") )
-    #        myprop=merge(myprop,(lst[,list(code,temperature,facies)]),
-    #                    by.x=c("code","facies"),
-    #                    by.y=c("code","facies"), all.x=T)
-    #       cat('DONE\n')
-    #       
-    #       cat('nrow of myprop  after merge with lst are:',nrow(myprop),"\n")
-    #       
-    #       cat('merging rainFall data with proportion of sites in alert...')
-    #        setkeyv( pmm , c("code","facies") )
-    #        myprop=merge(myprop,(pmm[,list(code,pmm_value,facies)]),
-    #                    by.x=c("code","facies"),
-    #                    by.y=c("code","facies"), all.x=T)
-    #       cat('DONE\n')
-    #       
-    #       cat("selection of faciès...")
-    #        myprop=myprop[facies==input$Cluster_algo]
-    #       cat("DONE\n")
-    #     } else {
           setkey(myprop,"code");setkey(caid,"code")
          
           cat('merging caid data with proportion of sites in alert...')
@@ -370,8 +316,7 @@ server<-function(input, output,session) {
                        by.x=c("code"),
                        by.y=c("code"), all.x=T )
           cat('DONE\n')
-      #  }
-        #print(myprop[code=="2010_02"])
+      
        
     #using plotly:
     #line width (epaisseur de la ligne):
@@ -611,7 +556,6 @@ server<-function(input, output,session) {
   #click event handler for leaflet:
   selected_site_leaflet=eventReactive(input$madagascar_map_marker_click,{
     event= input$madagascar_map_marker_click
-    print(str(event))
     return(sentinel_latlong[Long==event$lng & Lat==event$lat,get("sites")])
   },ignoreNULL=F)
  
@@ -982,7 +926,7 @@ server<-function(input, output,session) {
     plot_ly(X, y = occurence, x=deb_sem,
             color=name, 
             size = round(log(occurence+1)), mode = "markers")
-    #type="scatter3d"
+   
   
   })
   #download report handler (for Malaria and Diarrhea):
@@ -1013,14 +957,6 @@ server<-function(input, output,session) {
                   name="Monthly cases of Malaria",
                   line = list(width=line_width,color = "rgb(250,67,69)"))
       p = p %>% layout(legend = list(x = 0, y = 350),
-                       # shapes = list(
-                       #   list(type = "rect",
-                       #        fillcolor = "blue", line = list(color = "blue"), opacity = 0.3,
-                       #        x0 = L_preds+1, x1 =L , xref = "x",
-                       #        y0 = 350, y1 = 350, yref = "y")),
-                       #autosize = F,
-                       #width=500,
-                       #height=500,
                        title="Actual serie (Farafanga & Mananjary) vs forecasts",
                        xaxis =list(title="",dtick=3, tickangle=90),
                        yaxis =list(title="#Cases"))
@@ -1043,14 +979,6 @@ server<-function(input, output,session) {
                   y = occurence,name="Monthly cases of Malaria",
                   line = list(width=line_width,color = "rgb(250,67,69)") )
       p = p %>% layout(legend = list(x = 0, y = 350),
-                       # shapes = list(
-                       #   list(type = "rect", 
-                       #        fillcolor = "blue", line = list(color = "blue"), opacity = 0.3, 
-                       #        x0 = 1, x1 = L-L_preds, xref = "x", 
-                       #        y0 = 350, y1 = 350, yref = "y")),
-                       #autosize = T,
-                       #width=500,
-                       #height=450,
                        title="Actual serie (Farafanga & Mananjary) vs forecasts",
                        xaxis =list(title="",dtick=3, tickangle=90),
                        yaxis =list(title="#Cases"))
@@ -1084,13 +1012,7 @@ server<-function(input, output,session) {
                                       "RDT+/fever Indicator" = "Ind"),
                        selected = x)
   })
-  # observeEvent(input$Algorithmes_eval1,{
-  #   reset(input$Algorithmes_eval2)
-  # })
-  # 
-  # observeEvent(input$Algorithmes_eval2,{
-  #   reset(input$Algorithmes_eval1)
-  # })
+ 
 }
 
 ##############################################User interface ##############
