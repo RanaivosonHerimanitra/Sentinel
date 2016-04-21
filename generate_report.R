@@ -75,9 +75,9 @@ percentile_diar_alerte=calculate_percentile(data=diarrh,
                                             
 
 percentile_palu_alerte=merge(percentile_palu_alerte,sentinel_latlong,
-                             by.x=c("sites"),by.y=c("sites"))
+                             by.x=c("sites"),by.y=c("sites"),all.x=T)
 percentile_diar_alerte=merge(percentile_diar_alerte,sentinel_latlong,
-                             by.x=c("sites"),by.y=c("sites"))
+                             by.x=c("sites"),by.y=c("sites"),all.x=T)
 
 PaluConf_tdr[,SyndF:=sum(SyndF,na.rm=T),by="sites,code"]
 PaluConf_tdr[,TestPalu:=sum(TestPalu,na.rm=T),by="sites,code"]
@@ -90,16 +90,7 @@ PaluConf_tdr=unique(PaluConf_tdr,by=NULL)
 PaluConf_tdr=merge(PaluConf_tdr,sentinel_latlong[,list(sites,name)],
                     by.x=c("sites"),by.y=c("sites"),all.x = T)
 
-#previous
-#PaluConf_tdr[,manque_tdr:=sum(manque_tdr,na.rm=T),by="sites,code"]
-#PaluConf_tdr=unique(PaluConf_tdr[,list(sites,name,code,deb_sem,SyndF,TestPalu,manque_tdr)])
-
 setorder(PaluConf_tdr,sites,-deb_sem)
-
-
-#print(PaluConf_tdr)
-#Sys.sleep(1000)
-
 
 tana_centre = c("Manjakaray","Andohatapenaka","Tsaralalana","Behoririka")
 tana_haut_plateau= c("Fianarantsoa","Antsirabe","Anjozorobe")
@@ -111,8 +102,9 @@ mycode=unique(c(percentile_palu_alerte$code,
                 PaluConf_tdr$code))
 setkey(percentile_diar_alerte,code)
 setorder(percentile_diar_alerte,sites,-deb_sem)
-#perc_rank <- function(x, xo)  round(length( which(x <= xo) )/length(x)*100)
+#function that calculates percentile rank
 perc_rank = function(x,x0) {f=ecdf(x);return(round(100*f(x0)) )}
+# initialize document:
 mydocument = list()
 for ( j in mycode )
 {

@@ -53,7 +53,6 @@ if (L_palu | L_diar | L_tdr )
         cat('DONE\n')
       } else {
         msg_palu=NA
-        #msg_palu=pot("")
       }
       
     } else {
@@ -77,11 +76,9 @@ if (L_palu | L_diar | L_tdr )
       msg_diar=  pot("  .   est") + pot(" en ALERTE DIARRHEE",en_gras_green) + pot(" dépassant le seuil depuis  ")+ pot(mylength_diar,en_gras(fontsize=13) ) +pot("  semaines consécutives ")
       msg_diar= msg_diar + pot("(") + pot(paste0(myranks_diar[1],";")) + pot(paste0(myranks_diar[2],";")) + pot(paste0(myranks_diar[3],";")) + pot(paste0(myranks_diar[4],";")) + pot(paste0(myranks_diar[5],";")) + pot(paste0(myranks_diar[6],";")) + pot(paste0(myranks_diar[7],";")) + pot(paste0(myranks_diar[8],";")) + pot(paste0(myranks_diar[9],";")) + pot(paste0(myranks_diar[10],")."))
       point_virgule=1
-    
     cat("DONE\n")
   } else {
     msg_diar=NA
-    #msg_diar=pot("")
   }
   if (L_tdr)
   {
@@ -91,7 +88,8 @@ if (L_palu | L_diar | L_tdr )
       cat("generating narration for TDR manquant...")
      
         tdr_manquant= pot("  .   est") + pot(" PROBABLEMENT en manque de TDR ",highlight_tdr )
-        tdr_manquant=tdr_manquant + pot("cette semaine")
+        #tdr_manquant=tdr_manquant + pot("cette semaine")
+        tdr_manquant=tdr_manquant + pot("depuis la semaine dernière")
         tdr_manquant=tdr_manquant+ pot(paste("(",N_fiever, " cas de fièvres contre",N_tdr," TDR effectués)"))
        
       #add this line if It lasts more than a week:
@@ -102,11 +100,9 @@ if (L_palu | L_diar | L_tdr )
       cat("DONE\n")
     } else {
       tdr_manquant=NA
-      #tdr_manquant=pot("")
     }
   } else {
     tdr_manquant=NA
-    #tdr_manquant=pot("")
   }
   
 } else {
