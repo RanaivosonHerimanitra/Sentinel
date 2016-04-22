@@ -57,15 +57,16 @@ source("tdrplus.R");source("preprocessing.R");
 
 mydata=preprocessing_disease()
 PaluConf_tdr= tdr_malaria(); 
-PaluConf_tdr[code=="2016_15" & sites=="far"]
+# PaluConf_tdr[ code=="2016_15" & sites=="far",
+#               list(SyndF=sum(SyndF),TestPalu=sum(TestPalu))]
 #remove unused variables
-PaluConf_tdr[,ArboSusp:=NULL]
-PaluConf_tdr[,GrippSusp:=NULL]
-PaluConf_tdr[,AutrVirResp:=NULL]
-PaluConf_tdr[,NxConsltTotal:=NULL]
-PaluConf_tdr[,manque_tdr:=NULL]
+# PaluConf_tdr[,ArboSusp:=NULL]
+# PaluConf_tdr[,GrippSusp:=NULL]
+# PaluConf_tdr[,AutrVirResp:=NULL]
+# PaluConf_tdr[,NxConsltTotal:=NULL]
+# PaluConf_tdr[,manque_tdr:=NULL]
 #
-PaluConf_tdr=unique(PaluConf_tdr,by=NULL)
+# PaluConf_tdr=unique(PaluConf_tdr,by=NULL)
 Malaria=mydata[["Malaria"]]
 diarrh=mydata[["Diarrhea"]]
 
@@ -89,6 +90,12 @@ PaluConf_tdr[,TestPalu:=sum(TestPalu,na.rm=T),by="sites,code"]
 PaluConf_tdr[,manque_tdr:=SyndF - TestPalu]
 #only select those with possible lack of TDR (RDT)
 PaluConf_tdr = PaluConf_tdr[manque_tdr>0]
+#remove unused variables
+PaluConf_tdr[,ArboSusp:=NULL]
+PaluConf_tdr[,GrippSusp:=NULL]
+PaluConf_tdr[,AutrVirResp:=NULL]
+PaluConf_tdr[,NxConsltTotal:=NULL]
+#
 PaluConf_tdr=unique(PaluConf_tdr,by=NULL)
 PaluConf_tdr=merge(PaluConf_tdr,sentinel_latlong[,list(sites,name)],
                     by.x=c("sites"),by.y=c("sites"),all.x = T)
@@ -103,6 +110,10 @@ setorder(percentile_palu_alerte,sites,-deb_sem)
 mycode=unique(c(percentile_palu_alerte$code,
                 percentile_diar_alerte$code,
                 PaluConf_tdr$code))
+#remove ongoing week:
+ongoing_week= paste0(year(Sys.Date()),"_",isoweek(Sys.Date()))
+mycode=mycode[mycode!=ongoing_week]
+#
 setkey(percentile_diar_alerte,code)
 setorder(percentile_diar_alerte,sites,-deb_sem)
 #function that calculates percentile rank

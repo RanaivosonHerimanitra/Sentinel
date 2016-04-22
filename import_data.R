@@ -2,9 +2,9 @@
 #or to pull data directly from the server:
 remote_server=F;writing_to_disk=F
 #whether to run report or to run shiny:
-reporting =F;
+reporting =T;
 #load required packages:
-source("libraries.R");#source("var_conversion.R")
+source("libraries.R");source("var_conversion.R")
 if ( exists("PaluConf")==F ) #to speed up things
 {
   if ( remote_server==TRUE ) {
@@ -29,7 +29,7 @@ if ( exists("PaluConf")==F ) #to speed up things
     ili=fread("data/ili.csv")
     pfa=fread("data/pfa.csv")
     arbosusp=fread("data/arbosusp.csv")
-    #tdr_eff=fread("data/tdr_eff.csv")
+    tdr_eff=fread("data/tdr_eff.csv")
     ################################################################"
     max_date=max(as.Date(PaluConf$deb_sem,origin="1970-01-01"))
     #should accelerate extraction:
@@ -189,22 +189,6 @@ if ( exists("PaluConf")==F ) #to speed up things
     
     #
     
-    # max_date = max(tdr_eff$deb_sem)
-    # tdr_eff_tmp= tbl(sentinel,
-    #              build_sql('SELECT "Date" AS "deb_sem","SyndF","TestPalu","Centre2" AS "sites","Annee","Semaine","ArboSusp","GrippSusp","AutrVirResp","NxConsltTotal" FROM ',
-    #                       "vue_csb_sms_centre_format", " WHERE 'Date'>=",max_date))
-    # 
-    # if (dim(tdr_eff_tmp)[2]>0)
-    # {
-    #   #conversion of dataframe:
-    #   tdr_eff_tmp = tdr_eff_tmp %>% data.frame() %>% data.table()
-    #   #conversion of variables:
-    #   var_conv(tdr_eff,tdr_eff_tmp)
-    #   #rbind 02 dataframe:
-    #   tdr_eff=tdr_eff[deb_sem<max_date,]
-    #   tdr_eff=(rbind(tdr_eff,tdr_eff_tmp))
-    #   setorder(tdr_eff,-deb_sem)
-    # }
     
     max_date = max(as.Date(ili$deb_sem,origin="1970-01-01"))
     ili_tmp=tbl(sentinel,
@@ -258,6 +242,25 @@ if ( exists("PaluConf")==F ) #to speed up things
      #palu autochtone:
      if (reporting ==T)
      {
+       if (remote_server==T)
+       {
+         max_date = max(tdr_eff$deb_sem)
+         tdr_eff_tmp= tbl(sentinel,
+                          build_sql('SELECT "Date" AS "deb_sem","SyndF","TestPalu","Centre2" AS "sites","Annee","Semaine","ArboSusp","GrippSusp","AutrVirResp","NxConsltTotal" FROM ',
+                                    "vue_csb_sms_centre_format", " WHERE 'Date'>=",max_date))
+         
+         if (dim(tdr_eff_tmp)[2]>0)
+         {
+           #conversion of dataframe:
+           tdr_eff_tmp = tdr_eff_tmp %>% data.frame() %>% data.table()
+           #conversion of variables:
+           var_conv(tdr_eff,tdr_eff_tmp)
+           #rbind 02 dataframe:
+           tdr_eff=tdr_eff[deb_sem<max_date,]
+           tdr_eff=(rbind(tdr_eff,tdr_eff_tmp))
+           setorder(tdr_eff,-deb_sem)
+         }
+       }
        max_date=max(as.Date(palu_autoch$deb_sem,origin="1970-01-01"))
        palu_autoch_tmp=tbl(sentinel,
                            build_sql("SELECT * FROM ",
@@ -305,7 +308,7 @@ if ( exists("PaluConf")==F ) #to speed up things
       fwrite(SyndF,"data/SyndF.csv",sep=";")
       fwrite(Diarrh,"data/Diarrh.csv",sep=";")
       fwrite(Diarrh_feb,"data/Diarrh_feb.csv",sep=";")
-      #fwrite(tdr_eff,"data/tdr_eff.csv",sep=";")
+      fwrite(tdr_eff,"data/tdr_eff.csv",sep=";")
       fwrite(ili,"data/ili.csv",sep=";")
       fwrite(pfa,"data/pfa.csv",sep=";")
       fwrite(palu_autoch,"data/palu_autoch.csv",sep=";")
