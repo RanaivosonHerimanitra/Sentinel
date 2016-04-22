@@ -33,7 +33,7 @@ tdr_malaria = function (htc=FALSE)
                                 value=malaria_cases,-c(code,deb_sem)))
   #preprocessing of tdr_eff
  
-  tdr_eff = tdr_eff %>% data.frame() %>% data.table() 
+  #tdr_eff = tdr_eff %>% data.frame() %>% data.table() 
   
   tdr_eff[,code:=paste0(Annee,"_",Semaine)]
   tdr_eff[,sites:=tolower(sites)]

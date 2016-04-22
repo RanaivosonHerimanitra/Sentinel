@@ -51,22 +51,17 @@ alert_parameter= set_of_paragraphs(alert_parameter1,alert_parameter2,alert_param
 doc=addParagraph( doc, value = alert_parameter, stylename="BulletList")
 
 ######################### R code to generate the report ##########################
-require(tidyr);source("import_data.R");source("percentile.R");
-source("tdrplus.R");source("preprocessing.R");
+require(tidyr);source("import_data.R");
+source("percentile.R");
+source("preprocessing.R");
+#source("tdrplus.R");
 
 
 mydata=preprocessing_disease()
-PaluConf_tdr= tdr_malaria(); 
-# PaluConf_tdr[ code=="2016_15" & sites=="far",
-#               list(SyndF=sum(SyndF),TestPalu=sum(TestPalu))]
-#remove unused variables
-# PaluConf_tdr[,ArboSusp:=NULL]
-# PaluConf_tdr[,GrippSusp:=NULL]
-# PaluConf_tdr[,AutrVirResp:=NULL]
-# PaluConf_tdr[,NxConsltTotal:=NULL]
-# PaluConf_tdr[,manque_tdr:=NULL]
-#
-# PaluConf_tdr=unique(PaluConf_tdr,by=NULL)
+#PaluConf_tdr= tdr_malaria(); 
+
+
+PaluConf_tdr=tdr_eff
 Malaria=mydata[["Malaria"]]
 diarrh=mydata[["Diarrhea"]]
 
@@ -83,6 +78,8 @@ percentile_palu_alerte=merge(percentile_palu_alerte,sentinel_latlong,
 percentile_diar_alerte=merge(percentile_diar_alerte,sentinel_latlong,
                              by.x=c("sites"),by.y=c("sites"),all.x=T)
 
+#################prepare data to detect lack of RDT #######
+PaluConf_tdr[,code:= paste0(Annee,"_",Semaine)]
 PaluConf_tdr[,SyndF:=sum(SyndF,na.rm=T),by="sites,code"]
 PaluConf_tdr[,TestPalu:=sum(TestPalu,na.rm=T),by="sites,code"]
 
@@ -91,6 +88,7 @@ PaluConf_tdr[,manque_tdr:=SyndF - TestPalu]
 #only select those with possible lack of TDR (RDT)
 PaluConf_tdr = PaluConf_tdr[manque_tdr>0]
 #remove unused variables
+PaluConf_tdr[,Date:=NULL]
 PaluConf_tdr[,ArboSusp:=NULL]
 PaluConf_tdr[,GrippSusp:=NULL]
 PaluConf_tdr[,AutrVirResp:=NULL]
@@ -101,6 +99,7 @@ PaluConf_tdr=merge(PaluConf_tdr,sentinel_latlong[,list(sites,name)],
                     by.x=c("sites"),by.y=c("sites"),all.x = T)
 
 setorder(PaluConf_tdr,sites,-deb_sem)
+##########################################################################
 
 tana_centre = c("Manjakaray","Andohatapenaka","Tsaralalana","Behoririka")
 tana_haut_plateau= c("Fianarantsoa","Antsirabe","Anjozorobe")

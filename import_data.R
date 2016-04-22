@@ -246,7 +246,7 @@ if ( exists("PaluConf")==F ) #to speed up things
        {
          max_date = max(tdr_eff$deb_sem)
          tdr_eff_tmp= tbl(sentinel,
-                          build_sql('SELECT "Date" AS "deb_sem","SyndF","TestPalu","Centre2" AS "sites","Annee","Semaine","ArboSusp","GrippSusp","AutrVirResp","NxConsltTotal" FROM ',
+                          build_sql('SELECT "Date" AS "Date","SyndF","TestPalu","Centre2" AS "sites","Annee","Semaine","ArboSusp","GrippSusp","AutrVirResp","NxConsltTotal" FROM ',
                                     "vue_csb_sms_centre_format", " WHERE 'Date'>=",max_date))
          
          if (dim(tdr_eff_tmp)[2]>0)
