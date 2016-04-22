@@ -29,10 +29,12 @@ if (  (pos_j+alpha)<length(mycode) )
   }
 }
 cat('DONE\n')
-#append alert beyond 11th week to first 10 weeks if not empty:
+
 if ( length(myranks_palu_additionnal)>1)
 {
+  cat("Append alert beyond 11th week to first 10 weeks...")
   myranks_palu=c(myranks_palu,myranks_palu_additionnal)
+  cat("DONE\n")
 }
 
 tmp=myranks_palu
@@ -45,4 +47,6 @@ while( all(tmp>=90) == F & length(tmp)!=3  )
   mylength_palu=mylength_palu-1
 }
 
-#Nbcases=0
+# Effective Duration of the alert:
+mylength_palu=length(percentile_palu_alerte[alert_status=="alert" & name==k & code %in% mycode[(pos_j):(pos_j+mylength_palu-1)],alert_status])
+#
