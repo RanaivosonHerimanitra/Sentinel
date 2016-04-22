@@ -53,8 +53,11 @@ doc=addParagraph( doc, value = alert_parameter, stylename="BulletList")
 ######################### R code to generate the report ##########################
 require(tidyr);source("import_data.R");source("percentile.R");
 source("tdrplus.R");source("preprocessing.R");
+
+
 mydata=preprocessing_disease()
 PaluConf_tdr= tdr_malaria(); 
+PaluConf_tdr[code=="2016_15" & sites=="far"]
 #remove unused variables
 PaluConf_tdr[,ArboSusp:=NULL]
 PaluConf_tdr[,GrippSusp:=NULL]
