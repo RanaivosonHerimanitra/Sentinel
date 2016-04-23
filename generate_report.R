@@ -7,7 +7,6 @@ doc <- docx()
 options('ReporteRs-fontsize'=11, 'ReporteRs-default-font'='Arial')
 
 # Add a formatted paragraph of texts
-#++++++++++++++++++++++++++++++
 doc = addTitle(doc, "Surveillance sentinelle", level=1)
 doc = addParagraph(doc , pot( Sys.Date(), textItalic() ) )
 doc = addParagraph(doc, "        ")
@@ -60,7 +59,12 @@ source("preprocessing.R");
 mydata=preprocessing_disease()
 #PaluConf_tdr= tdr_malaria(); 
 
-
+#append all 54 sites in sentinel_latlong
+sentinel=fread("data/sentinel_codes.csv");sentinel
+setnames(sentinel,c("Centre","Code"),c("name","sites") )
+sentinel[,sites:=tolower(sites)]
+sentinel_latlong=rbind(sentinel_latlong,sentinel[!(sites %in% sentinel_latlong$sites)],fill=T)
+#
 PaluConf_tdr=tdr_eff
 Malaria=mydata[["Malaria"]]
 diarrh=mydata[["Diarrhea"]]
@@ -95,8 +99,9 @@ PaluConf_tdr[,AutrVirResp:=NULL]
 PaluConf_tdr[,NxConsltTotal:=NULL]
 #
 PaluConf_tdr=unique(PaluConf_tdr,by=NULL)
+PaluConf_tdr[,sites:=tolower(sites)]
 PaluConf_tdr=merge(PaluConf_tdr,sentinel_latlong[,list(sites,name)],
-                    by.x=c("sites"),by.y=c("sites"),all.x = T)
+                    by.x=c("sites"),by.y=c("sites"))
 
 setorder(PaluConf_tdr,sites,-deb_sem)
 ##########################################################################
