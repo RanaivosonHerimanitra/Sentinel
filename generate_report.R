@@ -56,7 +56,7 @@ source("preprocessing.R");
 #source("tdrplus.R");
 
 
-mydata=preprocessing_disease()
+mydata=preprocessing_disease(include_all_sites=F)
 #PaluConf_tdr= tdr_malaria(); 
 
 #append all 54 sites in sentinel_latlong

@@ -1,6 +1,6 @@
 ##################################Preprocessing for reporting purpose ###################
 
-preprocessing_disease = function (select_htc=FALSE)
+preprocessing_disease = function (select_htc=FALSE,include_all_sites=f)
 {
   #initialize a list:
   data_list=list()
@@ -44,10 +44,15 @@ preprocessing_disease = function (select_htc=FALSE)
     #cat("keep only sites that already have historical values...\n")
     if (select_htc==FALSE)
     {
-      if ( j!="ILI")
+      if ( j!="ILI" & include_all_sites==F)
       {
        
         data=data[,include,with=F]
+      }
+      if ( j!="ILI" & include_all_sites==T)
+      {
+        
+        data=data[,unique(c(include,htc)),with=F]
       }
      
     } else {

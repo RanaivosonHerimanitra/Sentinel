@@ -77,12 +77,6 @@ if ( exists("PaluConf")==F ) #to speed up things
       Consultations=rbind(Consultations,Consultations_tmp)
       Consultations[,deb_sem:=as.Date(deb_sem,origin="1970-01-01")]
       setorder(Consultations,-deb_sem)
-      # #conversion of variables:
-      # var_conv(Consultations,Consultations_tmp)
-      # #rbind 02 dataframe:
-      # Consultations=Consultations[deb_sem<max_date,]
-      # Consultations=(rbind(Consultations,Consultations_tmp)) 
-      # setorder(Consultations,-deb_sem)
     }
     ############################################################
     max_date=max(as.Date(SyndF$deb_sem,origin="1970-01-01"))

@@ -29,23 +29,47 @@ palu_autoch=palu_autoch[,htc,with=F]
 palu_autoch=as.data.table(gather(palu_autoch,
                                  key=sites,value=autoch,-c(code,deb_sem)))
 # sum autoch by deb_sem and sites
-palu_autoch[,autoch:=sum(autoch),by="deb_sem,sites"]
+
+#before 10h37
+#palu_autoch[,autoch:=sum(autoch),by="deb_sem,sites"]
+#
+
+#patch fix 10h37 24avril2016:
+palu_autoch[,is_NA:=all(is.na(autoch)==T),by="deb_sem,sites"]
+palu_autoch[,autoch:=as.integer(ifelse(is_NA==T,NA,sum(autoch,na.rm = T) )),by="deb_sem,sites"]
+palu_autoch[,is_NA:=NULL]
+#
+#retrieve unique rows after aggregation:
 palu_autoch=unique(palu_autoch,by=NULL)
 #Merge autochtone & Palu (all)
 mydata=merge(mydata,palu_autoch[,list(code,sites,autoch)],
              by.x=c("code","sites"),by.y=c("code","sites"),all.x=T,all.y=T)
 #preprocess data:
 mydata=mydata[as.Date(deb_sem)>=as.Date("2015-06-01"),]
+
+
 #Calculate Palu Importé:
-mydata[,palu_importe:=as.numeric(palu)-as.numeric(autoch),by="code,sites"]
+#before 10h55 24avril2016
+#mydata[,palu_importe:=as.numeric(palu)-as.numeric(autoch),by="code,sites"]
+
+
+#patch fix after 10h55 24avril2016
+mydata[complete.cases(palu,autoch),palu_importe:=as.numeric(palu-autoch)]
+mydata[complete.cases(palu) & complete.cases(palu,autoch)==F,palu_importe:=as.numeric(palu-0)]
+#Comment calculer les palu importes 
+#Si manque de BD palu alors que palu autoch existe?
+#==>impossible!
+
+
 #make a copy of data because we're going to transform it during plotting
 X=mydata
-X[is.na(palu)==T,palu:=0]
-X[is.na(autoch)==T,autoch:=0]
-X[is.na(palu_importe)==T,palu_importe:=0]
-#aggregate data:
-X[,autoch:=sum(autoch),by="code"]
-X[,palu_importe:=sum(palu_importe),by="code"]
+ # X[is.na(palu)==T,palu:=0]
+ # X[is.na(autoch)==T,autoch:=0]
+ # X[is.na(palu_importe)==T,palu_importe:=0]
+
+#aggregate data per Epidemiological week:
+X[,autoch:=sum(autoch,na.rm = T),by="code"]
+X[,palu_importe:=sum(palu_importe,na.rm = T),by="code"]
 
 Z1=unique(X[,list(deb_sem,autoch)],by=NULL); setnames(Z1,"autoch","vals")
 Z1[,Légende:="Palu autochtone"]
@@ -79,6 +103,8 @@ for ( k in 2:6 )
 }
 # selection for last 6 weeks before current week for Palu autochtone:
 last6_palu_autoch=palu_autoch[as.Date(deb_sem) %in% semaine,list(deb_sem,sites,autoch)]
+# reverse time order (to be conform to the report)
+setorder(last6_palu_autoch,sites,deb_sem)
 
 #knitr::kable(last6_palu_autoch)
 
