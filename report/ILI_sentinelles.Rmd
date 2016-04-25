@@ -51,6 +51,9 @@ for ( k in 2:6 )
 
 #ILI selection for last 6 weeks before current week:
 X=mydata[as.Date(deb_sem) %in% semaine,list(deb_sem,sites,occurence)]
+# reverse time order (to be conform to the report)
+setorder(X,sites,deb_sem)
+
 #transform NA into XX
 X$occurence=as.character(X$occurence)
 X[,occurence:=ifelse(is.na(occurence)==T,"na",occurence)]

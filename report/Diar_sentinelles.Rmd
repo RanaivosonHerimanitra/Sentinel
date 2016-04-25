@@ -51,7 +51,7 @@ Diarrh_feb=mydata[as.Date(deb_sem) %in% semaine,list(deb_sem,sites,diarh_feb)]
 Diarrh_feb$diarh_feb=as.character(Diarrh_feb$diarh_feb)
 Diarrh_feb[,diarh_feb:=ifelse(is.na(diarh_feb)==T,"na",diarh_feb)]
 Diarrh_feb[,diarh_feb:=ifelse(nchar(diarh_feb)<2,paste0("0",diarh_feb),diarh_feb)]
-# reverse time order (to be conform to the report)
+# reverse time order (to be follow report spec)
 setorder(Diarrh_feb,sites,deb_sem)
 
 #inline historical occurence:

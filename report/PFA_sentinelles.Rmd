@@ -7,9 +7,9 @@ output: pdf_document
 
 ```{r,echo=F, fig.width=10, out.extra='',comment='', message=FALSE , warning=FALSE}
 setwd("/media/herimanitra/DONNEES/IPM_sentinelle/sentinel_hrmntr 291115/Sentinel")
-source("./import_data.R");source("./preprocessing.R");require(ggplot2); require(gridExtra)
+source("./import_data.R");source("./preprocessing.R");require(ggplot2); require(gridExtra);require(Hmisc)
 #Retrieve PFA for HTC sites
-mydata= preprocessing_disease(select_htc=F)[["PFA"]]
+mydata= preprocessing_disease(include_all_sites=T)[["PFA"]]
 
 #aggregate occurence by week: 100*because rare disease!
 mydata[,occurence:=sum(occurence,na.rm = T),by="code"]
@@ -19,7 +19,7 @@ mydata=mydata[as.Date(deb_sem,origin="1970-01-01")>=as.Date("2015-06-01"),]
 d=ggplot(unique(mydata[,list(deb_sem,occurence)],by=NULL), aes(x=deb_sem, y=occurence),
          fill=occurence) 
 d= d + geom_bar(stat = "identity",fill="blue") 
-d= d + ggtitle(label="PFA dans le réseau sentinelle")
+d= d + ggtitle(label="PFA dans le réseau sentinel")
 d= d + xlab("Date") + ylab("Nb. Cas")
 debut_annee=as.numeric(unique(mydata[weeks==1,deb_sem]))
 d= d + geom_vline(xintercept = debut_annee,linetype=4,colour="orange")
@@ -36,7 +36,7 @@ print(d)
 
 ```{r,echo=F,out.extra='',comment='', message=FALSE , warning=FALSE}
 setwd("/media/herimanitra/DONNEES/IPM_sentinelle/sentinel_hrmntr 291115/Sentinel")
-mydata= preprocessing_disease()[["PFA"]]
+mydata= preprocessing_disease(include_all_sites=T)[["PFA"]]
 semaine=array()
 max_deb_sem=max(as.Date(mydata$deb_sem))
 semaine[6]= max_deb_sem-2*7 
@@ -50,6 +50,8 @@ for ( k in 2:6 )
 
 #PFA selection for last 6 weeks before current week:
 X=mydata[as.Date(deb_sem) %in% semaine,list(deb_sem,sites,occurence)]
+# reverse time order (to be follow report spec)
+setorder(X,sites,deb_sem)
 #transform NA into XX
 X$occurence=as.character(X$occurence)
 X[,occurence:=ifelse(is.na(occurence)==T,"na",occurence)]
@@ -64,7 +66,15 @@ lastweek[,occurence:=as.character(occurence)]
 lastweek[is.na(occurence)==T,occurence:="na"]                             
 X= merge(unique(X[,list(sites,vals)],by=NULL),lastweek,by.x="sites", by.y="sites")
               
-               
+ #append all 54 sites in sentinel_latlong
+  sentinel=fread("data/sentinel_codes.csv");
+  setnames(sentinel,c("Centre","Code"),c("name","sites") )
+  sentinel[,sites:=tolower(sites)]
+  sentinel_latlong=rbind(sentinel_latlong,sentinel[!(sites %in%     sentinel_latlong$sites)],fill=T)
+  # format sites's name:
+  require(Hmisc);
+  sentinel_latlong[,name:=capitalize(tolower(name))]
+     
 X= merge(X,sentinel_latlong[,list(name,sites)],by.x="sites",by.y="sites")
 X[,sites:=NULL]; 
 setnames(X,c("name","vals","occurence"),
@@ -78,6 +88,7 @@ knitr::kable(X[,c("Sites","6 semaines précédentes","Semaine dernière"),with=F
 
 ```{r,echo=F, fig.show = "hold" ,out.width = '50%', out.extra='',comment='', message=FALSE , warning=FALSE}
 setwd("/media/herimanitra/DONNEES/IPM_sentinelle/sentinel_hrmntr 291115/Sentinel")
+   
     #merge with sentinel_latlong:
     mydata=merge(mydata,sentinel_latlong, by.x="sites",by.y="sites")
     L=length(unique(mydata$name))
