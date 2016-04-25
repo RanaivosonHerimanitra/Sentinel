@@ -1,6 +1,6 @@
 ##################################Preprocessing for reporting purpose ###################
 
-preprocessing_disease = function (select_htc=FALSE,include_all_sites=f)
+preprocessing_disease = function (select_htc=FALSE,include_all_sites=F)
 {
   #initialize a list:
   data_list=list()
