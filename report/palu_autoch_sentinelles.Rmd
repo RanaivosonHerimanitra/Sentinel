@@ -125,7 +125,8 @@ lastweek[is.na(autoch)==T,autoch:="na"]
 
 #knitr::kable(lastweek)
 
-last6_palu_autoch=merge(unique(last6_palu_autoch[,list(sites,vals)],by=NULL),lastweek, by.x="sites", by.y="sites")
+last6_palu_autoch=merge(unique(last6_palu_autoch[,list(sites,vals)],by=NULL),
+                        lastweek, by.x="sites", by.y="sites")
              
 # merge with sentinel_code :
 sentinel_code=fread('data/sentinel_codes.csv')
@@ -142,7 +143,8 @@ last6_palu_autoch=merge(last6_palu_autoch,
  setnames(last6_palu_autoch,c("sites","vals","autoch"),
                  c("Sites","6 semaines précédentes","Semaine dernière"))
 #tolower name of sites:
-last6_palu_autoch[,Centre:=tolower(Centre)]
+ require(Hmisc)
+last6_palu_autoch[,Centre:=capitalize(tolower(Centre))]
 #generate tables:
 knitr::kable(last6_palu_autoch[, c("Centre","6 semaines précédentes","Semaine dernière"),with=F], caption="Paludisme autochtone dans le réseau sentinelle HTC")
 ```
