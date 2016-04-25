@@ -156,7 +156,6 @@ myname = as.character(unique(mydata$sites))
 mydata=mydata[as.Date(deb_sem,origin="1970-01-01")>=as.Date("2015-06-01"),]
 for ( p in myname )
        {
-  
         disease1=mydata[sites==p,list(sites,deb_sem,palu)]
         disease1[is.na(palu)==T,palu:=0]
         disease1[,Légende:="Importe"]

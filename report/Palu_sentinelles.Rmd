@@ -154,7 +154,7 @@ setnames(fievre,c("name","vals","SyndF"),
                 caption="Fièvres dans le réseau sentinel")
 
   knitr::kable(malaria[,c("Sites","6 semaines précédentes","Semaine dernière"),with=F],
-              caption="Paludisme dans le réseau sentinel")
+              caption="Paludisme dans le réseau sentinelle")
 ```
 
 ```{r,echo=F, fig.show = "hold" ,out.width = '50%', out.extra='',comment='', message=FALSE , warning=FALSE}
@@ -171,7 +171,6 @@ generate_plot(htc="dsd",
               disease2.targetvar="SyndF",
               legend.disease1="Paludisme TDR+",
               legend.disease2="Fièvres",
-              title.label="Fièvres et Paludisme dans le réseau sentinel",
+              title.label="Fièvres et Paludisme dans le réseau sentinelle",
               title.ylab="Cas de Fièvres et Paludisme")
-
 ```
