@@ -45,6 +45,9 @@ for ( k in 2:6 )
 #Malaria selection for last 6 weeks before current week:
 malaria=unique(mydata[as.Date(deb_sem) %in% semaine,list(deb_sem,sites,malaria_cases)],by=NULL)
 
+# reverse time order (to be conform to the report)
+setorder(malaria,sites,deb_sem)
+
 #transform NA
 malaria$malaria_cases=as.character(malaria$malaria_cases)
 malaria[is.na(malaria_cases)==T,malaria_cases:="na"]
