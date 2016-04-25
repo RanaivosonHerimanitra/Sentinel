@@ -16,27 +16,34 @@ calculate_minsan=function(data=mydata,
  
   max_deb_sem= max(as.Date(data$deb_sem))
   max_code=paste0(year(max_deb_sem),"_",isoweek(max_deb_sem))
-  
+  if (max_code==paste0(year(Sys.Date()),"_",isoweek(Sys.Date())) ) {
+    #if we are on the current week, update max_deb_sem
+    max_deb_sem = max_deb_sem - 7
+  } 
   
   
     cat('chosen slope parameter is:',slope_minsan,'\n')
     cat('weeks following this slope parameter:',minsan_weekrange,'\n')
     cat('Are these weeks consecutive? :',minsan_consecutive_week,'\n')
+    
+    
+     
+      
+    cat('merging data for MinSan algorithm...')
       S0=data[as.Date(deb_sem)==max_deb_sem,list(code,sites,occurence)]
       S1=data[as.Date(deb_sem)==max_deb_sem-7,list(sites,occurence)]
       setnames(S1,"occurence","occurence_1")
-      
-    cat('merging data for MinSan algorithm...\n')
       minsan=merge(S0,S1,by.x="sites",by.y="sites")
       S2=data[as.Date(deb_sem)==max_deb_sem-2*7,list(sites,occurence)]
       setnames(S2,"occurence","occurence_2")
-    cat('merging data for MinSan algorithm...')
       minsan=merge(minsan,S2,by.x="sites",by.y="sites")
     cat('DONE\n')
     
+    # 04 consecutive weeks or 03:
     if ( as.numeric(minsan_weekrange) ==4 )
     {
-      S3=data[as.Date(deb_sem)==max(as.Date(deb_sem))-3*7,list(sites,occurence)]
+      S3=data[as.Date(deb_sem)==max_deb_sem-3*7,list(sites,occurence)]
+      #S3=data[as.Date(deb_sem)==max(as.Date(deb_sem))-3*7,list(sites,occurence)]
       setnames(S3,"occurence","occurence_3")
       minsan=merge(minsan,S3,by.x="sites",by.y="sites")
       cat('merging with PaluConf data...')
@@ -50,12 +57,12 @@ calculate_minsan=function(data=mydata,
         cat('consecutive MinSan calculation for 04 weeks...\n')
         data[,alert_status:=ifelse(occurence>=slope_minsan*occurence_1 &
                                      occurence_1>=slope_minsan*occurence_2 &
-                                     occurence_2>=slope_minsan*occurence_3,"alert","normal")]
+                                     occurence_2>=slope_minsan*occurence_3 & occurence>0 & occurence_1>0 & occurence_2>0 & occurence_3>0,"alert","normal")]
       } else {
         cat('Non consecutive MinSan calculation for 04 weeks...')
-        data[,alert_status:=ifelse(occurence>=slope_minsan*occurence_1 |
+        data[,alert_status:=ifelse( (occurence>=slope_minsan*occurence_1 |
                                      occurence>=slope_minsan*occurence_2 |
-                                     occurence>=slope_minsan*occurence_3,"alert","normal")]
+                                     occurence>=slope_minsan*occurence_3) & (occurence>0 & occurence_1>0 & occurence_2>0 & occurence_3>0),"alert","normal")]
         cat('DONE\n')
       }
       cat('remove temporary files...')
@@ -77,16 +84,16 @@ calculate_minsan=function(data=mydata,
         cat('consecutive MinSan alert detection for 03 weeks...\n')
         cat('names in data are',names(data),'\n')
         data[,alert_status:=ifelse(occurence>=slope_minsan*occurence_1 &
-                                     occurence_1>=slope_minsan*occurence_2 
+                                     occurence_1>=slope_minsan*occurence_2 & occurence>0 & occurence_1>0 & occurence_2>0 
                                    ,"alert","normal")]
       } else {
         cat('Non consecutive MinSan calculation for 03 weeks...\n')
-        data[,alert_status:=ifelse(occurence>=slope_minsan*occurence_1 |
-                                     occurence>=slope_minsan*occurence_2 
+        data[,alert_status:=ifelse( (occurence>=slope_minsan*occurence_1 |
+                                     occurence>=slope_minsan*occurence_2 ) & (occurence>0 & occurence_1>0 & occurence_2>0 )
                                    ,"alert","normal")]
       }
     }
-  
+  #print(data[code=="2016_15" & alert_status=="alert"]);Sys.sleep(50)
   
   
   
@@ -163,22 +170,14 @@ calculate_minsan=function(data=mydata,
     if ( f==list_facies[1])
     {
       propsite_alerte_minsan_byfacies= datalist_facies[[f]]
-      #propsite_alerte_minsan_byfacies[,f:=NULL,with=F]
-      #propsite_alerte_minsan_byfacies[,eff_total:=NULL]
-      #propsite_alerte_minsan_byfacies[,eff_beyond:=NULL]
       propsite_alerte_minsan_byfacies[,facies:=f]
     } else {
       tmp= datalist_facies[[f]]
-     
-      #tmp[,f:=NULL,with=F]
-      #tmp[,eff_total:=NULL]
-      #tmp[,eff_beyond:=NULL]
       tmp[,facies:=f]
       propsite_alerte_minsan_byfacies=rbind(propsite_alerte_minsan_byfacies,tmp)
       rm(tmp);gc()
     }
     cat("DONE\n")
-    
   }
  
   
