@@ -302,7 +302,7 @@ if ( exists("PaluConf")==F ) #to speed up things
     mild=fread("data/mild_export.csv")
     ili=fread("data/ili.csv")
     #ili[,deb_sem:=as.character((as.Date(deb_sem,origin="1970-01-01")))]
-    
+    arbosusp=fread("data/arbosusp.csv")
     pfa=fread("data/pfa.csv")
     palu_autoch=fread("data/palu_autoch.csv")
     tdr_eff=fread("data/tdr_eff.csv")

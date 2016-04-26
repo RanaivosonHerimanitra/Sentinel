@@ -14,6 +14,7 @@ calculate_csum = function (data=mydata,
   max_code=paste0(year(max_deb_sem),"_",isoweek(max_deb_sem))
   last52weeks= unique(as.Date(data$deb_sem))[order(unique(as.Date(data$deb_sem)),decreasing = T)[1:52]]
   
+  
   cat('year range during which moving average will be calculated are: ')
   year_range= (as.numeric(year_choice)-Csum_year_map):(as.numeric(year_choice)-1)
   cat(year_range,"DONE\n")
@@ -43,6 +44,9 @@ calculate_csum = function (data=mydata,
     cat('Semaine epidemiologic:',w,'\n')
     #Past date range to be compared to current date_range in order to detect alert
     past_date_range= ( as.Date(w) -1*365 - Lleft*7 ):( as.Date(w)- 1*365  + Lright*7 )
+    
+    
+    
     #loop thru all weeks of this year
     for ( p in 2:length(year_range) )
     {
@@ -58,13 +62,21 @@ calculate_csum = function (data=mydata,
     code_range=unlist(lapply(year_range,function(i) paste0(i,"_",week_range)))
     cat("DONE\n")
     
+    
     cat("Calculate historical smoothed mean per site and per year for code range:",code_range,"...")
-    tmp= data[code %in% code_range,mean(occurence,na.rm = T),by="sites,years"]
-    setnames(tmp,"V1","smoothed_mean")
+     tmp= data[code %in% code_range,mean(occurence,na.rm = T),by="sites,years"]
+     setnames(tmp,"V1","smoothed_mean")
     cat("DONE\n")
+    
+    
+    #why don't
+    # occurence >= Sd_csum_map + smoothed_mean2015 & 
+    # occurence >= Sd_csum_map + smoothed_mean2014 & 
+    # occurence >= Sd_csum_map + smoothed_mean2013 ... etc
+    # instead of occurence >= Sd_csum_map + mean of smoothed_mean?
     cat('Calculate mean of smoothed mean per site...')
-    tmp = tmp [,mean(smoothed_mean),by="sites"]
-    setnames(tmp,"V1","smoothed_mean")
+     tmp = tmp [,mean(smoothed_mean),by="sites"]
+     setnames(tmp,"V1","smoothed_mean")
     cat('DONE\n')
    
     cat("merge smoothed mean per site with data of the current year...")
@@ -76,12 +88,11 @@ calculate_csum = function (data=mydata,
                                       "alert","normal")]
     csum_alerte[,smoothed_mean:=NULL]
     cat("DONE\n")
+    
+    
+    
   }
    
-
-
-    
-    
     cat('calculate radius for per site for Csum algorithm for  the current week...')
     #fixons la taille du cercle à 15 pour les alertes
     #la taille des cercles en situation normale est proportionnelle
@@ -91,34 +102,32 @@ calculate_csum = function (data=mydata,
     csum_alerte[alert_status=="normal", myradius:=15*occurence/sum_occurence_week,by="sites,code"]
     #set a minimum value if less than 2.5 in radius (for visibility purpose):
     csum_alerte[alert_status=="normal", myradius:=ifelse(myradius<2.5,2.5,myradius),by="sites,code"]
-    
     csum_alerte[alert_status %in% NA | myradius %in% NA , myradius:=5.0]
-    
-   
     cat('DONE\n')
     
   
   #########################################Weekly Proportion of sites in alert ###########
-  cat("Weekly number of sites in alert using C-sum algorithm (all)...\n")
-  Nbsite_beyond=csum_alerte[ is.na(occurence)==F & alert_status=="alert",length(unique(sites)),by=byvar]
-  setnames(Nbsite_beyond,"V1","eff_beyond")
-  cat('dimension of Nbsite_beyond for csum:',dim(Nbsite_beyond),'\n')
-  cat("Weekly number of sites that had given data (all)...\n")
-  Nbsite_withdata=csum_alerte[ is.na(occurence)==F,length(unique(sites)),by=byvar]
-  setnames(Nbsite_withdata,"V1","eff_total")
-  #MERGE to give proportion of sites beyond n_percentile per week:
-  propsite_alerte_csum=merge(x=Nbsite_withdata,y=Nbsite_beyond,by.x=byvar,by.y=byvar,all.x=T)
-  #calculate prop and change NA to zero:
-  propsite_alerte_csum[,prop:=ifelse(is.na(eff_beyond/eff_total)==T,0.0,eff_beyond/eff_total)]
+  cat("Weekly number of sites in alert using C-sum algorithm (all)...")
+   Nbsite_beyond=csum_alerte[ is.na(occurence)==F & alert_status=="alert",length(unique(sites)),by=byvar]
+   setnames(Nbsite_beyond,"V1","eff_beyond")
+  cat('DONE\n')
   
+  cat("Weekly number of sites that had given data (all)...")
+   Nbsite_withdata=csum_alerte[ is.na(occurence)==F,length(unique(sites)),by=byvar]
+   setnames(Nbsite_withdata,"V1","eff_total")
+   #MERGE to give proportion of sites beyond n_percentile per week:
+   propsite_alerte_csum=merge(x=Nbsite_withdata,y=Nbsite_beyond,by.x=byvar,by.y=byvar,all.x=T)
+   #calculate prop and change NA to zero:
+   propsite_alerte_csum[,prop:=ifelse(is.na(eff_beyond/eff_total)==T,0.0,eff_beyond/eff_total)]
+  cat('DONE\n')
   
-  #merge with deb_sem to reorder time series:
+  cat("merge with deb_sem to reorder time series...")
    propsite_alerte_csum=merge(propsite_alerte_csum,
                                 csum_alerte[,list(code,deb_sem,sites,alert_status,East,
                                            South,High_land,Fringe,excepted_East,
                                            excepted_High_land)],
                                 by.x="code",by.y="code")
-  
+  cat('DONE\n')
    ####################new method to handle facies###################################
    list_facies= c("East","South","High_land","Fringe","excepted_East","excepted_High_land")
    datalist_facies=list()

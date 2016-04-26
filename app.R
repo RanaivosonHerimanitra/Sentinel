@@ -9,7 +9,7 @@ if ( getwd()!="/srv/shiny-server/sentinel_hrmntr")
 }
 
 
-##############################################server ######################
+############################################## server ######################
 source("facies_class.R")
 server<-function(input, output,session) {
   source("import_data.R")
@@ -75,7 +75,6 @@ server<-function(input, output,session) {
     cat('DONE\n')
     mylist= calculate_csum(data=mydata,
                            Csum_year_map=input$Csum_year_map,
-                           #Csum_week_map=input$Csum_week_map,
                            Sd_csum_map=input$Sd_csum_map,
                            week_Csum_map=input$week_Csum_map
                            ,byvar="code")
@@ -209,24 +208,6 @@ server<-function(input, output,session) {
     
    }
    
-   # cat('calculate weekly proportion of sites in alert using tdr+/fever algorithm (by facies)...\n')
-   # source("create_facies.R")
-   # PaluConf_SyndF=create_facies(data=PaluConf_SyndF)
-   # Nbsite_beyond=PaluConf_SyndF[ alert_status_hist=="alert",
-   #                               length(unique(sites)),by=c("code","facies")]
-   # setnames(Nbsite_beyond,"V1","eff_beyond")
-   # Nbsite_beyond=merge(Nbsite_beyond,unique(PaluConf_SyndF[,list(code,deb_sem,facies)]),
-   #                     by.x=c("code","facies"),by.y=c("code","facies"))
-   # Nbsite_withdata=PaluConf_SyndF[is.na(alert_status_hist)==F,
-   #                                length(unique(sites)),by=c("code","facies")]
-   # setnames(Nbsite_withdata,"V1","eff_total")
-   # propsite_alerte_fever_byfacies=merge(x=Nbsite_withdata,y=Nbsite_beyond,
-   #                             by.x=c("code","facies"),by.y=c("code","facies") )
-   # propsite_alerte_fever_byfacies[,prop:=ifelse(is.na(eff_beyond/eff_total)==T,0.0,
-   #                                     eff_beyond/eff_total)]
-   # rm(Nbsite_beyond);rm(Nbsite_withdata);gc()
-   # cat('DONE\n')
-  
    cat('calculate radius for per site for percentile algorithm alert...')
      setkey(PaluConf_SyndF,alert_status_hist)
      PaluConf_SyndF[alert_status=="alert", myradius:=15.0]
@@ -275,8 +256,6 @@ server<-function(input, output,session) {
     source("introducing_lst.R",local = T) #==>now in hfi
     source("introducing_ndvi.R",local = T) #==>now in hfi
    
-    
-    
     source("if_percentile_viz.R",local = T)
     source("if_minsan_viz.R",local = T)
     source("if_csum_viz.R",local = T)
@@ -643,7 +622,7 @@ server<-function(input, output,session) {
   output$ili_graph = renderPlotly({
     
     tdr_eff=as.data.table(gather(ili,key=sites,value=Synd_g,-c(code,deb_sem)))
-    arbosusp=as.data.table(gather(ili,key=sites,value=ArboSusp,-c(code,deb_sem)))
+    arbosusp=as.data.table(gather(arbosusp,key=sites,value=ArboSusp,-c(code,deb_sem)))
     tdr_eff=merge(tdr_eff,arbosusp,
                   by.x=c("code","sites","deb_sem"),
                   by.y=c("code","sites","deb_sem"),all.x=T)

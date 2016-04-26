@@ -18,7 +18,8 @@ calculate_minsan=function(data=mydata,
   max_code=paste0(year(max_deb_sem),"_",isoweek(max_deb_sem))
   if (max_code==paste0(year(Sys.Date()),"_",isoweek(Sys.Date())) ) {
     #if we are on the current week, update max_deb_sem
-    max_deb_sem = max_deb_sem - 7
+    max_code_prev = paste0(year(Sys.Date()-7),"_",isoweek(Sys.Date()-7))
+    max_deb_sem =data[code==max_code_prev,get("deb_sem")]
   } 
   
   
@@ -31,7 +32,7 @@ calculate_minsan=function(data=mydata,
       
     cat('merging data for MinSan algorithm...')
       S0=data[as.Date(deb_sem)==max_deb_sem,list(code,sites,occurence)]
-      S1=data[as.Date(deb_sem)==max_deb_sem-7,list(sites,occurence)]
+      S1=data[as.Date(deb_sem)==max_deb_sem-1*7,list(sites,occurence)]
       setnames(S1,"occurence","occurence_1")
       minsan=merge(S0,S1,by.x="sites",by.y="sites")
       S2=data[as.Date(deb_sem)==max_deb_sem-2*7,list(sites,occurence)]
@@ -70,6 +71,7 @@ calculate_minsan=function(data=mydata,
       cat('DONE\n')
       
     } else {
+      # 03 weeks:
       cat('merging with PaluConf data...')
       data=merge(data,minsan[,list(sites,occurence_1,occurence_2)],
                  by.x="sites",by.y="sites")
@@ -93,7 +95,6 @@ calculate_minsan=function(data=mydata,
                                    ,"alert","normal")]
       }
     }
-  #print(data[code=="2016_15" & alert_status=="alert"]);Sys.sleep(50)
   
   
   
