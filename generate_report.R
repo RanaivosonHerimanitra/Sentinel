@@ -83,7 +83,7 @@ percentile_diar_alerte=merge(percentile_diar_alerte,sentinel_latlong,
                              by.x=c("sites"),by.y=c("sites"),all.x=T)
 
 #################prepare data to detect lack of RDT #######
-PaluConf_tdr[,code:= paste0(Annee,"_",Semaine)]
+PaluConf_tdr[,code:= paste0(Annee,"_",ifelse(nchar(Semaine)<2,paste0("0",Semaine),Semaine))]
 PaluConf_tdr[,SyndF:=sum(SyndF,na.rm=T),by="sites,code"]
 PaluConf_tdr[,TestPalu:=sum(TestPalu,na.rm=T),by="sites,code"]
 
@@ -103,17 +103,22 @@ PaluConf_tdr[,sites:=tolower(sites)]
 PaluConf_tdr=merge(PaluConf_tdr,sentinel_latlong[,list(sites,name)],
                     by.x=c("sites"),by.y=c("sites"))
 
-setorder(PaluConf_tdr,sites,-deb_sem)
+
 ##########################################################################
 
 tana_centre = c("Manjakaray","Andohatapenaka","Tsaralalana","Behoririka")
 tana_haut_plateau= c("Fianarantsoa","Antsirabe","Anjozorobe")
 
+#reorder time (very important step!)
 setkey(percentile_palu_alerte,code)
 setorder(percentile_palu_alerte,sites,-deb_sem)
+setkey(percentile_diar_alerte,code)
+setorder(percentile_diar_alerte,sites,-deb_sem)
+setorder(PaluConf_tdr,sites,-Annee,-Semaine)
+#
 mycode=unique(c(percentile_palu_alerte$code,
-                percentile_diar_alerte$code,
-                PaluConf_tdr$code))
+                percentile_diar_alerte$code))
+                #PaluConf_tdr$code))
 #remove ongoing week:
 ongoing_week= paste0(year(Sys.Date()),"_",isoweek(Sys.Date()))
 mycode=mycode[mycode!=ongoing_week]
@@ -148,7 +153,7 @@ for ( j in mycode )
                    alerte_diar$name,
                    alerte_manque_tdr$name,palu_NA,diar_NA))
   #mysites[mysites %in% tana_centre]="Antananarivo"
-  mysites=unique(mysites)
+  #mysites=unique(mysites)
   # k in mysites ---
   unlist(lapply(mysites, function(k) source("generate_narration.R",local = T)));
 }
