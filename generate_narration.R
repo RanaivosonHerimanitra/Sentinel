@@ -88,8 +88,8 @@ if (L_palu | L_diar | L_tdr )
       cat("generating narration for TDR manquant...")
      
         tdr_manquant= pot("  .   est") + pot(" PROBABLEMENT en manque de TDR ",highlight_tdr )
-        #tdr_manquant=tdr_manquant + pot("cette semaine")
-        tdr_manquant=tdr_manquant + pot("depuis la semaine dernière")
+        tdr_manquant=tdr_manquant + pot("cette semaine")
+        #tdr_manquant=tdr_manquant + pot("depuis la semaine dernière")
         tdr_manquant=tdr_manquant+ pot(paste("(",N_fiever, " cas de fièvres contre",N_tdr," TDR effectués)"))
        
       #add this line if It lasts more than a week:
