@@ -47,5 +47,5 @@ while( all(tmp>=90) == F & length(tmp)!=3  )
 cat('DONE\n')
 
 # Effective Duration of the alert:
-mylength_diar=3-1+length(percentile_diar_alerte[alert_status=="alert" & name==k & code %in% mycode[(pos_j):(pos_j+mylength_diar-1)],alert_status])
+mylength_diar=1-1+length(percentile_diar_alerte[alert_status=="alert" & name==k & code %in% mycode[(pos_j):(pos_j+mylength_diar-1)],alert_status])
 #

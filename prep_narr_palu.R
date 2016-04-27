@@ -48,5 +48,5 @@ while( all(tmp>=90) == F & length(tmp)!=3  )
 }
 
 # Effective Duration of the alert:
-mylength_palu=3-1+length(percentile_palu_alerte[alert_status=="alert" & name==k & code %in% mycode[(pos_j):(pos_j+mylength_palu-1)],alert_status])
+mylength_palu=1-1+length(percentile_palu_alerte[alert_status=="alert" & name==k & code %in% mycode[(pos_j):(pos_j+mylength_palu-1)],alert_status])
 #

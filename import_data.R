@@ -4,7 +4,7 @@ remote_server=F;writing_to_disk=F
 #whether to run report or to run shiny:
 reporting =T;
 #load required packages:
-source("libraries.R");source("var_conversion.R")
+source("libraries.R");#source("var_conversion.R")
 if ( exists("PaluConf")==F ) #to speed up things
 {
   if ( remote_server==TRUE ) {

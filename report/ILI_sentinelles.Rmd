@@ -74,7 +74,7 @@ setnames(X,c("name","vals","occurence"),
                  c("Sites","6 semaines précédentes","Semaine dernière"))
 #generate tables:
 knitr::kable(X[,c("Sites","6 semaines précédentes","Semaine dernière"),with=F],
-             caption="ILI dans le réseau sentinel")
+             caption="ILI dans le réseau sentinelle")
 
 ```
 

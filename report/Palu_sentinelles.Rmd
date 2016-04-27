@@ -22,7 +22,7 @@ generate_plot(htc="all",
               legend.disease2="Fièvres",
               disease1.targetvar="malaria_cases",
               disease2.targetvar="SyndF",
-              title.label="Fièvres et Paludisme dans le réseau sentinel",
+              title.label="Fièvres et Paludisme dans le réseau sentinelle",
               title.label.list="Fièvres et Paludisme à",
               title.ylab="Cas de Fièvres et Paludisme")
 ```

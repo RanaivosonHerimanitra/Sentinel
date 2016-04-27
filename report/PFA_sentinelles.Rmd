@@ -19,7 +19,7 @@ mydata=mydata[as.Date(deb_sem,origin="1970-01-01")>=as.Date("2015-06-01"),]
 d=ggplot(unique(mydata[,list(deb_sem,occurence)],by=NULL), aes(x=deb_sem, y=occurence),
          fill=occurence) 
 d= d + geom_bar(stat = "identity",fill="blue") 
-d= d + ggtitle(label="PFA dans le réseau sentinel")
+d= d + ggtitle(label="PFA dans le réseau sentinelle")
 d= d + xlab("Date") + ylab("Nb. Cas")
 debut_annee=as.numeric(unique(mydata[weeks==1,deb_sem]))
 d= d + geom_vline(xintercept = debut_annee,linetype=4,colour="orange")
@@ -81,7 +81,7 @@ setnames(X,c("name","vals","occurence"),
                  c("Sites","6 semaines précédentes","Semaine dernière"))
 #generate tables:
 knitr::kable(X[,c("Sites","6 semaines précédentes","Semaine dernière"),with=F],
-             caption="PFA dans le réseau sentinel")
+             caption="PFA dans le réseau sentinelle")
 
 ```
 

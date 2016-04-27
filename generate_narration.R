@@ -56,8 +56,8 @@ if (L_palu | L_diar | L_tdr )
       }
       
     } else {
-      cat("generating narration for other sites except Tana Ville and Periphrie for Palu...")
-        msg_palu=  pot("  .   est") + pot(" en ALERTE PALU",en_gras_rouge) + pot(" depuis  ")+ pot(mylength_palu,en_gras(fontsize=13) ) +pot("  semaines consécutives ")
+      cat("generating narration for other sites except Tana Ville and Periphérie for Palu...")
+        msg_palu=  pot("  .   est") + pot(" en ALERTE PALU",en_gras_rouge) + pot(" depuis  ")+ pot(mylength_palu,en_gras(fontsize=13) ) +pot("  semaine(s)  ")
         #vendredi 22 avril 2016:
         #msg_palu=  pot("  .   est") + pot(" en ALERTE PALU",en_gras_rouge) + pot(" dépassant le seuil depuis  ")+ pot(mylength_palu,en_gras(fontsize=13) ) +pot("  semaines consécutives ")
         msg_palu= msg_palu + pot("(") + pot(paste0(myranks_palu[1],";")) + pot(paste0(myranks_palu[2],";")) + pot(paste0(myranks_palu[3],";")) + pot(paste0(myranks_palu[4],";")) + pot(paste0(myranks_palu[5],";")) + pot(paste0(myranks_palu[6],";")) + pot(paste0(myranks_palu[7],";")) + pot(paste0(myranks_palu[8],";")) + pot(paste0(myranks_palu[9],";")) + pot(paste0(myranks_palu[10],")."))
@@ -71,7 +71,7 @@ if (L_palu | L_diar | L_tdr )
   {
     source("prep_narr_diar.R",local = T)
     cat("generating narration for Diarrhée for ",k,"...")
-      msg_diar=  pot("  .   est") + pot(" en ALERTE DIARRHEE",en_gras_green) + pot(" depuis  ")+ pot(mylength_diar,en_gras(fontsize=13) ) +pot("  semaines consécutives ")
+      msg_diar=  pot("  .   est") + pot(" en ALERTE DIARRHEE",en_gras_green) + pot(" depuis  ")+ pot(mylength_diar,en_gras(fontsize=13) ) +pot("  semaine(s) ")
     
      # msg_diar=  pot("  .   est") + pot(" en ALERTE DIARRHEE",en_gras_green) + pot(" dépassant le seuil depuis  ")+ pot(mylength_diar,en_gras(fontsize=13) ) +pot("  semaines consécutives ")
       msg_diar= msg_diar + pot("(") + pot(paste0(myranks_diar[1],";")) + pot(paste0(myranks_diar[2],";")) + pot(paste0(myranks_diar[3],";")) + pot(paste0(myranks_diar[4],";")) + pot(paste0(myranks_diar[5],";")) + pot(paste0(myranks_diar[6],";")) + pot(paste0(myranks_diar[7],";")) + pot(paste0(myranks_diar[8],";")) + pot(paste0(myranks_diar[9],";")) + pot(paste0(myranks_diar[10],")."))

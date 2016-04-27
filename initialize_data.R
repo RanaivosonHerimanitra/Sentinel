@@ -73,8 +73,8 @@ fwrite(ili,"data/ili.csv")
 
 hfi= tbl(conn_hfi,
              build_sql("SELECT * FROM ","crosstab_iri_caid"))
-ili= ili %>% data.frame() 
-fwrite(ili,"data/ili.csv")
+hfi= hfi %>% data.frame() 
+fwrite(hfi,"data/hfi.csv")
 
 ###################################################
 tdr_eff= tbl(sentinel,
