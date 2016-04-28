@@ -63,8 +63,9 @@ mycondparam_map_percentile=conditionalPanel(
               value = 90
   ),
   tags$hr(),
-  tags$p("This option is intended to improve the specificity of the alert system"),
-  radioButtons(inputId="comet_map", label="Number of consecutive weeks above threshold:",
+  tags$p("This option is intended to improve the specificity of this early warning system:"),
+  radioButtons(inputId="comet_map", 
+               label="Number of consecutive weeks above threshold:",
                c("1"=1 , "2"=2 , "3"= 3, "4"= 4),
                selected="3"
   )
@@ -72,8 +73,8 @@ mycondparam_map_percentile=conditionalPanel(
 mycondparam_map_minsan= conditionalPanel(
   condition = "input.Algorithmes_eval1 == 'MinSan' | input.Algorithmes_eval2 == 'MinSan'",
   tags$p(tags$strong("About algorithm")),
-  helpText("The Ministry of Health, has defined a method based on slope calculation, by identify a doubling of the number of cases for 3 consecutive weeks. 
-           They assume that a rapid multiplication of the number cases from week to week might signal onset of an epidemic."),
+  helpText("Malagasy Ministry of Health defined an algorithm which consists of identifying the duplication of the number of cases for 3 consecutive weeks (or not). 
+           They assume that a rapid multiplication of the number cases from week to week might signal onset of an epidemic.  Default slope is set to 02 (doubling) but user can slide it."),
   sliderInput(inputId="slope_minsan", 
               "Slope Value:", 
               min = 1,
