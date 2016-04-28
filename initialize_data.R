@@ -95,3 +95,10 @@ pfa= tbl(sentinel,
                        "crosstab_pfa_format"))
 pfa= pfa %>% data.frame() 
 fwrite(pfa,"data/pfa.csv")
+
+######################################################
+missing_sent= tbl(sentinel,
+                  build_sql("SELECT * FROM ",
+                   "vue_csb_sms_centre_format2"))
+missing_sent= missing_sent %>% data.frame() 
+fwrite(missing_sent,"data/missing_sent.csv")
