@@ -599,7 +599,9 @@ server<-function(input, output,session) {
                         by.x="weekOfday",by.y="weekOfday", all.x=T)
     
     setorder(propili_2015,-deb_sem)
-    
+    #handle date format:
+    propili_2015[,deb_sem:=as.character((as.Date(deb_sem,origin="1970-01-01")))]
+    #
     p <- plot_ly(propili_2015, 
                  x =deb_sem, 
                  y = prop,name="prop.",
@@ -634,6 +636,8 @@ server<-function(input, output,session) {
     sites34= include[-c(1:2)]
     #filter rows:
     myili=tdr_eff[sites %in% sites34 & year(as.Date(deb_sem ,origin="1970-01-01"))>=2015]
+    #handle date format:
+    myili[,deb_sem:=as.character((as.Date(deb_sem,origin="1970-01-01")))]
     
     p <- plot_ly(myili, x = deb_sem, type="bar",y = Synd_g,name="ILI")
     p = p %>% add_trace(x = deb_sem, type="bar",y = ArboSusp, name = "Dengue-Like")

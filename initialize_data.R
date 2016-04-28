@@ -99,6 +99,6 @@ fwrite(pfa,"data/pfa.csv")
 ######################################################
 missing_sent= tbl(sentinel,
                   build_sql("SELECT * FROM ",
-                   "vue_csb_sms_centre_format2"))
+                   "vue_csb_sms_centre_format"))
 missing_sent= missing_sent %>% data.frame() 
 fwrite(missing_sent,"data/missing_sent.csv")
