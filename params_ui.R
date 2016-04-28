@@ -52,8 +52,8 @@ mycondparam_map_percentile=conditionalPanel(
   condition = "input.Algorithmes_eval1 == 'Percentile' | input.Algorithmes_eval2 == 'Percentile'",
   tags$hr(),
   tags$p("About this algorithm:"),
-  helpText("An alert is triggered when disease cases of the current week exceed 
-           selected value of percentile of the whole chronological series of a site. 
+  helpText("An alert is triggered when disease cases number of last week exceed 
+           selected percentile value of the whole time series of a site. 
            The 90th percentile is the value such that 90% of the time series values are below it (and therefore 10% are above). "),
   tags$hr(),
   sliderInput("Centile_map", 
