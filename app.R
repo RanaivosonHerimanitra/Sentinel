@@ -996,9 +996,7 @@ server<-function(input, output,session) {
 ##############################################User interface ##############
 #
 mydashheader=dashboardHeader(title="Sentinel surveillance",titleWidth="233")
-# mydashheader$children[[2]]$children <-  tags$div(class="media",
-#                                                  tags$a(href="http://pasteur.mg",
-#   tags$img(class="media-object img-thumbnail" ,height='90',width='90',src="logo.png" ,alt="logo")))
+
 #skeleton of the user interface:
 source('initialize_ui.R')
 ui = list(dashboardPage(skin = "blue",

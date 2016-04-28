@@ -38,7 +38,7 @@ choose_disease_report= box(title="Reporting",
                            solidHeader = TRUE,
                            collapsible = TRUE,
                            tags$p("This report includes historical alerts about Malaria and diarrhea. Algorithm used is 90th percentile.
-                                   It also contains information about lack of data and RDT compared to reported number of fiever's consultation."),
+                                   It also contains information about lack of data and RDT compared to reported number of fever's consultation diagnosis."),
                            downloadButton('downloadReport','Download',class="primary")
                            ,width=8)
                                    
