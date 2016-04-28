@@ -18,8 +18,10 @@ diseases_choices=selectInput(inputId = "diseases",
                                           "ILI"="ILI"
                              ),selected = "Malaria")
 map_choices = radioButtons(inputId = "mapchoice",
-                           label = "Choose a map:",
-                           list("Leaflet"="leaflet","Other"="other")
+                           label="Map type:",
+                           #label = "Choose a map:",
+                           list("Leaflet"="leaflet")
+                                #,"Other"="other")
                            )
 #####################radio button's choices for epidemic threshold's alerts:
 #available algorithm when Malaria is displayed
@@ -98,8 +100,6 @@ mycondparam_map_cumsum=conditionalPanel(
               value = 5
   ),
   tags$hr(),
-  
-  
   sliderInput(inputId="Csum_week_map", "Weeks number:", 
               min = 1,
               max = 26, 
@@ -117,7 +117,8 @@ mycondparam_map_cumsum=conditionalPanel(
 )
 mycondparam_map_mcases=conditionalPanel(
   condition = "input.Algorithmes == 'Mcases'",
-  selectInput("sites", "Sentinel Sites", choices = c("Farafangana","Ambovombe","Ambatondrazaka","Antsohihy","Anjozorobe","Antsirabe","Belo sur Tsiribihina","Behoririka","Ambato Boeny","Ambositra","Cd Andohatapenaka","Diego","Mandritsara","Edjeda","Fianarantsoa","Ihosy","Maevatanana","Morondava","Mahajanga","Miandrivazo","Manjakaray","Mananjary","Morombe","Moramanga","Maroantsetra","Maintirano","Nosy Be","Sambava","Sainte-Marie","Tsiroanomandidy","Tolagnaro","Toliary","Toamasina","Tsaralalana")),
+  selectInput("sites", "Sentinel Sites", 
+              choices = c("Farafangana","Ambovombe","Ambatondrazaka","Antsohihy","Anjozorobe","Antsirabe","Belo sur Tsiribihina","Behoririka","Ambato Boeny","Ambositra","Cd Andohatapenaka","Diego","Mandritsara","Edjeda","Fianarantsoa","Ihosy","Maevatanana","Morondava","Mahajanga","Miandrivazo","Manjakaray","Mananjary","Morombe","Moramanga","Maroantsetra","Maintirano","Nosy Be","Sambava","Sainte-Marie","Tsiroanomandidy","Tolagnaro","Toliary","Toamasina","Tsaralalana")),
   selected=("Farafangana"))
 ############## proportion indicator #Malaria/#fiever
 mycondparam_map_ind=  conditionalPanel(

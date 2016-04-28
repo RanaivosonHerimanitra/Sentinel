@@ -655,11 +655,8 @@ server<-function(input, output,session) {
   })
   #render weekly diseases cases for a clicked site
   output$weekly_disease_cases_persite = renderPlotly({
-    
     #mydata=preprocessing()
     mydata=percentile_algorithm()$mydata
- 
-     
     #recupere date d'alerte percentile (seuleument pour cet algo) pour chaque site
     #cree une nouvelle variable = valeur de cette alerte
     if ( length(input$Algorithmes_eval1)>0 )
@@ -730,19 +727,17 @@ server<-function(input, output,session) {
        mild_tmp[,mild_value:=ifelse(is.na(mild_value)==T,NA,max_val)]
       cat(' DONE\n')
     }
-    
-    
+    #
     mydata=merge(mydata,mild_tmp[,list(code,mild_value)],
                  by.x=c("code"),by.y=c("code"),all.x=T)
-    #
-    #
-    
     #reorder time series
     mydata[,deb_sem:=as.Date(deb_sem)]
     mydata=mydata[order(deb_sem),]
     setnames(mydata,"deb_sem","Semaine")
     #handle title programmatically (depends on user choice of disease, site)
      mytitle=paste0("Weekly ",input$diseases," cases number in ",sentinel_latlong[sites==selected_site_leaflet(),get("name")])
+    #handle date format:
+    #mydata[,Semaine:=as.character(Semaine)]
     #
     line_width=1
     p=plot_ly(data=mydata,
