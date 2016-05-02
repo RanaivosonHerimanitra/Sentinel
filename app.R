@@ -903,12 +903,15 @@ server<-function(input, output,session) {
       
     X=merge(X,sentinel_latlong,by.x="sites",by.y="sites",all.x=T)
     
-    plot_ly(X, y = occurence, x=deb_sem,
+    p=plot_ly(X, y = occurence, x=deb_sem,
             color=name
             )
+    p = p %>% layout(xaxis =list(title="Weeks"),
+                     yaxis =list(title="#Cases"))
    #round(log(occurence+1))
   # size = occurence,
     # mode = "markers"
+    p
   })
   #download report handler (for Malaria and Diarrhea):
   output$downloadReport <- downloadHandler(
