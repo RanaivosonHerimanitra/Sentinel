@@ -8,7 +8,7 @@ output: pdf_document
 
 
 ```{r,echo=F, fig.width=10, out.extra='',comment='', message=FALSE , warning=FALSE}
-setwd("/media/herimanitra/DONNEES/IPM_sentinelle/sentinel_hrmntr 291115/Sentinel")
+setwd("/media/herimanitra/Document/IPM_sentinelle/sentinel_hrmntr 291115/Sentinel")
 source("./import_data.R");source("./preprocessing.R");require(ggplot2); require(gridExtra)
 #Retrieve ILI
 mydata= preprocessing_disease()[["ILI"]] #ensure this is the same as in #diseases_control.R
@@ -36,7 +36,7 @@ print(d)
 ```
 
 ```{r,echo=F,out.extra='',comment='', message=FALSE , warning=FALSE}
-setwd("/media/herimanitra/DONNEES/IPM_sentinelle/sentinel_hrmntr 291115/Sentinel")
+setwd("/media/herimanitra/Document/IPM_sentinelle/sentinel_hrmntr 291115/Sentinel")
 mydata= preprocessing_disease()[["ILI"]]
 semaine=array()
 max_deb_sem=max(as.Date(mydata$deb_sem))
@@ -79,7 +79,7 @@ knitr::kable(X[,c("Sites","6 semaines précédentes","Semaine dernière"),with=F
 ```
 
 ```{r,echo=F, fig.show = "hold" ,out.width = '50%', out.extra='',comment='', message=FALSE , warning=FALSE}
-setwd("/media/herimanitra/DONNEES/IPM_sentinelle/sentinel_hrmntr 291115/Sentinel")
+setwd("/media/herimanitra/Document/IPM_sentinelle/sentinel_hrmntr 291115/Sentinel")
     #merge with sentinel_latlong:
     mydata=merge(mydata,sentinel_latlong, by.x="sites",by.y="sites")
     L=length(unique(mydata$name))

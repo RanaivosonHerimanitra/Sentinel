@@ -18,8 +18,10 @@ diseases_choices=selectInput(inputId = "diseases",
                                           "ILI"="ILI"
                              ),selected = "Malaria")
 map_choices = radioButtons(inputId = "mapchoice",
-                           label = "Choose a map:",
-                           list("Leaflet"="leaflet","Other"="other")
+                           label="Map type:",
+                           #label = "Choose a map:",
+                           list("Leaflet"="leaflet")
+                                #,"Other"="other")
                            )
 #####################radio button's choices for epidemic threshold's alerts:
 #available algorithm when Malaria is displayed
@@ -50,8 +52,8 @@ mycondparam_map_percentile=conditionalPanel(
   condition = "input.Algorithmes_eval1 == 'Percentile' | input.Algorithmes_eval2 == 'Percentile'",
   tags$hr(),
   tags$p("About this algorithm:"),
-  helpText("An alert is triggered when disease cases of the current week exceed 
-           selected value of percentile of the whole chronological series of a site. 
+  helpText("An alert is triggered when disease cases number of last week exceed 
+           selected percentile value of the whole time series of a site. 
            The 90th percentile is the value such that 90% of the time series values are below it (and therefore 10% are above). "),
   tags$hr(),
   sliderInput("Centile_map", 
@@ -61,8 +63,9 @@ mycondparam_map_percentile=conditionalPanel(
               value = 90
   ),
   tags$hr(),
-  tags$p("This option is intended to improve the specificity of the alert system"),
-  radioButtons(inputId="comet_map", label="Number of consecutive weeks above threshold:",
+  tags$p("This option is intended to improve the specificity of this early warning system:"),
+  radioButtons(inputId="comet_map", 
+               label="Number of consecutive weeks above threshold:",
                c("1"=1 , "2"=2 , "3"= 3, "4"= 4),
                selected="3"
   )
@@ -70,8 +73,8 @@ mycondparam_map_percentile=conditionalPanel(
 mycondparam_map_minsan= conditionalPanel(
   condition = "input.Algorithmes_eval1 == 'MinSan' | input.Algorithmes_eval2 == 'MinSan'",
   tags$p(tags$strong("About algorithm")),
-  helpText("The Ministry of Health, has defined a method based on slope calculation, by identify a doubling of the number of cases for 3 consecutive weeks. 
-           They assume that a rapid multiplication of the number cases from week to week might signal onset of an epidemic."),
+  helpText("Malagasy Ministry of Health defined an algorithm which consists of identifying the duplication of the number of cases for 3 consecutive weeks (or not). 
+           They assume that a rapid multiplication of the number cases from week to week might signal onset of an epidemic.  Default slope is set to 02 (doubling) but user can slide it."),
   sliderInput(inputId="slope_minsan", 
               "Slope Value:", 
               min = 1,
@@ -98,8 +101,6 @@ mycondparam_map_cumsum=conditionalPanel(
               value = 5
   ),
   tags$hr(),
-  
-  
   sliderInput(inputId="Csum_week_map", "Weeks number:", 
               min = 1,
               max = 26, 
@@ -111,26 +112,27 @@ mycondparam_map_cumsum=conditionalPanel(
               step=0.01,
               value = 2),
   tags$hr(),
-  tags$p("This option is intended to improve the specificity of the alert system"),
+  tags$p("This option is intended to improve the specificity of this early warning system"),
   radioButtons(inputId="week_Csum_map", "Number of consecutive weeks above threshold:",
                c("1"="1","2"="2","3" = "3"))
 )
 mycondparam_map_mcases=conditionalPanel(
   condition = "input.Algorithmes == 'Mcases'",
-  selectInput("sites", "Sentinel Sites", choices = c("Farafangana","Ambovombe","Ambatondrazaka","Antsohihy","Anjozorobe","Antsirabe","Belo sur Tsiribihina","Behoririka","Ambato Boeny","Ambositra","Cd Andohatapenaka","Diego","Mandritsara","Edjeda","Fianarantsoa","Ihosy","Maevatanana","Morondava","Mahajanga","Miandrivazo","Manjakaray","Mananjary","Morombe","Moramanga","Maroantsetra","Maintirano","Nosy Be","Sambava","Sainte-Marie","Tsiroanomandidy","Tolagnaro","Toliary","Toamasina","Tsaralalana")),
+  selectInput("sites", "Sentinel Sites", 
+              choices = c("Farafangana","Ambovombe","Ambatondrazaka","Antsohihy","Anjozorobe","Antsirabe","Belo sur Tsiribihina","Behoririka","Ambato Boeny","Ambositra","Cd Andohatapenaka","Diego","Mandritsara","Edjeda","Fianarantsoa","Ihosy","Maevatanana","Morondava","Mahajanga","Miandrivazo","Manjakaray","Mananjary","Morombe","Moramanga","Maroantsetra","Maintirano","Nosy Be","Sambava","Sainte-Marie","Tsiroanomandidy","Tolagnaro","Toliary","Toamasina","Tsaralalana")),
   selected=("Farafangana"))
 ############## proportion indicator #Malaria/#fiever
 mycondparam_map_ind=  conditionalPanel(
   condition = "input.Algorithmes_eval1 == 'Ind' & input.diseases=='Malaria'",
   br(),
   sliderInput(inputId = "exp_map", 
-              "Malaria cases among fever cases:", 
+              label="Malaria cases among fever cases:", 
               min = 0,
               max = 100, 
               value = 40
   ),
   sliderInput(inputId = "expC_map", 
-              "malaria cases among visits:", 
+              label="Malaria cases among visits:", 
               min = 0,
               max = 100, 
               value = 10

@@ -19,7 +19,7 @@ horizontal_text= cellProperties(text.direction = "lrtb",
 cat("load data and preprocess missing sent..")
 require(data.table)
 missing_sent= fread("./data/missing_sent.csv")
-missing_sent[,code:=paste0(substr(Annee,3,4),"/",Semaine)]
+missing_sent[,code:=paste0(substr(Annee,3,4),"/",ifelse(nchar(Semaine)<2,paste0("0",Semaine),Semaine))]
 cat("DONE\n")
 
 cat("crosstabulation...")

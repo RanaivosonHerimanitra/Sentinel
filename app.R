@@ -3,7 +3,7 @@ source("libraries.R")
 #versatile app:
 if ( getwd()!="/srv/shiny-server/sentinel_hrmntr") 
 {
-  setwd('/media/herimanitra/DONNEES/IPM_sentinelle/sentinel_hrmntr 291115/Sentinel')
+  setwd('/media/herimanitra/Document/IPM_sentinelle/sentinel_hrmntr 291115/Sentinel')
 } else {
  
 }
@@ -599,7 +599,9 @@ server<-function(input, output,session) {
                         by.x="weekOfday",by.y="weekOfday", all.x=T)
     
     setorder(propili_2015,-deb_sem)
-    
+    #handle date format:
+    propili_2015[,deb_sem:=as.character((as.Date(deb_sem,origin="1970-01-01")))]
+    #
     p <- plot_ly(propili_2015, 
                  x =deb_sem, 
                  y = prop,name="prop.",
@@ -634,6 +636,8 @@ server<-function(input, output,session) {
     sites34= include[-c(1:2)]
     #filter rows:
     myili=tdr_eff[sites %in% sites34 & year(as.Date(deb_sem ,origin="1970-01-01"))>=2015]
+    #handle date format:
+    myili[,deb_sem:=as.character((as.Date(deb_sem,origin="1970-01-01")))]
     
     p <- plot_ly(myili, x = deb_sem, type="bar",y = Synd_g,name="ILI")
     p = p %>% add_trace(x = deb_sem, type="bar",y = ArboSusp, name = "Dengue-Like")
@@ -651,11 +655,8 @@ server<-function(input, output,session) {
   })
   #render weekly diseases cases for a clicked site
   output$weekly_disease_cases_persite = renderPlotly({
-    
     #mydata=preprocessing()
     mydata=percentile_algorithm()$mydata
- 
-     
     #recupere date d'alerte percentile (seuleument pour cet algo) pour chaque site
     #cree une nouvelle variable = valeur de cette alerte
     if ( length(input$Algorithmes_eval1)>0 )
@@ -726,19 +727,17 @@ server<-function(input, output,session) {
        mild_tmp[,mild_value:=ifelse(is.na(mild_value)==T,NA,max_val)]
       cat(' DONE\n')
     }
-    
-    
+    #
     mydata=merge(mydata,mild_tmp[,list(code,mild_value)],
                  by.x=c("code"),by.y=c("code"),all.x=T)
-    #
-    #
-    
     #reorder time series
     mydata[,deb_sem:=as.Date(deb_sem)]
     mydata=mydata[order(deb_sem),]
     setnames(mydata,"deb_sem","Semaine")
     #handle title programmatically (depends on user choice of disease, site)
      mytitle=paste0("Weekly ",input$diseases," cases number in ",sentinel_latlong[sites==selected_site_leaflet(),get("name")])
+    #handle date format:
+    #mydata[,Semaine:=as.character(Semaine)]
     #
     line_width=1
     p=plot_ly(data=mydata,
@@ -892,21 +891,24 @@ server<-function(input, output,session) {
     X=calculate_percentile(data=mydata,
                            week_length=input$comet_map,
                            percentile_value=input$Centile_map)$mydata
-                           
+    #order time series ascending (2007==>now)
+    setorder(X,sites,deb_sem)
+    #print(head(X));Sys.sleep(25)
     if (input$Cluster_algo=="Total")
     {
-       X=X[alert_status=="alert" ,]
+       X=X[as.Date(deb_sem,origin = "1970-01-01")>=as.Date("2016-01-01",origin = "1970-01-01") & alert_status=="alert" ,]
     } else {
-    X=X[alert_status=="alert" & get(input$Cluster_algo)==1,]
+      X=X[as.Date(deb_sem,origin = "1970-01-01")>=as.Date("2016-01-01",origin = "1970-01-01") & alert_status=="alert" & get(input$Cluster_algo)==1,]
     }
       
     X=merge(X,sentinel_latlong,by.x="sites",by.y="sites",all.x=T)
-    setorder(X,sites,deb_sem)
+    
     plot_ly(X, y = occurence, x=deb_sem,
-            color=name, 
-            size = round(log(occurence+1)), mode = "markers")
-   
-  
+            color=name
+            )
+   #round(log(occurence+1))
+  # size = occurence,
+    # mode = "markers"
   })
   #download report handler (for Malaria and Diarrhea):
   output$downloadReport <- downloadHandler(
@@ -997,9 +999,7 @@ server<-function(input, output,session) {
 ##############################################User interface ##############
 #
 mydashheader=dashboardHeader(title="Sentinel surveillance",titleWidth="233")
-# mydashheader$children[[2]]$children <-  tags$div(class="media",
-#                                                  tags$a(href="http://pasteur.mg",
-#   tags$img(class="media-object img-thumbnail" ,height='90',width='90',src="logo.png" ,alt="logo")))
+
 #skeleton of the user interface:
 source('initialize_ui.R')
 ui = list(dashboardPage(skin = "blue",
