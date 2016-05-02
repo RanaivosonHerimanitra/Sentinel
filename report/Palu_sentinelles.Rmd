@@ -8,7 +8,7 @@ output: pdf_document
 
 
 ```{r,echo=F, fig.width=10, out.extra='',comment='', message=FALSE , warning=FALSE}
-setwd("/media/herimanitra/DONNEES/IPM_sentinelle/sentinel_hrmntr 291115/Sentinel")
+setwd("/media/herimanitra/Document/IPM_sentinelle/sentinel_hrmntr 291115/Sentinel")
 #load source code:
 source("./import_data.R");source("./tdrplus.R");require(ggplot2); require(gridExtra)
 source("./var_conversion.R")
@@ -29,7 +29,7 @@ generate_plot(htc="all",
 
 
 ```{r,echo=F,out.extra='',comment='', message=FALSE , warning=FALSE}
-setwd("/media/herimanitra/DONNEES/IPM_sentinelle/sentinel_hrmntr 291115/Sentinel")
+setwd("/media/herimanitra/Document/IPM_sentinelle/sentinel_hrmntr 291115/Sentinel")
 mydata= tdr_malaria(htc=F)
 semaine=array()
 max_deb_sem=max(as.Date(mydata$deb_sem))
@@ -158,7 +158,7 @@ setnames(fievre,c("name","vals","SyndF"),
 ```
 
 ```{r,echo=F, fig.show = "hold" ,out.width = '50%', out.extra='',comment='', message=FALSE , warning=FALSE}
-setwd("/media/herimanitra/DONNEES/IPM_sentinelle/sentinel_hrmntr 291115/Sentinel")
+setwd("/media/herimanitra/Document/IPM_sentinelle/sentinel_hrmntr 291115/Sentinel")
 #merge with sentinel_latlong:
 mydata= tdr_malaria(htc=F)
 mydata=merge(mydata,sentinel_latlong, by.x="sites",by.y="sites")
