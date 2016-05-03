@@ -1,3 +1,4 @@
+#setwd("/media/herimanitra/Document/IPM_sentinelle/sentinel_hrmntr 291115/Sentinel")
 ###############################Missing sent report ############################
 library(ReporteRs)
 
@@ -18,16 +19,16 @@ horizontal_text= cellProperties(text.direction = "lrtb",
 
 cat("load data and preprocess missing sent..")
 require(data.table)
-missing_sent= fread("./data/missing_sent.csv")
+missing_sent= fread("/media/herimanitra/Document/IPM_sentinelle/sentinel_hrmntr 291115/Sentinel/data/missing_sent.csv")
 missing_sent[,code:=paste0(substr(Annee,3,4),"/",ifelse(nchar(Semaine)<2,paste0("0",Semaine),Semaine))]
 cat("DONE\n")
 
-cat("crosstabulation...")
+cat("crosstabulation of weeks and Sites...")
 X=table(missing_sent$code,missing_sent$Centre)
 cat("DONE\n")
 
 cat("load sentinel lat/long define 34sites vs other...")
-sentinel_latlong = fread("./data/sentinel.csv")
+sentinel_latlong = fread("/media/herimanitra/Document/IPM_sentinelle/sentinel_hrmntr 291115/Sentinel/data/sentinel.csv")
 sites34 = which( tolower(colnames(X)) %in% tolower(c("CSBU MANANJARY MNJ",
                                     "TSIMADILO",
                                     sentinel_latlong$centre) ))
@@ -37,12 +38,13 @@ other_site =which( !( tolower(colnames(X)) %in% tolower(c("CSBU MANANJARY MNJ",
                                         sentinel_latlong$centre)) ))
 cat("DONE\n")
 
-cat("crosstabulation...")
-X=table(missing_sent$code,missing_sent$Centre)
+cat("divide data into 02 parts...")
+#X=table(missing_sent$code,missing_sent$Centre)
 X1=X[,sites34]
 X2=X[,other_site]
 X2=X2[apply(X2,1,sum)>0,] #select only period where data collection has begun
 cat("DONE\n")
+
 
 #vertical text for headers
 mytable1 = FlexTable(X1, add.rownames = TRUE ,
@@ -63,13 +65,15 @@ mytable1[,1]=textProperties(font.size = 7)
 mytable2[,1]=textProperties(font.size = 7)
 # set column widths:
 first_cell_width= 1.25
-taille1 = ncol(X1)-1
+taille1 = ncol(X1) #before ncol(X1)-1 (12h30, 03 mai 2016)
 ratio1 = (taille1 - 1.25)/taille1
-taille2 = ncol(X2)-1
+taille2 = ncol(X2) #before ncol(X2)-1 (12h30, 03 mai 2016)
 ratio2 = (taille2 - 1.25)/taille2
 
-mytable1=setFlexTableWidths( mytable1, widths = c(first_cell_width, rep(ratio1, taille1) ))
-mytable2=setFlexTableWidths( mytable2, widths = c(first_cell_width, rep(ratio2, taille2 ) ))
+mytable1=setFlexTableWidths( mytable1, 
+                             widths = c(first_cell_width, rep(ratio1, taille1) ))
+mytable2=setFlexTableWidths( mytable2, 
+                             widths = c(first_cell_width, rep(ratio2, taille2 ) ))
 #
 #loop through columns and change into red those cells with value <4:
 #First line in vertical order
@@ -99,7 +103,8 @@ doc = addFlexTable( doc, mytable1 )
 doc = addParagraph(doc, "        ")
 doc = addFlexTable( doc, mytable2 )
 
-writeDoc(doc, file = "report/missing_sent.docx")
+writeDoc(doc, file = "missing_sent.docx")
 #sudo apt-get install unoconv
-system("doc2pdf report/missing_sent.docx") #write in pdf using cli command
+Sys.sleep(5)
+system("doc2pdf missing_sent.docx") #write in pdf using cli command
 cat('DONE\n')

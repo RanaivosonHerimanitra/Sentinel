@@ -4,7 +4,7 @@ calculate_percentile=function(data=mydata,
                               )
 {
 
-   max_deb_sem= max(as.Date(data$deb_sem))
+   max_deb_sem= max(as.Date(data$deb_sem,origin="1970-01-01"))
    max_code=paste0(year(max_deb_sem),"_",isoweek(max_deb_sem))
    
     if (as.numeric(week_length)==4 )
@@ -45,7 +45,7 @@ calculate_percentile=function(data=mydata,
     if (max_code==paste0(year(Sys.Date()),"_",isoweek(Sys.Date())) ) {
       #if max_date == current week then exclude this current week
       #from calculation of alert , otherwise include 
-      mypercentile=data[as.Date(deb_sem)<max_deb_sem,
+      mypercentile=data[as.Date(deb_sem,origin="1970-01-01")<max_deb_sem,
                         quantile(occurence,probs=percentile_value/100,na.rm=T),by="sites"]
     } else {
       mypercentile=data[,quantile(occurence,probs=percentile_value/100,na.rm=T),by="sites"]
@@ -66,7 +66,7 @@ calculate_percentile=function(data=mydata,
     cat("DONE\n")
     
     #new algo for detecting alert:
-    data[,deb_sem:=as.Date(deb_sem)]
+    data[,deb_sem:=as.Date(deb_sem,origin="1970-01-01")]
     cat("reorder date of the week by decreasing order, by sites...")
     setorder(data,sites,deb_sem)
     cat("DONE\n")

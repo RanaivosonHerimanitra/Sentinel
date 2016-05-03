@@ -8,7 +8,7 @@ output: pdf_document
 
 
 ```{r,echo=F, fig.width=10, out.extra='',comment='', message=FALSE , warning=FALSE}
-setwd("/media/herimanitra/DONNEES/IPM_sentinelle/sentinel_hrmntr 291115/Sentinel")
+setwd("/media/herimanitra/Document/IPM_sentinelle/sentinel_hrmntr 291115/Sentinel")
 source("./import_data.R");source("./preprocessing.R");require(ggplot2); require(gridExtra)
 #Retrieve ILI
 mydata= preprocessing_disease()[["ILI"]] #ensure this is the same as in #diseases_control.R
@@ -17,7 +17,7 @@ mydata= preprocessing_disease()[["ILI"]] #ensure this is the same as in #disease
 mydata$occurence=as.numeric(mydata$occurence)
 mydata[,occurence:=sum(occurence,na.rm = T),by="code"]
 
-mydata$deb_sem=as.Date(mydata$deb_sem)
+mydata$deb_sem=as.Date(mydata$deb_sem,origin="1970-01-01")
 mydata[,weeks:=week(deb_sem)]
 d=ggplot(unique(mydata[,list(deb_sem,occurence)],by=NULL), 
          aes(x=deb_sem, y=occurence), fill=occurence) 
@@ -36,10 +36,10 @@ print(d)
 ```
 
 ```{r,echo=F,out.extra='',comment='', message=FALSE , warning=FALSE}
-setwd("/media/herimanitra/DONNEES/IPM_sentinelle/sentinel_hrmntr 291115/Sentinel")
+setwd("/media/herimanitra/Document/IPM_sentinelle/sentinel_hrmntr 291115/Sentinel")
 mydata= preprocessing_disease()[["ILI"]]
 semaine=array()
-max_deb_sem=max(as.Date(mydata$deb_sem))
+max_deb_sem=max(as.Date(mydata$deb_sem,origin="1970-01-01"))
 semaine[6]= max_deb_sem-2*7 
 p=1
 for ( k in 2:6 )
@@ -50,7 +50,7 @@ for ( k in 2:6 )
 #select last 07 seven weeks for each disease:
 
 #ILI selection for last 6 weeks before current week:
-X=mydata[as.Date(deb_sem) %in% semaine,list(deb_sem,sites,occurence)]
+X=mydata[as.Date(deb_sem,origin="1970-01-01") %in% semaine,list(deb_sem,sites,occurence)]
 # reverse time order (to be conform to the report)
 setorder(X,sites,deb_sem)
 
@@ -62,7 +62,7 @@ X[,occurence:=ifelse(nchar(occurence)<2,paste0("0",occurence),occurence)]
 X[,vals:=paste(occurence,collapse = "-"),by="sites"]
 #append latest week per site:
 X[,occurence:=NULL]
-lastweek=unique(mydata[as.Date(deb_sem)==max_deb_sem-7, list(sites,occurence)],by=NULL)
+lastweek=unique(mydata[as.Date(deb_sem,origin="1970-01-01")==max_deb_sem-7, list(sites,occurence)],by=NULL)
 lastweek$occurence=as.character(lastweek$occurence)
 lastweek[is.na(occurence)==T,occurence:="na"]                        
 X= merge(unique(X[,list(sites,vals)],by=NULL),lastweek, by.x="sites", by.y="sites")
@@ -79,7 +79,7 @@ knitr::kable(X[,c("Sites","6 semaines précédentes","Semaine dernière"),with=F
 ```
 
 ```{r,echo=F, fig.show = "hold" ,out.width = '50%', out.extra='',comment='', message=FALSE , warning=FALSE}
-setwd("/media/herimanitra/DONNEES/IPM_sentinelle/sentinel_hrmntr 291115/Sentinel")
+setwd("/media/herimanitra/Document/IPM_sentinelle/sentinel_hrmntr 291115/Sentinel")
     #merge with sentinel_latlong:
     mydata=merge(mydata,sentinel_latlong, by.x="sites",by.y="sites")
     L=length(unique(mydata$name))
@@ -87,7 +87,7 @@ setwd("/media/herimanitra/DONNEES/IPM_sentinelle/sentinel_hrmntr 291115/Sentinel
     for ( p in 1:L )
     {
       X= mydata[name==myname[p],list(code,deb_sem,occurence)]
-      X$deb_sem=as.Date(X$deb_sem)
+      X$deb_sem=as.Date(X$deb_sem,origin="1970-01-01")
       X[,weeks:=week(deb_sem)]
       setnames(X,"deb_sem","Date")
       d= ggplot(data=X,aes(x=Date,y=occurence)) 

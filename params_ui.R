@@ -112,7 +112,7 @@ mycondparam_map_cumsum=conditionalPanel(
               step=0.01,
               value = 2),
   tags$hr(),
-  tags$p("This option is intended to improve the specificity of the alert system"),
+  tags$p("This option is intended to improve the specificity of this early warning system"),
   radioButtons(inputId="week_Csum_map", "Number of consecutive weeks above threshold:",
                c("1"="1","2"="2","3" = "3"))
 )
@@ -126,13 +126,13 @@ mycondparam_map_ind=  conditionalPanel(
   condition = "input.Algorithmes_eval1 == 'Ind' & input.diseases=='Malaria'",
   br(),
   sliderInput(inputId = "exp_map", 
-              "Malaria cases among fever cases:", 
+              label="Malaria cases among fever cases:", 
               min = 0,
               max = 100, 
               value = 40
   ),
   sliderInput(inputId = "expC_map", 
-              "malaria cases among visits:", 
+              label="Malaria cases among visits:", 
               min = 0,
               max = 100, 
               value = 10

@@ -3,7 +3,7 @@ source("libraries.R")
 #versatile app:
 if ( getwd()!="/srv/shiny-server/sentinel_hrmntr") 
 {
-  setwd('/media/herimanitra/DONNEES/IPM_sentinelle/sentinel_hrmntr 291115/Sentinel')
+  setwd('/media/herimanitra/Document/IPM_sentinelle/sentinel_hrmntr 291115/Sentinel')
 } else {
  
 }
@@ -891,21 +891,27 @@ server<-function(input, output,session) {
     X=calculate_percentile(data=mydata,
                            week_length=input$comet_map,
                            percentile_value=input$Centile_map)$mydata
-                           
+    #order time series ascending (2007==>now)
+    setorder(X,sites,deb_sem)
+    #print(head(X));Sys.sleep(25)
     if (input$Cluster_algo=="Total")
     {
-       X=X[alert_status=="alert" ,]
+       X=X[as.Date(deb_sem,origin = "1970-01-01")>=as.Date("2016-01-01",origin = "1970-01-01") & alert_status=="alert" ,]
     } else {
-    X=X[alert_status=="alert" & get(input$Cluster_algo)==1,]
+      X=X[as.Date(deb_sem,origin = "1970-01-01")>=as.Date("2016-01-01",origin = "1970-01-01") & alert_status=="alert" & get(input$Cluster_algo)==1,]
     }
       
     X=merge(X,sentinel_latlong,by.x="sites",by.y="sites",all.x=T)
-    setorder(X,sites,deb_sem)
-    plot_ly(X, y = occurence, x=deb_sem,
-            color=name, 
-            size = round(log(occurence+1)), mode = "markers")
-   
-  
+    
+    p=plot_ly(X, y = occurence, x=deb_sem,
+            color=name
+            )
+    p = p %>% layout(xaxis =list(title="Weeks"),
+                     yaxis =list(title="#Cases"))
+   #round(log(occurence+1))
+  # size = occurence,
+    # mode = "markers"
+    p
   })
   #download report handler (for Malaria and Diarrhea):
   output$downloadReport <- downloadHandler(

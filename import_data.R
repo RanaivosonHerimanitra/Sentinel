@@ -286,7 +286,7 @@ if ( exists("PaluConf")==F ) #to speed up things
     
     
   } else {
-    setwd('/media/herimanitra/DONNEES/IPM_sentinelle/sentinel_hrmntr 291115/Sentinel')
+    setwd('/media/herimanitra/Document/IPM_sentinelle/sentinel_hrmntr 291115/Sentinel')
     PaluConf=fread("data/PaluConf.csv")
    
     Consultations=fread("data/Consultations.csv")

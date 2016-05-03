@@ -1,4 +1,5 @@
 ###################### Initialize data to avoid error sometimes ###########
+setwd("/media/herimanitra/Document/IPM_sentinelle/sentinel_hrmntr 291115/Sentinel")
 source("libraries.R")
 cat('connect to the server...')
 sentinel <- src_postgres(dbname="sentinel",
