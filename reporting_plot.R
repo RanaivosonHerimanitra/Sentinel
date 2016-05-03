@@ -32,7 +32,7 @@ generate_plot=function(htc="all",
     
     
     X=rbind(unique(disease1), unique(disease2) )
-    X$deb_sem=as.Date(X$deb_sem)
+    X$deb_sem=as.Date(X$deb_sem,origin="1970-01-01")
     X[,weeks:=week(deb_sem)]
     setnames(X,"deb_sem","Date")
    
@@ -72,7 +72,7 @@ generate_plot=function(htc="all",
       setnames(disease2,disease2.targetvar,"value")
       disease2[,Légende:=legend.disease2]
       X=rbind(disease1, disease2)
-      X$deb_sem=as.Date(X$deb_sem)
+      X$deb_sem=as.Date(X$deb_sem,origin="1970-01-01")
       X[,weeks:=week(deb_sem)]
       setnames(X,"deb_sem","Date")
       d= ggplot(data=X,

@@ -10,6 +10,7 @@ preprocessing_disease = function (select_htc=FALSE,include_all_sites=F)
   {
     #cat("Disease:",j,"\n")
     data=select_disease(disease=j)
+    
     #cat("convert data table to data.table format...")
     #data=as.data.table(as.data.frame(data))
     
