@@ -1,5 +1,12 @@
 ---
 title: "Surveillance Paludisme Autochtone HTC"
+header-includes: 
+   \usepackage{graphicx}
+   \usepackage{fancyhdr}
+   \pagestyle{fancy}
+   \setlength\headheight{15pt}
+   \fancyhead[L]{\includegraphics[width=4cm]{logo.png}}
+   \fancyfoot[LE,RO]{}
 author: "Institut Pasteur de Madagascar"
 date: "`r Sys.Date()`"
 output: pdf_document
@@ -90,6 +97,7 @@ X$deb_sem=as.Date(X$deb_sem,origin="1970-01-01")
  d= d + scale_color_manual(values=c("#CC6666", "#9999CC"))
  d= d + ggtitle(label="Cas de Paludisme (autochtone vs Importé)")
  d= d + xlab("Date") + ylab("Nb. Cas")
+ #vertical axis label 
  d=d+theme(axis.text.x=element_text(angle=90,hjust=1,vjust=0.5))
  d= d + scale_x_date(date_breaks = "1 week")
  
@@ -166,7 +174,7 @@ for ( p in myname )
        {
         disease1=mydata[sites==p,list(sites,deb_sem,palu)]
         disease1[is.na(palu)==T,palu:=0]
-        disease1[,Légende:="Importe"]
+        disease1[,Légende:="Importé"]
         disease2= palu_autoch[sites==p,list(sites,deb_sem,autoch)]
         disease2[is.na(autoch)==T,autoch:=0] 
         #merge to calculate palu_importe
