@@ -71,9 +71,7 @@ mydata[complete.cases(palu) & complete.cases(palu,autoch)==F,palu_importe:=as.nu
 
 #make a copy of data because we're going to transform it during plotting
 X=mydata
- # X[is.na(palu)==T,palu:=0]
- # X[is.na(autoch)==T,autoch:=0]
- # X[is.na(palu_importe)==T,palu_importe:=0]
+ 
 
 #aggregate data per Epidemiological week:
 X[,autoch:=sum(autoch,na.rm = T),by="code"]
@@ -119,16 +117,10 @@ for ( k in 2:6 )
 last6_palu_autoch=palu_autoch[as.Date(deb_sem,origin="1970-01-01") %in% semaine,list(deb_sem,sites,autoch)]
 # reverse time order (to be conform to the report)
 setorder(last6_palu_autoch,sites,deb_sem)
-
-#knitr::kable(last6_palu_autoch)
-
-
 #transform NA into XX
 last6_palu_autoch$autoch=as.character(last6_palu_autoch$autoch)
 last6_palu_autoch[,autoch:=ifelse(is.na(autoch)==T,"na",autoch)]
 last6_palu_autoch[,autoch:=ifelse(nchar(autoch)<2,paste0("0",autoch),autoch)]
-
-
 #inline historical occurence:
 last6_palu_autoch[,vals:=paste(autoch,collapse = "-"),by="sites"]
 last6_palu_autoch[,autoch:=NULL]
@@ -136,9 +128,6 @@ lastweek =  palu_autoch[as.Date(deb_sem,origin="1970-01-01")==max_deb_sem-7, lis
 
 lastweek[,autoch:=as.character(autoch)]
 lastweek[is.na(autoch)==T,autoch:="na"]
-
-#knitr::kable(lastweek)
-
 last6_palu_autoch=merge(unique(last6_palu_autoch[,list(sites,vals)],by=NULL),
                         lastweek, by.x="sites", by.y="sites")
              
