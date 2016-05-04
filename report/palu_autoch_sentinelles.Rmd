@@ -6,7 +6,7 @@ output: pdf_document
 ---
 
 
-![Caption](htc_map.png)
+![](htc_map.png)
 
 
 
