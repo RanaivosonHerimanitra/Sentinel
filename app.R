@@ -418,7 +418,15 @@ server<-function(input, output,session) {
     mada_map=leaflet(sentinel_latlong[!(sites%in% High_land)]) 
     mada_map=mada_map %>% setView(lng = 47.051532 , 
                                               lat =-19.503781 , zoom = 5) 
-    mada_map=mada_map %>% addTiles(urlTemplate="http://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}") 
+    mada_map=mada_map %>% addTiles(urlTemplate="http://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}")  
+    addLegend(map=mada_map,"bottomleft", title="legend",
+                  colors = c("orange","green", "red", "black"),
+                  labels = c("Cleanup in progress.",
+                             "Cleanup complete.",
+                             "Status unclear.",
+                             "No potential for radioactive contamination."), 
+                  opacity = 0.8)
+                                                                                                                                                             
     #change color to red when alert is triggered:
     #navy
     pal <- colorFactor(c("red", "darkgreen"), domain = c("normal", "alert"))
@@ -429,6 +437,7 @@ server<-function(input, output,session) {
                                                        color = ~pal(alert_status),
                                                        fillOpacity = 0.7,
                                                        popup = ~name)
+   
     
     mada_map
     })
@@ -915,10 +924,13 @@ server<-function(input, output,session) {
   })
   #download report handler (for Malaria and Diarrhea):
   output$downloadReport <- downloadHandler(
-    filename = "report.pdf",
+    filename <- function() {
+      paste("output", "zip", sep=".")
+    },
     content = function(file) {
-      file.copy('report/report.pdf', file)
-    }
+      file.copy('report/report.zip', file)
+    },
+    contentType = "application/zip"
   )
   
   #Forecasting of # cases of Malaria:
@@ -1011,12 +1023,12 @@ ui = list(dashboardPage(skin = "blue",
     sidebarMenu(
       menuItem(text="Main",tabName="mytabbox", 
                icon = icon("database")),
-      diseases_choices,
-      map_choices,
-      myfacies_algo,
+      menuItem(text="Diseases",.list=diseases_choices,icon=icon("cog")),
+      menuItem(text="Map",.list=map_choices,icon=icon("map-marker")),
+      menuItem(text="Aggregation",.list=myfacies_algo,icon=icon("group")),
       menuItem(text="Download diseases report",
-               tabName="diparam", 
-               icon = icon("building")),
+               tabName="diparam",   icon = icon("file-zip-o")),
+             
       menuItem(text=list("Forecasting", tags$small(class="media-heading",tags$span(class="label label-danger", "beta release"))),
                tabName="myforecast", 
                icon = icon("line-chart")),
