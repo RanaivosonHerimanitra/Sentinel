@@ -1,5 +1,12 @@
 ---
 title: "PFA dans le réseau sentinelle"
+header-includes: 
+   \usepackage{graphicx}
+   \usepackage{fancyhdr}
+   \pagestyle{fancy}
+   \setlength\headheight{15pt}
+   \fancyhead[L]{\includegraphics[width=4cm]{logo.png}}
+   \fancyfoot[LE,RO]{}
 author: "Institut Pasteur de Madagascar"
 date: "`r Sys.Date()`"
 output: pdf_document
@@ -24,7 +31,7 @@ d= d + geom_bar(stat = "identity",fill="blue")
 d= d + ggtitle(label="PFA dans le réseau sentinelle")
 d= d + xlab("Date") + ylab("Nb. Cas")
 debut_annee=as.numeric(unique(mydata[weeks==1,deb_sem]))
-d= d + geom_vline(xintercept = debut_annee,linetype=4,colour="orange")
+d= d + geom_vline(xintercept = debut_annee,size=1.5,linetype=4,colour="orange")
  d= d + scale_x_date(labels = date_format("%m-%Y"))
 #set ylim to 10 if <10
 mymax=range(as.numeric(mydata$occurence)[is.na(as.numeric(mydata$occurence))==F])
@@ -32,6 +39,9 @@ mymax[2]=ifelse(mymax[2]<10,10,mymax[2])
 #
        d = d + scale_y_continuous(breaks= seq.int(from=1,to=mymax[2],by=2) ) 
 #
+       #vertical axis label 
+ d=d+theme(axis.text.x=element_text(angle=90,hjust=1,vjust=0.5))
+ d= d + scale_x_date(date_breaks = "1 week")
 print(d)
 
 ```
@@ -97,28 +107,25 @@ setwd("/media/herimanitra/Document/IPM_sentinelle/sentinel_hrmntr 291115/Sentine
     myname = unique(mydata$name)
     for ( p in 1:L )
     {
-      X= mydata[name==myname[p],list(code,deb_sem,occurence)]
+      X= mydata[name==myname[p] & year(as.Date(deb_sem,origin="1970-01-01"))>=2015,list(code,deb_sem,occurence)]
       X$deb_sem=as.Date(X$deb_sem,origin="1970-01-01")
       X[,weeks:=week(deb_sem)]
       setnames(X,"deb_sem","Date")
       d= ggplot(data=X,aes(x=Date,y=occurence)) 
       d=d + geom_bar(stat = "identity",fill='darkblue')
-        
-       
-        
       debut_annee=c(as.numeric(unique(X[weeks==1,Date])))
-      d= d + geom_vline(xintercept = debut_annee,
+      d= d + geom_vline(xintercept = debut_annee,size=1.5,
                         linetype=4,colour="orange")
       d=d + ggtitle(label=paste(myname[p]))
       d=d + xlab("Date (ligne verte=1er janvier)") + ylab("Nb. Cas")
-      
-      
       #set ylim to 10 if <10
-mymax=range(as.integer(X$occurence)[is.na(as.integer(X$occurence))==F])
-mymax[2]=ifelse(mymax[2]<10,10,mymax[2])
-#
-       d = d + scale_y_continuous(breaks= seq.int(from=0,to=mymax[2],by=1) ) 
-      d= d + scale_x_date(labels = date_format("%m-%Y"))
+      mymax=range(as.integer(X$occurence)[is.na(as.integer(X$occurence))==F])
+      mymax[2]=ifelse(mymax[2]<10,10,mymax[2])
+      d = d + scale_y_continuous(breaks= seq.int(from=0,to=mymax[2],by=1) ) 
+      # d= d + scale_x_date(labels = date_format("%m-%Y"))
+      #vertical axis label 
+      d=d+theme(axis.text.x=element_text(angle=90,hjust=1,vjust=0.5))
+      d= d + scale_x_date(date_breaks = "2 weeks")
       print(d)
     }
 ```

@@ -1,5 +1,12 @@
 ---
 title: "ILI dans le réseau sentinelle"
+header-includes: 
+   \usepackage{graphicx}
+   \usepackage{fancyhdr}
+   \pagestyle{fancy}
+   \setlength\headheight{15pt}
+   \fancyhead[L]{\includegraphics[width=4cm]{logo.png}}
+   \fancyfoot[LE,RO]{}
 author: "Institut Pasteur de Madagascar"
 date: "`r Sys.Date()`"
 output: pdf_document

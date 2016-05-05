@@ -218,7 +218,8 @@ calculate_minsan=function(data=mydata,
   
   return (list(minsan_alerte_currentweek=minsan_alerte_currentweek,
                propsite_alerte_minsan=propsite_alerte_minsan,
-               propsite_alerte_minsan_byfacies=propsite_alerte_minsan_byfacies
+               propsite_alerte_minsan_byfacies=propsite_alerte_minsan_byfacies,
+               mydata=data
   ))
   
 

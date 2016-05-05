@@ -345,15 +345,12 @@ server<-function(input, output,session) {
     {
       if (input$Algorithmes_eval1=="Percentile" ) 
       {
-        
         cat("display alert status into the map using percentile algorithm...\n")
         #setkey for fast merging
         setkey(sentinel_latlong,sites)
         setkey(percentile_algorithm()$percentile_alerte_currentweek,sites)
         sentinel_latlong=merge(sentinel_latlong,percentile_algorithm()$percentile_alerte_currentweek
                                ,by.x="sites",by.y = "sites",all.x=T)
-        
-        
       }
       if (input$Algorithmes_eval1=="MinSan"  ) 
       {
@@ -418,7 +415,15 @@ server<-function(input, output,session) {
     mada_map=leaflet(sentinel_latlong[!(sites%in% High_land)]) 
     mada_map=mada_map %>% setView(lng = 47.051532 , 
                                               lat =-19.503781 , zoom = 5) 
-    mada_map=mada_map %>% addTiles(urlTemplate="http://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}") 
+    mada_map=mada_map %>% addTiles(urlTemplate="http://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}")  
+    addLegend(map=mada_map,"bottomleft", title="legend",
+                  colors = c("orange","green", "red", "black"),
+                  labels = c("Cleanup in progress.",
+                             "Cleanup complete.",
+                             "Status unclear.",
+                             "No potential for radioactive contamination."), 
+                  opacity = 0.8)
+                                                                                                                                                             
     #change color to red when alert is triggered:
     #navy
     pal <- colorFactor(c("red", "darkgreen"), domain = c("normal", "alert"))
@@ -429,6 +434,7 @@ server<-function(input, output,session) {
                                                        color = ~pal(alert_status),
                                                        fillOpacity = 0.7,
                                                        popup = ~name)
+   
     
     mada_map
     })
@@ -556,7 +562,6 @@ server<-function(input, output,session) {
   #render mean ILI
   output$propili = renderPlotly({
     
-   
     ############################### new way to handle ILI ##################
     sites34= include[-c(1:2)]
     tdr_eff=as.data.table(gather(ili,key=sites,value=Synd_g,-c(code,deb_sem)))
@@ -590,8 +595,6 @@ server<-function(input, output,session) {
      #create a key to merge later 
     cat("DONE\n")
     gc()
-    
-    
     
     #merge:
     line_width=1.0
@@ -885,15 +888,21 @@ server<-function(input, output,session) {
   })
   #Bubble chart to display past alert:
   output$mybubble = renderPlotly({
-    mydata=preprocessing()
-    cat('Calculation of percentile and proportion of sites in alert begin...\n')
-    source("percentile.R")
-    X=calculate_percentile(data=mydata,
-                           week_length=input$comet_map,
-                           percentile_value=input$Centile_map)$mydata
+      mydata=preprocessing()
+      cat('Calculation of percentile and proportion of sites in alert begin...')
+      source("percentile.R")
+      X=calculate_percentile(data=mydata,
+                             week_length=input$comet_map,
+                             percentile_value=input$Centile_map)$mydata
+      cat("DONE\n")
+    
+    
+    
+    
     #order time series ascending (2007==>now)
+   
     setorder(X,sites,deb_sem)
-    #print(head(X));Sys.sleep(25)
+    
     if (input$Cluster_algo=="Total")
     {
        X=X[as.Date(deb_sem,origin = "1970-01-01")>=as.Date("2016-01-01",origin = "1970-01-01") & alert_status=="alert" ,]
@@ -902,10 +911,8 @@ server<-function(input, output,session) {
     }
       
     X=merge(X,sentinel_latlong,by.x="sites",by.y="sites",all.x=T)
-    
-    p=plot_ly(X, y = occurence, x=deb_sem,
-            color=name
-            )
+   
+    p=plot_ly(X, y = occurence, x=deb_sem,color=name )
     p = p %>% layout(xaxis =list(title="Weeks"),
                      yaxis =list(title="#Cases"))
    #round(log(occurence+1))
@@ -915,10 +922,13 @@ server<-function(input, output,session) {
   })
   #download report handler (for Malaria and Diarrhea):
   output$downloadReport <- downloadHandler(
-    filename = "report.pdf",
+    filename <- function() {
+      paste("output", "zip", sep=".")
+    },
     content = function(file) {
-      file.copy('report/report.pdf', file)
-    }
+      file.copy('report/report.zip', file)
+    },
+    contentType = "application/zip"
   )
   
   #Forecasting of # cases of Malaria:
@@ -1009,14 +1019,11 @@ ui = list(dashboardPage(skin = "blue",
           mydashheader,
   dashboardSidebar(
     sidebarMenu(
-      menuItem(text="Main",tabName="mytabbox", 
-               icon = icon("database")),
-      diseases_choices,
-      map_choices,
-      myfacies_algo,
-      menuItem(text="Download diseases report",
-               tabName="diparam", 
-               icon = icon("building")),
+      menuItem(text="Main",tabName="mytabbox", icon = icon("database")),
+      menuItem(text="Diseases",.list=diseases_choices,icon=icon("cog")),
+      menuItem(text="Map",.list=map_choices,icon=icon("map-marker")),
+      menuItem(text="Aggregation",.list=myfacies_algo,icon=icon("group")),
+      menuItem(text="Download diseases report",tabName="diparam",   icon = icon("file-zip-o")),
       menuItem(text=list("Forecasting", tags$small(class="media-heading",tags$span(class="label label-danger", "beta release"))),
                tabName="myforecast", 
                icon = icon("line-chart")),
