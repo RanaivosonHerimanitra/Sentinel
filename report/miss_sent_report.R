@@ -1,6 +1,6 @@
 #setwd("/media/herimanitra/Document/IPM_sentinelle/sentinel_hrmntr 291115/Sentinel")
 ###############################Missing sent report ############################
-library(ReporteRs)
+library(ReporteRs);require(Hmisc)
 
 doc <- docx() 
 
@@ -24,6 +24,7 @@ missing_sent[,code:=paste0(substr(Annee,3,4),"/",ifelse(nchar(Semaine)<2,paste0(
 cat("DONE\n")
 
 cat("crosstabulation of weeks and Sites...")
+missing_sent[,Centre:=capitalize(tolower(Centre))]
 X=table(missing_sent$code,missing_sent$Centre)
 cat("DONE\n")
 
