@@ -27,10 +27,6 @@ cat("crosstabulation of weeks and Sites...")
 X=table(missing_sent$code,missing_sent$Centre)
 cat("DONE\n")
 
-cat("Add Semaine épidémiologique...")
-X=cbind(Semaine=row.names(X),X)
-cat("DONE\n")
-
 cat("load sentinel lat/long define 34sites vs other...")
 sentinel_latlong = fread("/media/herimanitra/Document/IPM_sentinelle/sentinel_hrmntr 291115/Sentinel/data/sentinel.csv")
 sites34 = which( tolower(colnames(X)) %in% tolower(c("CSBU MANANJARY MNJ",
@@ -44,53 +40,86 @@ cat("DONE\n")
 
 cat("divide data into 03 parts...")
 #X=table(missing_sent$code,missing_sent$Centre)
-X1=X[,c(1,sites34[1:15])]
-X2=X[,c(1,sites34[16:33])]
-#select only period where data collection has begun
-X3=X[95:nrow(X),other_site]
+X1=X[,sites34[1:15]]
+X2=X[,sites34[16:33]]
+X3=X[,other_site]
+X3=X3[apply(X3,1,sum)>0,] #select only period where data collection has begun
 cat("DONE\n")
 
 
+#vertical text for headers
+mytable1 = FlexTable(X1, add.rownames = TRUE ,
+                     header.cell.props = vertical_text,
+                     header.text.props = textProperties(font.weight='normal',font.size = 10),
+                     body.text.props = textProperties(font.size = 10)
+                     )
 
 #vertical test for headers
-mytable1 = vanilla.table(X1,text.direction = "btlr")
-mytable2 = vanilla.table(X2,text.direction = "btlr")
-mytable3 = vanilla.table(X3,text.direction = "btlr")
+mytable2 = FlexTable( X2, add.rownames = TRUE ,
+                      header.cell.props = vertical_text,
+                      header.text.props = textProperties(font.weight='normal',font.size = 10),
+                      body.text.props = textProperties(font.size = 10)
+)
 
+#vertical test for headers
+mytable3 = FlexTable( X3, add.rownames = TRUE ,
+                      header.cell.props = vertical_text,
+                      header.text.props = textProperties(font.weight='normal',font.size = 10),
+                      body.text.props = textProperties(font.size = 10)
+)
 
+#decrease font.weight of first column which corresponds to date:
+mytable1[,1]=textProperties(font.size = 10)
+mytable2[,1]=textProperties(font.size = 10)
+mytable3[,1]=textProperties(font.size = 10)
+# set column widths:
+first_cell_width= 1.25
+taille1 = ncol(X1) #before ncol(X1)-1 (12h30, 03 mai 2016)
+ratio1 = (taille1 - 1.25)/taille1
+taille2 = ncol(X2) #before ncol(X2)-1 (12h30, 03 mai 2016)
+ratio2 = (taille2 - 1.25)/taille2
+taille3=ncol(X3)
+ratio3= (taille3 - 1.25)/taille3
+mytable1=setFlexTableWidths( mytable1, 
+                             widths = c(first_cell_width, rep(ratio1, taille1) ))
+mytable2=setFlexTableWidths( mytable2, 
+                             widths = c(first_cell_width, rep(ratio2, taille2 ) ))
+mytable3=setFlexTableWidths( mytable3, 
+                             widths = c(first_cell_width, rep(ratio3, taille3 ) ))
+#
 #loop through columns and change into red those cells with value <4:
 #First line in vertical order
-for ( k in 2:ncol(X1) ) 
+for ( k in 1:ncol(X1) ) 
 {
   cat(k,"\n")
-  mytable1[as.numeric(X1[,k]) >= 4, k] =  textProperties( font.size = 10)
-  mytable1[as.numeric(X1[,k]) < 4, k] =  textProperties( color="#FF3333",font.size = 10)
+  mytable1[X1[,k] >= 4, k+1] =  textProperties( font.size = 10)
+  mytable1[X1[,k] < 4, k+1] =  textProperties( color="#FF3333",font.size = 10)
 }
-for ( k in 2:ncol(X2) ) 
+for ( k in 1:ncol(X2) ) 
 {
   cat(k,"\n")
-  mytable2[as.numeric(X2[,k]) >= 4, k] =  textProperties( font.size = 10)
-  mytable2[as.numeric(X2[,k]) < 4, k] =  textProperties( color="#FF3333",font.size = 10)
+  mytable2[X2[,k] >= 4, k+1] =  textProperties( font.size = 10)
+  mytable2[X2[,k] < 4, k+1] =  textProperties( color="#FF3333",font.size = 10)
 }
-for ( k in 2:ncol(X3) ) 
+for ( k in 1:ncol(X3) ) 
 {
   cat(k,"\n")
-  mytable3[as.numeric(X3[,k]) >= 4, k] =  textProperties( font.size = 10)
-  mytable3[as.numeric(X3[,k]) < 4, k] =  textProperties( color="#FF3333",font.size = 10)
+  mytable3[X3[,k] >= 4, k+1] =  textProperties( font.size = 10)
+  mytable3[X3[,k] < 4, k+1] =  textProperties( color="#FF3333",font.size = 10)
 }
 cat("Writing document to a word document...")
 mytable1 = addFooterRow( mytable1, 
                         value = c("En rouge , les cas <4"),
                         cell.properties = horizontal_text
-                        ,colspan = ncol(X1))
+                        ,colspan = ncol(X1)+1 )
 mytable2 = addFooterRow( mytable2, 
                          value = c("En rouge , les cas <4"),
                          cell.properties = horizontal_text
-                         ,colspan = ncol(X2))
+                         ,colspan = ncol(X2)+1)
 mytable3 = addFooterRow( mytable3, 
                          value = c("En rouge , les cas <4"),
                          cell.properties = horizontal_text
-                         ,colspan = ncol(X3))
+                         ,colspan = ncol(X3)+1)
 doc = addFlexTable( doc, mytable1 )
 doc = addParagraph(doc, "        ")
 doc = addFlexTable( doc, mytable2 )
