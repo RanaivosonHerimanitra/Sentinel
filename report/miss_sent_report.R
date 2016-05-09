@@ -71,7 +71,7 @@ for ( k in 2:ncol(X1) )
   mytable1[as.numeric(X1[,k]) >= 4, k] =  textProperties( font.size = 10)
   mytable1[as.numeric(X1[,k]) < 4, k] =  textProperties( color="#FF3333",font.size = 10)
   #handle case where >=10 
-  mytable1[as.numeric(X1[,k]) >=10, k] =  textProperties( font.size = 8)
+  #mytable1[as.numeric(X1[,k]) >=10, k] =  textProperties( font.size = 8)
 }
 for ( k in 2:ncol(X2) ) 
 {
@@ -79,7 +79,7 @@ for ( k in 2:ncol(X2) )
   mytable2[as.numeric(X2[,k]) >= 4, k] =  textProperties( font.size = 10)
   mytable2[as.numeric(X2[,k]) < 4, k] =  textProperties( color="#FF3333",font.size = 10)
   #handle case where >=10 
-  mytable2[as.numeric(X2[,k]) >=10, k] =  textProperties( font.size = 8)
+  #mytable2[as.numeric(X2[,k]) >=10, k] =  textProperties( font.size = 8)
 }
 for ( k in 2:ncol(X3) ) 
 {
@@ -87,7 +87,7 @@ for ( k in 2:ncol(X3) )
   mytable3[as.numeric(X3[,k]) >= 4, k] =  textProperties( font.size = 10)
   mytable3[as.numeric(X3[,k]) < 4, k] =  textProperties( color="#FF3333",font.size = 10)
   #handle case where >=10 
-  mytable3[as.numeric(X3[,k]) >=10, k] =  textProperties(font.size = 8)
+  #mytable3[as.numeric(X3[,k]) >=10, k] =  textProperties(font.size = 8)
 }
 cat("Writing document to a word document...")
 mytable1 = addFooterRow( mytable1, 
