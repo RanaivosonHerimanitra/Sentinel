@@ -134,7 +134,7 @@ setorder(percentile_diar_alerte,sites,-deb_sem)
 perc_rank = function(x,x0) {f=ecdf(x);return(round(100*f(x0)) )}
 # initialize document:
 mydocument = list()
-for ( j in mycode[1:5] )
+for ( j in mycode )
 {
   cat("writing report for Semaine épidémiologique:",j,'\n')
   semaine = as.numeric(unlist(strsplit(j,"_"))[2])
