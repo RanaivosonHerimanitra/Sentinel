@@ -2,19 +2,19 @@
 setwd("/media/herimanitra/Document/IPM_sentinelle/sentinel_hrmntr 291115/Sentinel")
 source("libraries.R")
 cat('connect to the server...')
-sentinel <- src_postgres(dbname="sentinel",
-                         host = "172.16.0.230", 
-                         user = "cnx_florian",
-                         password = "sigflorianipm")
-data_iri_env<-src_postgres(dbname="data_iri",
-                           host="172.16.0.230",
-                           port=5432,
-                           user="cnx_florian",
-                           password="sigflorianipm")
-conn_hfi <- src_postgres(dbname="data_iri",
-                         host = "172.16.0.230", 
-                         user = "cnx_user",
-                         password = "sig0000ipm")
+sentinel <- src_postgres(dbname="***",
+                         host = "***", 
+                         user = "***",
+                         password = "***")
+data_iri_env<-src_postgres(dbname="***",
+                           host="***",
+                           port=000,
+                           user="***",
+                           password="***")
+conn_hfi <- src_postgres(dbname="***",
+                         host = "***", 
+                         user = "***",
+                         password = "***")
 cat('DONE\n')
 
 cat("retrieve and convert PaluConf into a dataframe...")

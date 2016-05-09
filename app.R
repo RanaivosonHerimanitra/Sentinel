@@ -1,4 +1,3 @@
-#
 #required libraries
 source("libraries.R")
 #versatile app:
