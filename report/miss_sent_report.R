@@ -9,6 +9,7 @@ options('ReporteRs-fontsize'=10, 'ReporteRs-default-font'='Arial')
 # Add a formatted paragraph of texts
 #++++++++++++++++++++++++++++++
 doc = addTitle(doc, "Sms hebdomadaire du réseau sentinelle", level=1)
+
 doc = addParagraph(doc , pot( Sys.Date(), textItalic() ) )
 doc = addParagraph(doc, "        ")
 baseCellProp = cellProperties( padding = 2 )

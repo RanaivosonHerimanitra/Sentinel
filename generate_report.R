@@ -3,6 +3,11 @@ library(ReporteRs)
 
 doc <- docx() 
 
+doc=addImage(doc, "/media/herimanitra/Document/IPM_sentinelle/sentinel_hrmntr 291115/Sentinel/report/logo.png",
+         par.properties = parProperties(text.align = "left", padding = 5), 
+         width=5,
+         height=1.5)
+
 # Change the default font size and font family
 options('ReporteRs-fontsize'=11, 'ReporteRs-default-font'='Arial')
 
@@ -129,7 +134,7 @@ setorder(percentile_diar_alerte,sites,-deb_sem)
 perc_rank = function(x,x0) {f=ecdf(x);return(round(100*f(x0)) )}
 # initialize document:
 mydocument = list()
-for ( j in mycode )
+for ( j in mycode[1:5] )
 {
   cat("writing report for Semaine épidémiologique:",j,'\n')
   semaine = as.numeric(unlist(strsplit(j,"_"))[2])
