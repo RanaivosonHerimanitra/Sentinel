@@ -934,7 +934,9 @@ server<-function(input, output,session) {
   #Forecasting of # cases of Malaria:
   #in the future should take anykind of diseases:
   output$forecast_plot = renderPlotly({
+    mymodel=input$mymodel
     source("prepare_data_forecast.R",local = T)
+    X=prepare_load(mymodel=mymodel)
     source("forecasting_functions.R",local = T)
     #########################################################################################################
     if ( input$mymodel=="HLT" & input$forecast_type=="retrospective")
@@ -947,7 +949,7 @@ server<-function(input, output,session) {
       ################# plotting begins ##################################
       line_width=1.5
       cat ("MAE of holt retrospective:",mae(X$occurence[1:L_preds],preds),"\n")
-      p = plot_ly(X, x=mymonth,y = occurence,
+      p = plot_ly(X, x=mymonth, y = occurence,
                   name="Monthly cases of Malaria",
                   line = list(width=line_width,color = "rgb(250,67,69)"))
       p = p %>% layout(legend = list(x = 0, y = 350),

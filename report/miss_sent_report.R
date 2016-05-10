@@ -52,7 +52,8 @@ cat("divide data into 03 parts...")
 X1=X[,c(1,sites34[1:15])]
 X2=X[,c(1,sites34[16:33])]
 #select only period where data collection has begun
-X3=X[95:nrow(X),other_site]
+X3=X[95:nrow(X),other_site[1:10]]
+X4=X[95:nrow(X),c(1,other_site[11:length(other_site)])]
 cat("DONE\n")
 
 
@@ -61,6 +62,7 @@ cat("DONE\n")
 mytable1 = vanilla.table(X1,text.direction = "btlr")
 mytable2 = vanilla.table(X2,text.direction = "btlr")
 mytable3 = vanilla.table(X3,text.direction = "btlr")
+mytable4 = vanilla.table(X4,text.direction = "btlr")
 
 
 #loop through columns and change into red those cells with value <4:
@@ -70,24 +72,24 @@ for ( k in 2:ncol(X1) )
   cat(k,"\n")
   mytable1[as.numeric(X1[,k]) >= 4, k] =  textProperties( font.size = 10)
   mytable1[as.numeric(X1[,k]) < 4, k] =  textProperties( color="#FF3333",font.size = 10)
-  #handle case where >=10 
-  #mytable1[as.numeric(X1[,k]) >=10, k] =  textProperties( font.size = 8)
 }
 for ( k in 2:ncol(X2) ) 
 {
   cat(k,"\n")
   mytable2[as.numeric(X2[,k]) >= 4, k] =  textProperties( font.size = 10)
   mytable2[as.numeric(X2[,k]) < 4, k] =  textProperties( color="#FF3333",font.size = 10)
-  #handle case where >=10 
-  #mytable2[as.numeric(X2[,k]) >=10, k] =  textProperties( font.size = 8)
 }
 for ( k in 2:ncol(X3) ) 
 {
   cat(k,"\n")
   mytable3[as.numeric(X3[,k]) >= 4, k] =  textProperties( font.size = 10)
   mytable3[as.numeric(X3[,k]) < 4, k] =  textProperties( color="#FF3333",font.size = 10)
-  #handle case where >=10 
-  #mytable3[as.numeric(X3[,k]) >=10, k] =  textProperties(font.size = 8)
+}
+for ( k in 2:ncol(X4) ) 
+{
+  cat(k,"\n")
+  mytable4[as.numeric(X4[,k]) >= 4, k] =  textProperties( font.size = 10)
+  mytable4[as.numeric(X4[,k]) < 4, k] =  textProperties( color="#FF3333",font.size = 10)
 }
 cat("Writing document to a word document...")
 mytable1 = addFooterRow( mytable1, 
@@ -102,11 +104,17 @@ mytable3 = addFooterRow( mytable3,
                          value = c("En rouge , les cas <4"),
                          cell.properties = horizontal_text
                          ,colspan = ncol(X3))
+mytable4 = addFooterRow( mytable4, 
+                         value = c("En rouge , les cas <4"),
+                         cell.properties = horizontal_text
+                         ,colspan = ncol(X4))
 doc = addFlexTable( doc, mytable1 )
 doc = addParagraph(doc, "        ")
 doc = addFlexTable( doc, mytable2 )
 doc = addParagraph(doc, "        ")
 doc = addFlexTable( doc, mytable3 )
+doc = addParagraph(doc, "        ")
+doc = addFlexTable( doc, mytable4 )
 
 writeDoc(doc, file = "missing_sent.docx")
 #sudo apt-get install unoconv

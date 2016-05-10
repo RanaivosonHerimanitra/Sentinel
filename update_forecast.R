@@ -1,5 +1,7 @@
+mymodel="Holt";direction="retrospective";
 source("import_data.R",local = T)
 source("prepare_data_forecast.R",local = T)
+X=prepare_load(mymodel=mymodel)
 source("forecasting_functions.R",local = T)
 ############################### run model (update forecast) #################
 alpha_range= seq(0.1,0.9,0.05)
