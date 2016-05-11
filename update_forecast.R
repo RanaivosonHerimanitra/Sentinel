@@ -1,9 +1,10 @@
-mymodel="Holt";direction="retrospective";
+mymodel="Holt";direction="prospective";
 source("import_data.R",local = T)
 source("prepare_data_forecast.R",local = T)
 X=prepare_load(mymodel=mymodel)
 source("forecasting_functions.R",local = T)
 ############################### run model (update forecast) #################
+############################### by searching optimal params ################
 alpha_range= seq(0.1,0.9,0.05)
 beta_range= seq (0.1,0.9,0.05)
 mymae=1e3
@@ -31,11 +32,11 @@ model= run_back_test(alpha=best_a,beta=best_b,plot=F,direction=direction)
 #handle <0:
 preds=abs(model$preds) #more accurate?
 #preds= ifelse(preds<0,0,preds)
-fit1= model$mymodel
+#fit1= model$mymodel
 ################################### save model and forecasts ###########################
   if (direction=="prospective")
   {
-    save(fit1,preds,file="holt_prospective.rda")
+    save(preds,file="holt_prospective.rda")
     L_preds= length(preds)
     L=length(X$occurence)
     print (mae(X$occurence[(L-L_preds+1):L],preds))

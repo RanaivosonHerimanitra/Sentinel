@@ -5,18 +5,25 @@ run_model = function (serie, parameters=list(method=c("holt","ARIMAX"),
 {   
   if ( parameters[["direction"]]=="prospective" )
   {
-    #training set:
+    cat("select training set from index: ",begin," to", begin+l,"...")
     tr_set= serie[begin:(begin+l)]
-    #validation set:
-    valid_set = serie[begin+horizon]
-    #training begins:
+    cat("DONE\n")
+    cat("select validation set from index: ",begin+horizon,"...")
+     #before 15h41 begin+horizon
+     #valid_set = serie[begin+l+1]
+     valid_set=serie[begin+horizon]
+    cat("DONE\n")
+    cat("model training...")
     if (parameters[["method"]]=="holt")
     {
       fit1 <- holt(tr_set, alpha=alpha, beta=beta, initial="simple", h=horizon)
-    }    
-    #preprocess prediction into numeric format
-    preds = forecast(fit1,h=horizon)
-    preds = as.numeric(preds$mean)
+    }
+    cat("DONE\n")
+    cat("perform prediction at index:",begin+l+horizon,"...")
+     preds = forecast(fit1,h=horizon)
+     preds = as.numeric(preds$mean)
+    cat("DONE\n")
+    
     #if user want to plot (pass plot=T)
     if (plot==T)
     {
@@ -46,9 +53,14 @@ run_model = function (serie, parameters=list(method=c("holt","ARIMAX"),
     }
   }
   
- 
+ #if we are at the end 
+ if (is.na(valid_set)==T ) {
+   mymae=0
+ } else {
+   mymae= mae(valid_set,preds)
+ }
   #return MAE and predictions:
-  return  (list(mymodel=fit1, mymae=mae(valid_set,preds),preds=preds ))
+  return  (list(mymodel=fit1, mymae=mymae,preds=preds ))
 }
 #########################################################################################################
 run_back_test = function(alpha=0.8,beta=0.2,plot=F,direction="retrospective")
@@ -72,7 +84,7 @@ run_back_test = function(alpha=0.8,beta=0.2,plot=F,direction="retrospective")
   } 
   if (direction=="prospective") 
   {
-    for ( j in  1:(nrow(X)-round(nrow(X)/4)-1) )
+    for ( j in  1:(nrow(X)-round(nrow(X)/4)-1+1) )
     {
       result= run_model(serie=X$occurence, begin=j, horizon=1,plot=plot,
                         parameters=list(method="holt",direction=direction),
@@ -84,7 +96,7 @@ run_back_test = function(alpha=0.8,beta=0.2,plot=F,direction="retrospective")
       preds[counter]= result$preds
       counter = counter + 1 
     }   
-    return (list( mymae=mean(mymae), preds=preds))
+    return ( list( mymae=mean(mymae), preds=preds) )
    }
   
 }
