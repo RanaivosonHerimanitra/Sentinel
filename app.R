@@ -1001,9 +1001,12 @@ server<-function(input, output,session) {
       load(file = "holt_prospective.rda")
       L_preds= length(preds)
       L=length(X$occurence)
+      #add next month : VERY IMPORTANT NEED TO FIND DURABLE SOLUTION
+      X=rbind(X,data.table(mymonth=6,myyear=2016,occurence=NA))
       X[,mymonth:=paste0(mymonth,"/",substr(myyear,3,4))]
       ########################### plotting begins #########################
       line_width=1.5
+      #should be:cat ("MAE of holt prospective:",mae(X$occurence[(L-(L_preds-1)+1):L],preds[-1]),"\n")
       cat ("MAE of holt prospective:",mae(X$occurence[(L-L_preds+1):L],preds),"\n")
       p = plot_ly(X, x=mymonth,
                   mode = 'lines+markers',
@@ -1013,7 +1016,8 @@ server<-function(input, output,session) {
                        title="Actual serie (Farafanga & Mananjary) vs forecasts",
                        xaxis =list(title="",dtick=3, tickangle=90),
                        yaxis =list(title="#Cases"))
-      p = p %>% add_trace(x = mymonth, y = c(X$occurence[1:(L-L_preds)],round(preds)),
+      #before 15h04 [1:(L-L_preds)]
+      p = p %>% add_trace(x = mymonth, y = c(X$occurence[1:(L-L_preds+1)],round(preds)),
                           name = "prospective forecast",
                           mode = 'lines+markers',
                           line = list(width=line_width,color="rgb(85,135,249)") )

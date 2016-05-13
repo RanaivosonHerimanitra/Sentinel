@@ -41,7 +41,8 @@ preds=abs(model$preds) #more accurate?
     L=length(X$occurence)
     print (mae(X$occurence[(L-L_preds+1):L],preds))
     ts.plot(X$occurence)
-    lines(round(c(X$occurence[1:(L-L_preds)],preds)),col="blue")
+    #before 15h14 lines(round(c(X$occurence[1:(L-L_preds)],preds)),col="blue")
+    lines(round(c(X$occurence[1:(L-L_preds+1)],preds)),col="blue")
   } else {
     save(fit1,preds,file="holt_retrospective.rda")
     L_preds= length(preds)

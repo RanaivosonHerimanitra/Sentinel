@@ -99,6 +99,8 @@ run_back_test = function(alpha=0.8,beta=0.2,plot=F,direction="retrospective")
       #store predictions in an array
       preds[counter]= result$preds
       counter = counter + 1 
+      cat("length of preds==>",length(preds),
+          " ,length of serie:",nrow(X),"\n")
     }   
     return ( list( mymae=mean(mymae), preds=preds) )
    }
