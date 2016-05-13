@@ -9,16 +9,18 @@ run_model = function (serie, parameters=list(method=c("holt","ARIMAX"),
     cat("select training set from index: ",begin," to", begin+l,"...")
     tr_set= serie[begin:(begin+l)]
     cat("DONE\n")
+    cat("training set are",tr_set,"\n")
+    cat("training set length is",length(tr_set),"\n")
     cat("select validation set from index: ",begin+l+1,"...")
      #before 15h41 begin+horizon
-     valid_set = serie[begin+l+1]
+     valid_set = serie[begin+length(tr_set)+1]
      #valid_set=serie[begin+horizon]
     cat("DONE\n")
     cat("model training...")
     if (parameters[["method"]]=="holt")
     {
-      cat("perform prediction at index:",begin+l+horizon,"...")
-      preds <- holt(tr_set, alpha=alpha, beta=beta, initial="simple", h=horizon)
+      cat("perform prediction at index:",begin+l+1,"...")
+      preds <- holt(tr_set, alpha=alpha, beta=beta, initial="simple", h=1)
       preds = as.numeric(preds$mean)
       cat("DONE\n")
     }

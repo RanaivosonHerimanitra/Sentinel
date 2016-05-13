@@ -983,6 +983,7 @@ server<-function(input, output,session) {
       cat ("MAE of holt retrospective:",mae(X$occurence[1:L_preds],preds),"\n")
       p = plot_ly(X, x=mymonth, y = occurence,
                   name="Monthly cases of Malaria",
+                  mode = 'lines+markers',
                   line = list(width=line_width,color = "rgb(250,67,69)"))
       p = p %>% layout(legend = list(x = 0, y = 350),
                        title="Actual serie (Farafanga & Mananjary) vs forecasts",
@@ -990,6 +991,7 @@ server<-function(input, output,session) {
                        yaxis =list(title="#Cases"))
       p = p %>% add_trace(x = mymonth, y = c(round(preds),X$occurence[(L_preds+1):L]),
                           name = "retrospective forecast",
+                          mode = 'lines+markers',
                           line = list(width=line_width,color="rgb(85,135,249)") )
     } 
     #####################################################################
@@ -1004,6 +1006,7 @@ server<-function(input, output,session) {
       line_width=1.5
       cat ("MAE of holt prospective:",mae(X$occurence[(L-L_preds+1):L],preds),"\n")
       p = plot_ly(X, x=mymonth,
+                  mode = 'lines+markers',
                   y = occurence,name="Monthly cases of Malaria",
                   line = list(width=line_width,color = "rgb(250,67,69)") )
       p = p %>% layout(legend = list(x = 0, y = 350),
@@ -1012,6 +1015,7 @@ server<-function(input, output,session) {
                        yaxis =list(title="#Cases"))
       p = p %>% add_trace(x = mymonth, y = c(X$occurence[1:(L-L_preds)],round(preds)),
                           name = "prospective forecast",
+                          mode = 'lines+markers',
                           line = list(width=line_width,color="rgb(85,135,249)") )
     }
     p
