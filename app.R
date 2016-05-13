@@ -304,7 +304,7 @@ server<-function(input, output,session) {
     p <- plot_ly(myprop, x = deb_sem,
                  y = 100*prop,name=input$diseases,
                  line = list(width=line_width,color = "rgb(255, 0, 0)") )
-    p = p %>% layout( plot_bgcolor = "#E5E5E5",title="%sites in alert")
+    p = p %>% layout( legend=list(x = 0.5, y = 0),plot_bgcolor = "#E5E5E5",title="%sites in alert")
     #these are only make sense when Malaria (not for other diseases)
     if ( input$diseases=="Malaria")
     {
