@@ -1,4 +1,5 @@
 #######################################################################
+#' l := training's length
 run_model = function (serie, parameters=list(method=c("holt","ARIMAX"),
                                              direction=c("prospective","retrospective")),
                       begin=1,horizon=1,plot=T, l=round(nrow(X)/4),alpha=0.8,beta=0.2, metric=mae,save_model=T)
@@ -8,20 +9,21 @@ run_model = function (serie, parameters=list(method=c("holt","ARIMAX"),
     cat("select training set from index: ",begin," to", begin+l,"...")
     tr_set= serie[begin:(begin+l)]
     cat("DONE\n")
-    cat("select validation set from index: ",begin+horizon,"...")
+    cat("select validation set from index: ",begin+l+1,"...")
      #before 15h41 begin+horizon
-     #valid_set = serie[begin+l+1]
-     valid_set=serie[begin+horizon]
+     valid_set = serie[begin+l+1]
+     #valid_set=serie[begin+horizon]
     cat("DONE\n")
     cat("model training...")
     if (parameters[["method"]]=="holt")
     {
-      fit1 <- holt(tr_set, alpha=alpha, beta=beta, initial="simple", h=horizon)
+      cat("perform prediction at index:",begin+l+horizon,"...")
+      preds <- holt(tr_set, alpha=alpha, beta=beta, initial="simple", h=horizon)
+      preds = as.numeric(preds$mean)
+      cat("DONE\n")
     }
-    cat("DONE\n")
-    cat("perform prediction at index:",begin+l+horizon,"...")
-     preds = forecast(fit1,h=horizon)
-     preds = as.numeric(preds$mean)
+     #preds = forecast(fit1,h=horizon)
+     #preds = as.numeric(preds$mean)
     cat("DONE\n")
     
     #if user want to plot (pass plot=T)
@@ -60,7 +62,7 @@ run_model = function (serie, parameters=list(method=c("holt","ARIMAX"),
    mymae= mae(valid_set,preds)
  }
   #return MAE and predictions:
-  return  (list(mymodel=fit1, mymae=mymae,preds=preds ))
+  return  (list(mymae=mymae,preds=preds ))
 }
 #########################################################################################################
 run_back_test = function(alpha=0.8,beta=0.2,plot=F,direction="retrospective")

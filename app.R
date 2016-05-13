@@ -626,35 +626,67 @@ server<-function(input, output,session) {
   #render Syndrome Grippal, Syndrom Dengue-Like
   output$ili_graph = renderPlotly({
     
-    tdr_eff=as.data.table(gather(ili,key=sites,value=Synd_g,-c(code,deb_sem)))
+    ili=as.data.table(gather(ili,key=sites,value=Synd_g,-c(code,deb_sem)))
     arbosusp=as.data.table(gather(arbosusp,key=sites,value=ArboSusp,-c(code,deb_sem)))
-    tdr_eff=merge(tdr_eff,arbosusp,
+    ili=merge(ili,arbosusp,
                   by.x=c("code","sites","deb_sem"),
                   by.y=c("code","sites","deb_sem"),all.x=T)
+    #aggregate cases per week:
+    ili[,Synd_g:=sum(Synd_g,na.rm = T),by="code"]
+    ili[,ArboSusp:=sum(ArboSusp,na.rm = T),by="code"]
     #data processing:
-    # tdr_eff[,Synd_g := GrippSusp + AutrVirResp ]
-    tdr_eff=unique(tdr_eff,by=NULL)
+    # ili[,Synd_g := GrippSusp + AutrVirResp ]
+    ili=unique(ili,by=NULL)
 
     #34 sites we need:
     sites34= include[-c(1:2)]
-    #filter rows:
-    myili=tdr_eff[sites %in% sites34 & year(as.Date(deb_sem ,origin="1970-01-01"))>=2015]
+    #filter rows:  sites %in% sites34 &
+    myili=ili[ year(as.Date(deb_sem ,origin="1970-01-01"))>=2009]
     #handle date format:
     myili[,deb_sem:=as.character((as.Date(deb_sem,origin="1970-01-01")))]
-    
-    p <- plot_ly(myili, x = deb_sem, type="bar",y = Synd_g,name="ILI")
-    p = p %>% add_trace(x = deb_sem, type="bar",y = ArboSusp, name = "Dengue-Like")
+    p <- plot_ly(myili, x = deb_sem, type="bar",y = Synd_g,name="ILI",
+                 marker=list(color = "rgb(0,0,102)"))
+    p = p %>% add_trace(x = deb_sem, type="bar",y = ArboSusp, name = "Dengue-Like",
+                        marker=list(color = "rgb(204,0,0)"))
     
     #position legend at top of the graph
     p= p %>% layout(title="ILI & Dengue-LIKE (34 sites)",
                     xaxis = list(title = "Date(weeks)"),
-                    yaxis = list(title = "# Cases"),
+                    yaxis = list(title = "#Cases"),
                     legend = list(x = 0, y = 40) 
                     )
-    
     p
-   
-    
+    # #Malaria
+    # source("preprocessing.R");
+    # mydata=preprocessing_disease(include_all_sites=F)
+    # sentinel=fread("data/sentinel_codes.csv");sentinel
+    # setnames(sentinel,c("Centre","Code"),c("name","sites") )
+    # sentinel[,sites:=tolower(sites)]
+    # sentinel_latlong=rbind(sentinel_latlong,sentinel[!(sites %in% sentinel_latlong$sites)],fill=T)
+    # Malaria=mydata[["Malaria"]]
+    # Malaria[,occurence:=sum(occurence,na.rm = T),by="code"]
+    # Malaria=unique(Malaria[,list(deb_sem,code,occurence)],by=NULL)
+    # #ILI
+    # ili=as.data.table(gather(ili,key=sites,value=Synd_g,-c(code,deb_sem)))
+    # ili[,Synd_g:=sum(Synd_g,na.rm = T),by="code"]
+    # ili=unique(ili[,list(deb_sem,code,Synd_g)],by=NULL)
+    # #plotting...
+    # require(ggplot2)
+    # tmp1 = Malaria[,list(code,deb_sem,occurence)];setnames(tmp1,"occurence","cases")
+    # tmp1[,Disease:="Malaria(RDT+)"]
+    # setorder(tmp1,deb_sem)
+    # tmp2 = ili[,list(code,deb_sem,Synd_g)];setnames(tmp2,"Synd_g","cases")
+    # tmp2[,Disease:="Fever"]
+    # setorder(tmp2,deb_sem)
+    # tmp=rbind(tmp1,tmp2)
+    # p =ggplot(data = tmp,aes(x=as.Date(deb_sem),y=cases,fill=Disease))
+    # p= p + theme(legend.position="bottom", legend.direction="horizontal") + scale_fill_discrete("")
+    # p= p  + scale_alpha_manual(values = "0.7", guide='none')
+    # p= p  + geom_bar(stat = "identity")
+    # p = p + scale_fill_manual(values=c("blue","darkred"))
+    # p=p  + xlab("Date (per week)") + ylab("#Cases")
+    # p= p + ggtitle("Fever and Malaria in Sentinel network")
+    # p
   })
   #render weekly diseases cases for a clicked site
   output$weekly_disease_cases_persite = renderPlotly({
