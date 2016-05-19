@@ -50,14 +50,9 @@ source("./reporting_plot.R",local = T)
   p =ggplot(data = tmp,aes(x=(as.Date(deb_sem,origin="1970-01-01")),
                            y=cases,fill=Disease))
   #increase space between legend keys:
-  p= p + theme(legend.position="bottom", legend.direction="horizontal",  legend.key=element_rect(size=7),
-               legend.key.size = unit(1.5, "lines"))
-
- # p=p+ scale_fill_discrete("")
+  p= p + theme(legend.position="bottom", legend.direction="horizontal",  legend.key=element_rect(size=7),legend.key.size = unit(1.5, "lines"))
   #remove legend title:
   p=p+ guides(fill=guide_legend(title=NULL))
-
-  #p= p  + scale_alpha_manual(values = "0.7", guide='none')
   p= p  + geom_bar(stat = "identity")
   p = p + scale_fill_manual(values=c("blue","darkred"))
   p=p  + xlab("Date(Semaine)") + ylab("Nombre de cas")
@@ -68,12 +63,12 @@ source("./reporting_plot.R",local = T)
   }
   p = p + scale_x_date(breaks = date_breaks("1 year"),date_labels = "%Y")
   #annotate vertical line:
-  p=p +geom_text(aes(x=(as.Date("2010-01-01",origin = "1970-01-01")),
-                     label="1st", y=700),size=5,angle = 45)
-  p=p +geom_text(aes(x=(as.Date("2014-01-01",origin = "1970-01-01")),
-                     label="2nd", y=700),size=5,angle = 45)
-  p=p +geom_text(aes(x=(as.Date("2015-01-01",origin = "1970-01-01")),
-                     label="3rd", y=700),size=5,angle = 45)
+  # p=p +geom_text(aes(x=(as.Date("2010-01-01",origin = "1970-01-01")),
+  #                    label="1st", y=700),size=5,angle = 45)
+  # p=p +geom_text(aes(x=(as.Date("2014-01-01",origin = "1970-01-01")),
+  #                    label="2nd", y=700),size=5,angle = 45)
+  # p=p +geom_text(aes(x=(as.Date("2015-01-01",origin = "1970-01-01")),
+  #                    label="3rd", y=700),size=5,angle = 45)
 
   p
 # generate_plot(htc="all",
@@ -112,8 +107,7 @@ setorder(malaria,sites,deb_sem)
 #transform NA
 malaria$malaria_cases=as.character(malaria$malaria_cases)
 malaria[is.na(malaria_cases)==T,malaria_cases:="na"]
-malaria[,malaria_cases:=ifelse(nchar(malaria_cases)<2,paste0("0",malaria_cases),
-                               malaria_cases)]
+malaria[,malaria_cases:=ifelse(nchar(malaria_cases)<2,paste0("0",malaria_cases),malaria_cases)]
 
 #get unique sites for max
 liste_sites= unique(malaria$sites)
@@ -230,6 +224,7 @@ generate_plot(htc="dsd",
               disease2.targetvar="SyndF",
               legend.disease1="Palu(TDR+)",
               legend.disease2="Fièvres",
+              title.label.list="Fièvres et Palu à",
               title.label="Fièvres et Paludisme dans le réseau sentinelle",
               title.ylab="Cas de Fièvres et Paludisme")
 ```
