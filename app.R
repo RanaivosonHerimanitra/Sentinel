@@ -57,7 +57,6 @@ server<-function(input, output,session) {
   })
   minsan_algorithm = reactive({
     mydata=preprocessing()
-   
     #####################################Doublement du nb de cas (MinSan algo) ###################
     cat('Calculation of minsan and proportion of sites in alert begin...\n')
     source("minsan.R")
@@ -659,37 +658,7 @@ server<-function(input, output,session) {
                     legend = list(x = 0, y = 40) 
                     )
     p
-    # #Malaria
-    # source("preprocessing.R");
-    # mydata=preprocessing_disease(include_all_sites=F)
-    # sentinel=fread("data/sentinel_codes.csv");sentinel
-    # setnames(sentinel,c("Centre","Code"),c("name","sites") )
-    # sentinel[,sites:=tolower(sites)]
-    # sentinel_latlong=rbind(sentinel_latlong,sentinel[!(sites %in% sentinel_latlong$sites)],fill=T)
-    # Malaria=mydata[["Malaria"]]
-    # Malaria[,occurence:=sum(occurence,na.rm = T),by="code"]
-    # Malaria=unique(Malaria[,list(deb_sem,code,occurence)],by=NULL)
-    # #ILI
-    # ili=as.data.table(gather(ili,key=sites,value=Synd_g,-c(code,deb_sem)))
-    # ili[,Synd_g:=sum(Synd_g,na.rm = T),by="code"]
-    # ili=unique(ili[,list(deb_sem,code,Synd_g)],by=NULL)
-    # #plotting...
-    # require(ggplot2)
-    # tmp1 = Malaria[,list(code,deb_sem,occurence)];setnames(tmp1,"occurence","cases")
-    # tmp1[,Disease:="Malaria(RDT+)"]
-    # setorder(tmp1,deb_sem)
-    # tmp2 = ili[,list(code,deb_sem,Synd_g)];setnames(tmp2,"Synd_g","cases")
-    # tmp2[,Disease:="Fever"]
-    # setorder(tmp2,deb_sem)
-    # tmp=rbind(tmp1,tmp2)
-    # p =ggplot(data = tmp,aes(x=as.Date(deb_sem),y=cases,fill=Disease))
-    # p= p + theme(legend.position="bottom", legend.direction="horizontal") + scale_fill_discrete("")
-    # p= p  + scale_alpha_manual(values = "0.7", guide='none')
-    # p= p  + geom_bar(stat = "identity")
-    # p = p + scale_fill_manual(values=c("blue","darkred"))
-    # p=p  + xlab("Date (per week)") + ylab("#Cases")
-    # p= p + ggtitle("Fever and Malaria in Sentinel network")
-    # p
+  
   })
   #render weekly diseases cases for a clicked site
   output$weekly_disease_cases_persite = renderPlotly({

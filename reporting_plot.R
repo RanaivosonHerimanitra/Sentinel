@@ -40,9 +40,12 @@ generate_plot=function(htc="all",
                 aes(x=Date,y=value,fill=Légende,colour=Légende)) 
       
       d=d + geom_line()  #alpha=0.6
+      #if user specifies a trend:
       if (add_trend==T) {  d= d + geom_smooth(method='lm',formula=y~x) }
-      d= d + scale_color_manual(values=c("#CC6666", "#9999CC"))
-
+      #more vibrant color:
+      d= d + scale_color_manual(values=c("#0000ff", "#840000"))
+      #remove legend sutitle:
+      d=d+ guides(fill=guide_legend(title=NULL))
       debut_annee=c(as.numeric(as.Date("2008-01-01")),
                     as.numeric(as.Date("2009-01-01")), 
                     as.numeric(as.Date("2010-01-01")), 
@@ -77,9 +80,11 @@ generate_plot=function(htc="all",
       setnames(X,"deb_sem","Date")
       d= ggplot(data=X,
                 aes(x=Date,y=value,fill=Légende,colour=Légende)) 
-      d=d + geom_line() #alpha=0.6
-      d= d + scale_color_manual(values=c("#CC6666", "#9999CC"))
-     
+      d=d + geom_bar(stat = "identity") 
+      #more vibrant color:
+      d= d + scale_color_manual(values=c("#0000ff", "#840000"))
+      #remove legend sutitle:
+      d=d+ guides(fill=guide_legend(title=NULL))
       debut_annee=c(as.numeric(as.Date("2008-01-01")),
                     as.numeric(as.Date("2009-01-01")), 
                     as.numeric(as.Date("2010-01-01")), 
