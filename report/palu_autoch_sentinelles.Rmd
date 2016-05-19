@@ -85,7 +85,7 @@ X$deb_sem=as.Date(X$deb_sem,origin="1970-01-01")
  #adding space between bars:, position = position_dodge(width=0.5)
  d= d + geom_bar(colour="black",stat = "identity" ) 
  # add figure within stacked bar,color text:
- d= d + geom_text(aes(label = vals),color="green",size = 3)
+ d= d + geom_text(aes(label = vals),color="#000000",size = 3)
  d= d + scale_fill_manual(values=c("#CC6666", "#9999CC"))
  d= d + scale_color_manual(values=c("#CC6666", "#9999CC"))
  d= d + ggtitle(label="Cas de Paludisme (autochtone vs Importé)")
