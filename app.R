@@ -57,7 +57,6 @@ server<-function(input, output,session) {
   })
   minsan_algorithm = reactive({
     mydata=preprocessing()
-   
     #####################################Doublement du nb de cas (MinSan algo) ###################
     cat('Calculation of minsan and proportion of sites in alert begin...\n')
     source("minsan.R")
@@ -304,7 +303,7 @@ server<-function(input, output,session) {
     p <- plot_ly(myprop, x = deb_sem,
                  y = 100*prop,name=input$diseases,
                  line = list(width=line_width,color = "rgb(255, 0, 0)") )
-    p = p %>% layout(title="%sites in alert")
+    p = p %>% layout( legend=list(x = 0.5, y = 0),plot_bgcolor = "#E5E5E5",title="%sites in alert")
     #these are only make sense when Malaria (not for other diseases)
     if ( input$diseases=="Malaria")
     {
@@ -330,7 +329,8 @@ server<-function(input, output,session) {
     p = p %>% add_trace(x = deb_sem, y = temperature, name = "Temp.",
                         line = list(width=line_width,color = "#ff8d00"),
                         visible='legendonly')
-    p = p %>% layout(legend = list(x = 0, y = 100),
+    p = p %>% layout( plot_bgcolor = "#E5E5E5",
+                      legend = list(x = 0, y = 100),
                      xaxis =list(title="Weeks"),
                      yaxis =list(title="Values")
                      )
@@ -610,6 +610,7 @@ server<-function(input, output,session) {
                  y = prop,name="prop.",
                  line = list(width=line_width))
     p = p %>% layout(title="prop of ILI among medical diagnosis",
+                     plot_bgcolor = "#E5E5E5",
                      font=list(size=11),
                      xaxis = list(title = "Date(Weeks)"),
                      legend = list(x = 0, 
@@ -626,35 +627,38 @@ server<-function(input, output,session) {
   #render Syndrome Grippal, Syndrom Dengue-Like
   output$ili_graph = renderPlotly({
     
-    tdr_eff=as.data.table(gather(ili,key=sites,value=Synd_g,-c(code,deb_sem)))
+    ili=as.data.table(gather(ili,key=sites,value=Synd_g,-c(code,deb_sem)))
     arbosusp=as.data.table(gather(arbosusp,key=sites,value=ArboSusp,-c(code,deb_sem)))
-    tdr_eff=merge(tdr_eff,arbosusp,
+    ili=merge(ili,arbosusp,
                   by.x=c("code","sites","deb_sem"),
                   by.y=c("code","sites","deb_sem"),all.x=T)
+    #aggregate cases per week:
+    ili[,Synd_g:=sum(Synd_g,na.rm = T),by="code"]
+    ili[,ArboSusp:=sum(ArboSusp,na.rm = T),by="code"]
     #data processing:
-    # tdr_eff[,Synd_g := GrippSusp + AutrVirResp ]
-    tdr_eff=unique(tdr_eff,by=NULL)
+    # ili[,Synd_g := GrippSusp + AutrVirResp ]
+    ili=unique(ili,by=NULL)
 
     #34 sites we need:
     sites34= include[-c(1:2)]
-    #filter rows:
-    myili=tdr_eff[sites %in% sites34 & year(as.Date(deb_sem ,origin="1970-01-01"))>=2015]
+    #filter rows:  sites %in% sites34 &
+    myili=ili[ year(as.Date(deb_sem ,origin="1970-01-01"))>=2009]
     #handle date format:
     myili[,deb_sem:=as.character((as.Date(deb_sem,origin="1970-01-01")))]
-    
-    p <- plot_ly(myili, x = deb_sem, type="bar",y = Synd_g,name="ILI")
-    p = p %>% add_trace(x = deb_sem, type="bar",y = ArboSusp, name = "Dengue-Like")
+    p <- plot_ly(myili, x = deb_sem, type="bar",y = Synd_g,name="ILI",
+                 marker=list(color = "rgb(0,0,102)"))
+    p = p %>% add_trace(x = deb_sem, type="bar",y = ArboSusp, name = "Dengue-Like",
+                        marker=list(color = "rgb(204,0,0)"))
     
     #position legend at top of the graph
-    p= p %>% layout(title="ILI & Dengue-LIKE (34 sites)",
+    p= p %>% layout( plot_bgcolor = "#E5E5E5",
+                     title="ILI & Dengue-LIKE (34 sites)",
                     xaxis = list(title = "Date(weeks)"),
-                    yaxis = list(title = "# Cases"),
+                    yaxis = list(title = "#Cases"),
                     legend = list(x = 0, y = 40) 
                     )
-    
     p
-   
-    
+  
   })
   #render weekly diseases cases for a clicked site
   output$weekly_disease_cases_persite = renderPlotly({
@@ -751,6 +755,7 @@ server<-function(input, output,session) {
     #position legend at top of the graph
     #90th percentile as horizontal line:
     p = p %>% layout(title=mytitle,
+                     plot_bgcolor = "#E5E5E5",
                      font=list(size=9),
                      legend = list(x = 0, y =10 ),
                      xaxis =list(title="Weeks"),
@@ -913,7 +918,8 @@ server<-function(input, output,session) {
     X=merge(X,sentinel_latlong,by.x="sites",by.y="sites",all.x=T)
    
     p=plot_ly(X, y = occurence, x=deb_sem,color=name )
-    p = p %>% layout(xaxis =list(title="Weeks"),
+    p = p %>% layout( plot_bgcolor = "#E5E5E5",
+                      xaxis =list(title="Weeks"),
                      yaxis =list(title="#Cases"))
    #round(log(occurence+1))
   # size = occurence,
@@ -934,7 +940,9 @@ server<-function(input, output,session) {
   #Forecasting of # cases of Malaria:
   #in the future should take anykind of diseases:
   output$forecast_plot = renderPlotly({
+    mymodel=input$mymodel
     source("prepare_data_forecast.R",local = T)
+    X=prepare_load(mymodel=mymodel)
     source("forecasting_functions.R",local = T)
     #########################################################################################################
     if ( input$mymodel=="HLT" & input$forecast_type=="retrospective")
@@ -947,15 +955,18 @@ server<-function(input, output,session) {
       ################# plotting begins ##################################
       line_width=1.5
       cat ("MAE of holt retrospective:",mae(X$occurence[1:L_preds],preds),"\n")
-      p = plot_ly(X, x=mymonth,y = occurence,
+      p = plot_ly(X, x=mymonth, y = occurence,
                   name="Monthly cases of Malaria",
+                  mode = 'lines+markers',
                   line = list(width=line_width,color = "rgb(250,67,69)"))
       p = p %>% layout(legend = list(x = 0, y = 350),
+                       plot_bgcolor = "#E5E5E5",
                        title="Actual serie (Farafanga & Mananjary) vs forecasts",
                        xaxis =list(title="",dtick=3, tickangle=90),
                        yaxis =list(title="#Cases"))
       p = p %>% add_trace(x = mymonth, y = c(round(preds),X$occurence[(L_preds+1):L]),
                           name = "retrospective forecast",
+                          mode = 'lines+markers',
                           line = list(width=line_width,color="rgb(85,135,249)") )
     } 
     #####################################################################
@@ -965,19 +976,26 @@ server<-function(input, output,session) {
       load(file = "holt_prospective.rda")
       L_preds= length(preds)
       L=length(X$occurence)
+      #add next month : VERY IMPORTANT NEED TO FIND DURABLE SOLUTION
+      X=rbind(X,data.table(mymonth=6,myyear=2016,occurence=NA))
       X[,mymonth:=paste0(mymonth,"/",substr(myyear,3,4))]
       ########################### plotting begins #########################
       line_width=1.5
+      #should be:cat ("MAE of holt prospective:",mae(X$occurence[(L-(L_preds-1)+1):L],preds[-1]),"\n")
       cat ("MAE of holt prospective:",mae(X$occurence[(L-L_preds+1):L],preds),"\n")
       p = plot_ly(X, x=mymonth,
+                  mode = 'lines+markers',
                   y = occurence,name="Monthly cases of Malaria",
                   line = list(width=line_width,color = "rgb(250,67,69)") )
       p = p %>% layout(legend = list(x = 0, y = 350),
+                       plot_bgcolor = "#E5E5E5",
                        title="Actual serie (Farafanga & Mananjary) vs forecasts",
                        xaxis =list(title="",dtick=3, tickangle=90),
                        yaxis =list(title="#Cases"))
-      p = p %>% add_trace(x = mymonth, y = c(X$occurence[1:(L-L_preds)],round(preds)),
+      #before 15h04 [1:(L-L_preds)]
+      p = p %>% add_trace(x = mymonth, y = c(X$occurence[1:(L-L_preds+1)],round(preds)),
                           name = "prospective forecast",
+                          mode = 'lines+markers',
                           line = list(width=line_width,color="rgb(85,135,249)") )
     }
     p

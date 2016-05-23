@@ -22,16 +22,65 @@ source("./var_conversion.R")
 mydata= tdr_malaria(htc=F)
 
 source("./reporting_plot.R",local = T)
-generate_plot(htc="all",
-              mydata=mydata,
-              add_trend=T,
-              legend.disease1="Paludisme TDR+",
-              legend.disease2="Fièvres",
-              disease1.targetvar="malaria_cases",
-              disease2.targetvar="SyndF",
-              title.label="Fièvres et Paludisme dans le réseau sentinelle",
-              title.label.list="Fièvres et Paludisme à",
-              title.ylab="Cas de Fièvres et Paludisme")
+  #Malaria
+  source("preprocessing.R");
+  mydata=preprocessing_disease(include_all_sites=F)
+  sentinel=fread("data/sentinel_codes.csv")
+  setnames(sentinel,c("Centre","Code"),c("name","sites") )
+  sentinel[,sites:=tolower(sites)]
+  sentinel_latlong=rbind(sentinel_latlong,sentinel[!(sites %in% sentinel_latlong$sites)],fill=T)
+  Malaria=mydata[["Malaria"]]
+  Malaria[,occurence:=sum(occurence,na.rm = T),by="code"]
+  Malaria=unique(Malaria[,list(deb_sem,code,occurence)],by=NULL)
+  #ILI
+  ili=as.data.table(gather(ili,key=sites,value=Synd_g,-c(code,deb_sem)))
+  ili[,Synd_g:=sum(Synd_g,na.rm = T),by="code"]
+  ili=unique(ili[,list(deb_sem,code,Synd_g)],by=NULL)
+  #plotting...
+  require(ggplot2)
+  tmp1 = Malaria[,list(code,deb_sem,occurence)];setnames(tmp1,"occurence","cases")
+  tmp1[,Disease:="Palu(TDR+)"]
+  setorder(tmp1,deb_sem)
+  tmp2 = ili[,list(code,deb_sem,Synd_g)];setnames(tmp2,"Synd_g","cases")
+  tmp2[,Disease:="Fièvre"]
+  setorder(tmp2,deb_sem)
+  tmp=rbind(tmp1,tmp2)
+  tmp=tmp[deb_sem>=as.Date("2009-01-01")]
+  #tmp[,deb_sem:=as.numeric(as.Date(deb_sem,origin="1970-01-01"))]
+  p =ggplot(data = tmp,aes(x=(as.Date(deb_sem,origin="1970-01-01")),
+                           y=cases,fill=Disease))
+  #increase space between legend keys:
+  p= p + theme(legend.position="bottom", legend.direction="horizontal",  legend.key=element_rect(size=7),legend.key.size = unit(1.5, "lines"))
+  #remove legend title:
+  p=p+ guides(fill=guide_legend(title=NULL))
+  p= p  + geom_bar(stat = "identity")
+  p = p + scale_fill_manual(values=c("blue","darkred"))
+  p=p  + xlab("Date(Semaine)") + ylab("Nombre de cas")
+  #add custom vertical line for each beginning of the year:
+  for ( u in paste0(2009:2016,"-01-01") )
+  {
+     p= p + geom_vline(xintercept = as.numeric(as.Date(u,origin = "1970-01-01")),size=0.75,linetype=4,colour="orange")
+  }
+  p = p + scale_x_date(breaks = date_breaks("1 year"),date_labels = "%Y")
+  #annotate vertical line:
+  # p=p +geom_text(aes(x=(as.Date("2010-01-01",origin = "1970-01-01")),
+  #                    label="1st", y=700),size=5,angle = 45)
+  # p=p +geom_text(aes(x=(as.Date("2014-01-01",origin = "1970-01-01")),
+  #                    label="2nd", y=700),size=5,angle = 45)
+  # p=p +geom_text(aes(x=(as.Date("2015-01-01",origin = "1970-01-01")),
+  #                    label="3rd", y=700),size=5,angle = 45)
+
+  p
+# generate_plot(htc="all",
+#               mydata=mydata,
+#               add_trend=T,
+#               legend.disease1="Paludisme TDR+",
+#               legend.disease2="Fièvres",
+#               disease1.targetvar="malaria_cases",
+#               disease2.targetvar="SyndF",
+#               title.label="Fièvres et Paludisme dans le réseau sentinelle",
+#               title.label.list="Fièvres et Paludisme à",
+#               title.ylab="Cas de Fièvres et Paludisme")
 ```
 
 
@@ -58,10 +107,7 @@ setorder(malaria,sites,deb_sem)
 #transform NA
 malaria$malaria_cases=as.character(malaria$malaria_cases)
 malaria[is.na(malaria_cases)==T,malaria_cases:="na"]
-malaria[,malaria_cases:=ifelse(nchar(malaria_cases)<2,paste0("0",malaria_cases),
-                               malaria_cases)]
-#looking for missing sites for each semaine:
-
+malaria[,malaria_cases:=ifelse(nchar(malaria_cases)<2,paste0("0",malaria_cases),malaria_cases)]
 
 #get unique sites for max
 liste_sites= unique(malaria$sites)
@@ -103,9 +149,9 @@ malaria=merge(malaria,sentinel_latlong[,list(sites,name)],
 setnames(malaria,c("name","vals","malaria_cases"),
                  c("Sites","6 semaines précédentes","Semaine dernière"))
 
-##################################################################################
+############################################################################
 
-#Fiever selection for last 6 weeks before current week:
+#Fever selection for last 6 weeks before current week:
 fievre=mydata[as.Date(deb_sem,origin="1970-01-01") %in% semaine,list(deb_sem,sites,SyndF)]
 fievre=fievre[,SyndF:=sum(SyndF,na.rm = T),by="deb_sem,sites"]
 fievre=unique(fievre,by=NULL)
@@ -158,7 +204,7 @@ setnames(fievre,c("name","vals","SyndF"),
 
 #generate tables:
     knitr::kable(fievre[,c("Sites","6 semaines précédentes","Semaine dernière"),with=F],
-                caption="Fièvres dans le réseau sentinel")
+                caption="Fièvres dans le réseau sentinelle")
 
   knitr::kable(malaria[,c("Sites","6 semaines précédentes","Semaine dernière"),with=F],
               caption="Paludisme dans le réseau sentinelle")
@@ -176,8 +222,9 @@ generate_plot(htc="dsd",
               disease2=fievre,
               disease1.targetvar="malaria_cases",
               disease2.targetvar="SyndF",
-              legend.disease1="Paludisme TDR+",
+              legend.disease1="Palu(TDR+)",
               legend.disease2="Fièvres",
+              title.label.list="Fièvres et Palu à",
               title.label="Fièvres et Paludisme dans le réseau sentinelle",
               title.ylab="Cas de Fièvres et Paludisme")
 ```

@@ -36,11 +36,6 @@ htc= c("deb_sem","code","abon","ambl","ants","bela",
 palu_autoch=palu_autoch[,htc,with=F]
 palu_autoch=as.data.table(gather(palu_autoch,
                                  key=sites,value=autoch,-c(code,deb_sem)))
-# sum autoch by deb_sem and sites
-
-#before 10h37
-#palu_autoch[,autoch:=sum(autoch),by="deb_sem,sites"]
-#
 
 #patch fix 10h37 24avril2016:
 palu_autoch[,is_NA:=all(is.na(autoch)==T),by="deb_sem,sites"]
@@ -90,11 +85,15 @@ X$deb_sem=as.Date(X$deb_sem,origin="1970-01-01")
  #adding space between bars:, position = position_dodge(width=0.5)
  d= d + geom_bar(colour="black",stat = "identity" ) 
  # add figure within stacked bar,color text:
- d= d + geom_text(aes(label = vals),color="green",size = 3)
+ d= d + geom_text(aes(label = vals),color="#000000",size = 3)
  d= d + scale_fill_manual(values=c("#CC6666", "#9999CC"))
  d= d + scale_color_manual(values=c("#CC6666", "#9999CC"))
  d= d + ggtitle(label="Cas de Paludisme (autochtone vs Importé)")
- d= d + xlab("Date") + ylab("Nb. Cas")
+ d= d + xlab("Date") + ylab("Nombre de cas")
+ #increase space between legend keys:
+  d= d + theme(legend.position="bottom", legend.direction="horizontal",  legend.key=element_rect(size=7),legend.key.size = unit(1.5, "lines"))
+  #remove legend title:
+  d=d+ guides(fill=guide_legend(title=NULL))
  #vertical axis label 
  d=d+theme(axis.text.x=element_text(angle=90,hjust=1,vjust=0.5))
  d= d + scale_x_date(date_breaks = "1 week")
@@ -193,6 +192,10 @@ for ( p in myname )
         
         d = d + ggtitle(label=last6_palu_autoch[Sites==p,get("Centre")])
         d = d + xlab("Date") + ylab("Nb. Cas")
+         #increase space between legend keys:
+  d= d + theme(legend.position="bottom", legend.direction="horizontal",  legend.key=element_rect(size=7),legend.key.size = unit(1.5, "lines"))
+  #remove legend title:
+  d=d+ guides(fill=guide_legend(title=NULL))
        # d= d + scale_x_date(labels = date_format("%m-%Y"))
         d=d+theme(axis.text.x=element_text(angle=90,hjust=1,vjust=0.5))
         d= d + scale_x_date(date_breaks = "2 weeks")

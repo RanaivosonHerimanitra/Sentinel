@@ -43,7 +43,7 @@ tdr_malaria = function (htc=FALSE)
   #
   PaluConf_tdr=merge(PaluConf,tdr_eff,
                      by.x=c("code","sites"),
-                     by.y=c("code","sites") )
+                     by.y=c("code","sites"),all.x=T )
  PaluConf_tdr[,manque_tdr:=ifelse(SyndF-TestPalu>0,1,0)] 
 
  return(PaluConf_tdr)

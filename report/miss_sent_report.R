@@ -1,14 +1,18 @@
 #setwd("/media/herimanitra/Document/IPM_sentinelle/sentinel_hrmntr 291115/Sentinel")
 ###############################Missing sent report ############################
-library(ReporteRs)
+library(ReporteRs);require(Hmisc)
 
 doc <- docx() 
-
+doc=addImage(doc, "/media/herimanitra/Document/IPM_sentinelle/sentinel_hrmntr 291115/Sentinel/report/logo.png",
+             par.properties = parProperties(text.align = "left", padding = 5), 
+             width=5,
+             height=1.5)
 # Change the default font size and font family
 options('ReporteRs-fontsize'=10, 'ReporteRs-default-font'='Arial')
 # Add a formatted paragraph of texts
 #++++++++++++++++++++++++++++++
 doc = addTitle(doc, "Sms hebdomadaire du réseau sentinelle", level=1)
+
 doc = addParagraph(doc , pot( Sys.Date(), textItalic() ) )
 doc = addParagraph(doc, "        ")
 baseCellProp = cellProperties( padding = 2 )
@@ -24,7 +28,12 @@ missing_sent[,code:=paste0(substr(Annee,3,4),"/",ifelse(nchar(Semaine)<2,paste0(
 cat("DONE\n")
 
 cat("crosstabulation of weeks and Sites...")
+missing_sent[,Centre:=capitalize(tolower(Centre))]
 X=table(missing_sent$code,missing_sent$Centre)
+cat("DONE\n")
+
+cat("Add Semaine épidémiologique...")
+X=cbind(Semaine=row.names(X),X)
 cat("DONE\n")
 
 cat("load sentinel lat/long define 34sites vs other...")
@@ -38,70 +47,74 @@ other_site =which( !( tolower(colnames(X)) %in% tolower(c("CSBU MANANJARY MNJ",
                                         sentinel_latlong$centre)) ))
 cat("DONE\n")
 
-cat("divide data into 02 parts...")
+cat("divide data into 03 parts...")
 #X=table(missing_sent$code,missing_sent$Centre)
-X1=X[,sites34]
-X2=X[,other_site]
-X2=X2[apply(X2,1,sum)>0,] #select only period where data collection has begun
+X1=X[,c(1,sites34[1:15])]
+X2=X[,c(1,sites34[16:33])]
+#select only period where data collection has begun
+X3=X[95:nrow(X),other_site[1:10]]
+X4=X[95:nrow(X),c(1,other_site[11:length(other_site)])]
 cat("DONE\n")
 
 
-#vertical text for headers
-mytable1 = FlexTable(X1, add.rownames = TRUE ,
-                     header.cell.props = vertical_text,
-                     header.text.props = textProperties(font.weight='normal',font.size = 7),
-                     body.text.props = textProperties(font.size = 5)
-                     )
 
 #vertical test for headers
-mytable2 = FlexTable( X2, add.rownames = TRUE ,
-                      header.cell.props = vertical_text,
-                      header.text.props = textProperties(font.weight='normal',font.size = 7),
-                      body.text.props = textProperties(font.size = 7)
-)
+mytable1 = vanilla.table(X1,text.direction = "btlr")
+mytable2 = vanilla.table(X2,text.direction = "btlr")
+mytable3 = vanilla.table(X3,text.direction = "btlr")
+mytable4 = vanilla.table(X4,text.direction = "btlr")
 
-#decrease font.weight of first column which corresponds to date:
-mytable1[,1]=textProperties(font.size = 7)
-mytable2[,1]=textProperties(font.size = 7)
-# set column widths:
-first_cell_width= 1.25
-taille1 = ncol(X1) #before ncol(X1)-1 (12h30, 03 mai 2016)
-ratio1 = (taille1 - 1.25)/taille1
-taille2 = ncol(X2) #before ncol(X2)-1 (12h30, 03 mai 2016)
-ratio2 = (taille2 - 1.25)/taille2
 
-mytable1=setFlexTableWidths( mytable1, 
-                             widths = c(first_cell_width, rep(ratio1, taille1) ))
-mytable2=setFlexTableWidths( mytable2, 
-                             widths = c(first_cell_width, rep(ratio2, taille2 ) ))
-#
 #loop through columns and change into red those cells with value <4:
 #First line in vertical order
-for ( k in 1:ncol(X1) ) 
+for ( k in 2:ncol(X1) ) 
 {
   cat(k,"\n")
-  mytable1[X1[,k] >= 4, k+1] =  textProperties( font.size = 6)
-  mytable1[X1[,k] < 4, k+1] =  textProperties( color="#FF3333",font.size = 6)
+  mytable1[as.numeric(X1[,k]) >= 4, k] =  textProperties( font.size = 10)
+  mytable1[as.numeric(X1[,k]) < 4, k] =  textProperties( color="#FF3333",font.size = 10)
 }
-for ( k in 1:ncol(X2) ) 
+for ( k in 2:ncol(X2) ) 
 {
   cat(k,"\n")
-  mytable2[X2[,k] >= 4, k+1] =  textProperties( font.size = 6)
-  mytable2[X2[,k] < 4, k+1] =  textProperties( color="#FF3333",font.size = 6)
+  mytable2[as.numeric(X2[,k]) >= 4, k] =  textProperties( font.size = 10)
+  mytable2[as.numeric(X2[,k]) < 4, k] =  textProperties( color="#FF3333",font.size = 10)
+}
+for ( k in 2:ncol(X3) ) 
+{
+  cat(k,"\n")
+  mytable3[as.numeric(X3[,k]) >= 4, k] =  textProperties( font.size = 10)
+  mytable3[as.numeric(X3[,k]) < 4, k] =  textProperties( color="#FF3333",font.size = 10)
+}
+for ( k in 2:ncol(X4) ) 
+{
+  cat(k,"\n")
+  mytable4[as.numeric(X4[,k]) >= 4, k] =  textProperties( font.size = 10)
+  mytable4[as.numeric(X4[,k]) < 4, k] =  textProperties( color="#FF3333",font.size = 10)
 }
 cat("Writing document to a word document...")
 mytable1 = addFooterRow( mytable1, 
                         value = c("En rouge , les cas <4"),
                         cell.properties = horizontal_text
-                        ,colspan = ncol(X1)+1 )
+                        ,colspan = ncol(X1))
 mytable2 = addFooterRow( mytable2, 
                          value = c("En rouge , les cas <4"),
                          cell.properties = horizontal_text
-                         ,colspan = ncol(X2)+1)
-
+                         ,colspan = ncol(X2))
+mytable3 = addFooterRow( mytable3, 
+                         value = c("En rouge , les cas <4"),
+                         cell.properties = horizontal_text
+                         ,colspan = ncol(X3))
+mytable4 = addFooterRow( mytable4, 
+                         value = c("En rouge , les cas <4"),
+                         cell.properties = horizontal_text
+                         ,colspan = ncol(X4))
 doc = addFlexTable( doc, mytable1 )
 doc = addParagraph(doc, "        ")
 doc = addFlexTable( doc, mytable2 )
+doc = addParagraph(doc, "        ")
+doc = addFlexTable( doc, mytable3 )
+doc = addParagraph(doc, "        ")
+doc = addFlexTable( doc, mytable4 )
 
 writeDoc(doc, file = "missing_sent.docx")
 #sudo apt-get install unoconv

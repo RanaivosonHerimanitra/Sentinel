@@ -37,12 +37,18 @@ generate_plot=function(htc="all",
     setnames(X,"deb_sem","Date")
    
       d= ggplot(data=X,
-                aes(x=Date,y=value,fill=Légende,colour=Légende)) 
+                aes(x=Date,y=value,fill=Légende)) 
       
-      d=d + geom_line()  #alpha=0.6
+      d=d + geom_bar(stat = "identity")  
+      #if user specifies a trend:
       if (add_trend==T) {  d= d + geom_smooth(method='lm',formula=y~x) }
-      d= d + scale_color_manual(values=c("#CC6666", "#9999CC"))
-
+      #more vibrant color:
+      d= d + scale_fill_manual(values=c("#0000ff", "#840000"))
+      #increase space between legend keys:
+      d= d + theme(legend.position="bottom", legend.direction="horizontal",  legend.key=element_rect(size=7),legend.key.size = unit(1.5, "lines"))
+      
+      #remove legend sutitle:
+      d=d+ guides(fill=guide_legend(title=NULL))
       debut_annee=c(as.numeric(as.Date("2008-01-01")),
                     as.numeric(as.Date("2009-01-01")), 
                     as.numeric(as.Date("2010-01-01")), 
@@ -75,11 +81,14 @@ generate_plot=function(htc="all",
       X$deb_sem=as.Date(X$deb_sem,origin="1970-01-01")
       X[,weeks:=week(deb_sem)]
       setnames(X,"deb_sem","Date")
-      d= ggplot(data=X,
-                aes(x=Date,y=value,fill=Légende,colour=Légende)) 
-      d=d + geom_line() #alpha=0.6
-      d= d + scale_color_manual(values=c("#CC6666", "#9999CC"))
-     
+      d= ggplot(data=X,aes(x=Date,y=value,fill=Légende)) 
+      d=d + geom_bar(stat = "identity") 
+      #increase space between legend keys:
+      d= d + theme(legend.position="bottom", legend.direction="horizontal",  legend.key=element_rect(size=7),legend.key.size = unit(1.5, "lines"))
+      #more vibrant color:
+      d= d + scale_fill_manual(values=c("#0000ff", "#840000"))
+      #remove legend sutitle:
+      d=d+ guides(fill=guide_legend(title=NULL))
       debut_annee=c(as.numeric(as.Date("2008-01-01")),
                     as.numeric(as.Date("2009-01-01")), 
                     as.numeric(as.Date("2010-01-01")), 

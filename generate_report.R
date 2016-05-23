@@ -3,6 +3,11 @@ library(ReporteRs)
 
 doc <- docx() 
 
+doc=addImage(doc, "/media/herimanitra/Document/IPM_sentinelle/sentinel_hrmntr 291115/Sentinel/report/logo.png",
+         par.properties = parProperties(text.align = "left", padding = 5), 
+         width=5,
+         height=1.5)
+
 # Change the default font size and font family
 options('ReporteRs-fontsize'=11, 'ReporteRs-default-font'='Arial')
 
