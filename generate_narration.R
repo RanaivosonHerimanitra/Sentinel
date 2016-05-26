@@ -31,9 +31,27 @@ if (mylength_NA>0)
   msg_NA = msg_NA + pot(ifelse (mylength_NA==1,"une semaine",paste(mylength_NA," semaines consécutives")))
   point_virgule=1
   cat('DONE','\n')
+  #NEW 26mey2016:
+  cat("store result in a csv...")
+  msg_NA_english= ifelse(mylength_NA==1,"lack of data during one week",
+                         paste("lack of data during ",mylength_NA," consecutive weeks."))
+  if (historical_alert$code[1]=="" & historical_alert$sites[1]=="" & historical_alert$alert[1]=="" ) {
+    historical_alert$code[1]=j
+    historical_alert$sites[1]=k
+    historical_alert$alert[1]=msg_NA_english
+    write.table(historical_alert,"interactive_summary_report/historical_alert.csv",row.names=F,sep=";")
+    historical_alert=fread("interactive_summary_report/historical_alert.csv")
+   
+  } else {
+    DT2=data.table(code=j,sites=k,alert=msg_NA_english)
+    historical_alert=rbindlist(list(historical_alert,DT2), use.names=TRUE)
+    write.table(historical_alert,"interactive_summary_report/historical_alert.csv",row.names=F,sep=";")
+    historical_alert=fread("interactive_summary_report/historical_alert.csv")
+    
+    }
+  cat("DONE\n")
 } else {
    msg_NA=NA
-  #msg_NA=pot("")
 }
 if (L_palu | L_diar | L_tdr )
 {
@@ -46,11 +64,27 @@ if (L_palu | L_diar | L_tdr )
       if (Nbcases>0)
       {
         cat("generating narration for Palu in ",k,"...")
-       
           msg_palu=  pot(paste("  .  PALUDISME à ",k,"(",Nbcases," cas). Vérifier au CSB si cas importé."),en_gras_blue)
-        
-        
         cat('DONE\n')
+        #NEW 26mey2016:
+        cat("store result in a csv...")
+        msg_palu_english= paste("Malaria identified","(",Nbcases," cases)",".Check whether It is imported.")
+        if (historical_alert$code[1]=="" & historical_alert$sites[1]=="" & historical_alert$alert[1]=="" ) {
+          historical_alert$code[1]=j
+          historical_alert$sites[1]=k
+          historical_alert$alert[1]=msg_palu_english
+          write.table(historical_alert,"interactive_summary_report/historical_alert.csv",row.names=F,sep=";")
+          historical_alert=fread("interactive_summary_report/historical_alert.csv")
+         
+        } else {
+          DT2=data.table(code=j,sites=k,alert=msg_palu_english)
+          historical_alert=rbindlist(list(historical_alert,DT2), use.names=TRUE)
+          write.table(historical_alert,"interactive_summary_report/historical_alert.csv",row.names=F,sep=";")
+          historical_alert=fread("interactive_summary_report/historical_alert.csv")
+         
+          }
+        cat("DONE\n")
+        
       } else {
         msg_palu=NA
       }
@@ -58,25 +92,58 @@ if (L_palu | L_diar | L_tdr )
     } else {
       cat("generating narration for other sites except Tana Ville and Periphérie for Palu...")
         msg_palu=  pot("  .   est") + pot(" en ALERTE PALU",en_gras_rouge) + pot(" depuis  ")+ pot(mylength_palu,en_gras(fontsize=13) ) +pot("  semaine(s)  ")
-        #vendredi 22 avril 2016:
-        #msg_palu=  pot("  .   est") + pot(" en ALERTE PALU",en_gras_rouge) + pot(" dépassant le seuil depuis  ")+ pot(mylength_palu,en_gras(fontsize=13) ) +pot("  semaines consécutives ")
         msg_palu= msg_palu + pot("(") + pot(paste0(myranks_palu[1],";")) + pot(paste0(myranks_palu[2],";")) + pot(paste0(myranks_palu[3],";")) + pot(paste0(myranks_palu[4],";")) + pot(paste0(myranks_palu[5],";")) + pot(paste0(myranks_palu[6],";")) + pot(paste0(myranks_palu[7],";")) + pot(paste0(myranks_palu[8],";")) + pot(paste0(myranks_palu[9],";")) + pot(paste0(myranks_palu[10],")."))
       cat('DONE\n')
+      #NEW 26mey2016:
+      cat("store result in a csv...")
+      msg_palu_english= paste("Malaria alert since",mylength_palu,"weeks","(", myranks_palu[1],";",myranks_palu[2],";",myranks_palu[3],";",myranks_palu[4],";",myranks_palu[5],";",myranks_palu[6],";",myranks_palu[7],";",myranks_palu[8],";",myranks_palu[9],";",myranks_palu[10],").")
+      if (historical_alert$code[1]=="" & historical_alert$sites[1]=="" & historical_alert$alert[1]=="" ) {
+        historical_alert$code[1]=j
+        historical_alert$sites[1]=k
+        historical_alert$alert[1]=msg_palu_english
+        write.table(historical_alert,"interactive_summary_report/historical_alert.csv",row.names=F,sep=";")
+        historical_alert=fread("interactive_summary_report/historical_alert.csv")
+       
+      } else {
+        DT2=data.table(code=j,sites=k,alert=msg_palu_english)
+        historical_alert=rbindlist(list(historical_alert,DT2), use.names=TRUE)
+        write.table(historical_alert,"interactive_summary_report/historical_alert.csv",row.names=F,sep=";")
+        historical_alert=fread("interactive_summary_report/historical_alert.csv")
+      
+        }
+      cat("DONE\n")
+      
     }
   } else {
     msg_palu=NA
-    #msg_palu=pot("")
   } 
   if (L_diar)
   {
     source("prep_narr_diar.R",local = T)
     cat("generating narration for Diarrhée for ",k,"...")
       msg_diar=  pot("  .   est") + pot(" en ALERTE DIARRHEE",en_gras_green) + pot(" depuis  ")+ pot(mylength_diar,en_gras(fontsize=13) ) +pot("  semaine(s) ")
-    
-     # msg_diar=  pot("  .   est") + pot(" en ALERTE DIARRHEE",en_gras_green) + pot(" dépassant le seuil depuis  ")+ pot(mylength_diar,en_gras(fontsize=13) ) +pot("  semaines consécutives ")
       msg_diar= msg_diar + pot("(") + pot(paste0(myranks_diar[1],";")) + pot(paste0(myranks_diar[2],";")) + pot(paste0(myranks_diar[3],";")) + pot(paste0(myranks_diar[4],";")) + pot(paste0(myranks_diar[5],";")) + pot(paste0(myranks_diar[6],";")) + pot(paste0(myranks_diar[7],";")) + pot(paste0(myranks_diar[8],";")) + pot(paste0(myranks_diar[9],";")) + pot(paste0(myranks_diar[10],")."))
       point_virgule=1
     cat("DONE\n")
+    #NEW 26mey2016:
+    cat("store result in a csv...")
+    msg_diar_english= paste("Diarrhea alert since",mylength_diar,"weeks","(", myranks_diar[1],";",myranks_diar[2],";",myranks_diar[3],";",myranks_diar[4],";",myranks_diar[5],";",myranks_diar[6],";",myranks_diar[7],";",myranks_diar[8],";",myranks_diar[9],";",myranks_diar[10],").")
+    if (historical_alert$code[1]=="" & historical_alert$sites[1]=="" & historical_alert$alert[1]=="" ) {
+      historical_alert$code[1]=j
+      historical_alert$sites[1]=k
+      historical_alert$alert[1]=msg_diar_english
+      write.table(historical_alert,"interactive_summary_report/historical_alert.csv",row.names=F,sep=";")
+      historical_alert=fread("interactive_summary_report/historical_alert.csv")
+    
+    } else {
+      DT2=data.table(code=j,sites=k,alert=msg_diar_english)
+      historical_alert=rbindlist(list(historical_alert,DT2), use.names=TRUE)
+      write.table(historical_alert,"interactive_summary_report/historical_alert.csv",row.names=F,sep=";")
+      historical_alert=fread("interactive_summary_report/historical_alert.csv")
+      
+      }
+    cat("DONE\n")
+    
   } else {
     msg_diar=NA
   }
@@ -89,7 +156,6 @@ if (L_palu | L_diar | L_tdr )
      
         tdr_manquant= pot("  .   est") + pot(" PROBABLEMENT en manque de TDR ",highlight_tdr )
         tdr_manquant=tdr_manquant + pot("cette semaine")
-        #tdr_manquant=tdr_manquant + pot("depuis la semaine dernière")
         tdr_manquant=tdr_manquant+ pot(paste("(",N_fiever, " cas de fièvres contre",N_tdr," TDR effectués)"))
        
       #add this line if It lasts more than a week:
@@ -98,6 +164,25 @@ if (L_palu | L_diar | L_tdr )
         tdr_manquant = tdr_manquant + pot(". Cela depuis ") + pot(mylength_tdr) + pot(" semaines.")
       } 
       cat("DONE\n")
+      #NEW 26mey2016:
+      cat("store result in a csv...")
+      tdr_manquant_english= paste("probably a lack of diagnostic kit since",mylength_tdr,"weeks (",N_fiever," fever cases against",N_tdr,"RDT test done).")
+      if (historical_alert$code[1]=="" & historical_alert$sites[1]=="" & historical_alert$alert[1]=="" ) {
+        historical_alert$code[1]=j
+        historical_alert$sites[1]=k
+        historical_alert$alert[1]=tdr_manquant_english
+        write.table(historical_alert,"interactive_summary_report/historical_alert.csv",row.names=F,sep=";")
+        historical_alert=fread("interactive_summary_report/historical_alert.csv")
+       
+      } else {
+        DT2=data.table(code=j,sites=k,alert=tdr_manquant_english)
+        historical_alert=rbindlist(list(historical_alert,DT2), use.names=TRUE)
+        write.table(historical_alert,"interactive_summary_report/historical_alert.csv",row.names=F,sep=";")
+        historical_alert=fread("interactive_summary_report/historical_alert.csv")
+        
+        }
+      cat("DONE\n")
+      
     } else {
       tdr_manquant=NA
     }

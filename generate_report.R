@@ -139,6 +139,9 @@ setorder(percentile_diar_alerte,sites,-deb_sem)
 perc_rank = function(x,x0) {f=ecdf(x);return(round(100*f(x0)) )}
 # initialize document:
 mydocument = list()
+#initialize a data.frame to be saved in a csv for historical alerts:
+historical_alert=data.table(code="",sites="",alert="")
+#report only years>=2012
 for ( j in mycode[as.numeric(substr(mycode,1,4))>=2012] )
 {
   cat("writing report for Semaine épidémiologique:",j,'\n')
@@ -162,13 +165,18 @@ for ( j in mycode[as.numeric(substr(mycode,1,4))>=2012] )
   mysites=unique(c(alerte_palu$name,
                    alerte_diar$name,
                    alerte_manque_tdr$name,palu_NA,diar_NA))
-  #mysites[mysites %in% tana_centre]="Antananarivo"
-  #mysites=unique(mysites)
+ 
   # k in mysites ---
-  unlist(lapply(mysites, function(k) source("generate_narration.R",local = T)));
+  #unlist(lapply(mysites, function(k) source("generate_narration.R",local = T)));
+  for ( k in mysites )
+  {
+    source("generate_narration.R",local = T)
+  }
 }
 
-
+cat("Writing log into a csv...")
+write.table(historical_alert,"interactive_summary_report/historical_alert.csv",row.names = F,sep=";")
+cat("DONE\n")
 cat("Writing document to a word document...")
 writeDoc(doc, file = "report/report.docx")
 #sudo apt-get install unoconv

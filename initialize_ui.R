@@ -81,7 +81,7 @@ disease_item=tabItem(tabName = "diparam",
                                      tabPanel("Malaria report"),
                                      tabPanel("Diarrhea report"),
                                      tabPanel("ILI report"),
-                                     tabPanel("PFA report"),
+                                     tabPanel("acute flaccid paralysis (AFP) report"),
                                      tabPanel("Missing sent report"))),
                      fluidRow(choose_disease_report)
                      )
