@@ -60,11 +60,11 @@ tabbox_item= tabItem(tabName = "mytabbox",
                        ),width = 9)
                        
                      ))
-#layer of the forecast page:
+##############################layer of the forecast page:#################
 source("UI/forecast_ui.R")
 forecast_item=tabItem(tabName="myforecast",myforecast_ui)
 
-#layer of the summary report and download page:
+#######################layer of the summary report and download page:####
 choose_disease_report= box(title="Reporting",
                            status = "primary", 
                            solidHeader = TRUE,
@@ -73,9 +73,10 @@ choose_disease_report= box(title="Reporting",
                                    It also contains information about lack of data and RDT+ compared to reported number of fever's consultation diagnosis."),
                            downloadButton('downloadReport','Download',class="primary")
                            ,width=12)
+source("interactive_summary_report/layers.R")
 disease_item=tabItem(tabName = "diparam",
                      fluidRow(tabBox(width = 12,
-                                     tabPanel("Summary report"),
+                                     tabPanel("Summary report",summary_report),
                                      tabPanel("HTC report"),
                                      tabPanel("Malaria report"),
                                      tabPanel("Diarrhea report"),
