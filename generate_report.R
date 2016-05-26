@@ -69,10 +69,13 @@ sentinel=fread("data/sentinel_codes.csv");sentinel
 setnames(sentinel,c("Centre","Code"),c("name","sites") )
 sentinel[,sites:=tolower(sites)]
 sentinel_latlong=rbind(sentinel_latlong,sentinel[!(sites %in% sentinel_latlong$sites)],fill=T)
-#
+
+#generate reports starting from 2012 only:
 PaluConf_tdr=tdr_eff
 Malaria=mydata[["Malaria"]]
+
 diarrh=mydata[["Diarrhea"]]
+
 
 percentile_palu_alerte=calculate_percentile(data=Malaria,
                                             week_length=3,
@@ -86,7 +89,9 @@ percentile_palu_alerte=merge(percentile_palu_alerte,sentinel_latlong,
                              by.x=c("sites"),by.y=c("sites"),all.x=T)
 percentile_diar_alerte=merge(percentile_diar_alerte,sentinel_latlong,
                              by.x=c("sites"),by.y=c("sites"),all.x=T)
-
+#generate reports starting from 2012 only:
+# percentile_diar_alerte=percentile_diar_alerte[years>=2012]
+# percentile_palu_alerte=percentile_palu_alerte[years>=2012]
 #################prepare data to detect lack of RDT #######
 PaluConf_tdr[,code:= paste0(Annee,"_",ifelse(nchar(Semaine)<2,paste0("0",Semaine),Semaine))]
 PaluConf_tdr[,SyndF:=sum(SyndF,na.rm=T),by="sites,code"]
@@ -134,7 +139,7 @@ setorder(percentile_diar_alerte,sites,-deb_sem)
 perc_rank = function(x,x0) {f=ecdf(x);return(round(100*f(x0)) )}
 # initialize document:
 mydocument = list()
-for ( j in mycode )
+for ( j in mycode[as.numeric(substr(mycode,1,4))>=2012] )
 {
   cat("writing report for Semaine épidémiologique:",j,'\n')
   semaine = as.numeric(unlist(strsplit(j,"_"))[2])
