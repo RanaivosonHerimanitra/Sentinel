@@ -31,16 +31,9 @@ week_retrospective=sliderInput(inputId="week_choice",
             value = ifelse(Sys.Date()-as.Date(paste0(year(Sys.Date()),"-01-01"))<8
                            ,1,week(Sys.Date())) )
 
-#plot.new()
+
 source("params_ui.R",local = T)
-choose_disease_report= box(title="Reporting",
-                           status = "primary", 
-                           solidHeader = TRUE,
-                           collapsible = TRUE,
-                           tags$p("This report includes historical alerts about Malaria, diarrhea and PFA across 54 sentinel sites. Algorithm used is 90th percentile.
-                                   It also contains information about lack of data and RDT+ compared to reported number of fever's consultation diagnosis."),
-                           downloadButton('downloadReport','Download',class="primary")
-                           ,width=12)
+
                                    
 source("map_ui.R",local = T)
 algoviz_parameters=box(status = "primary", solidHeader = TRUE,
@@ -65,8 +58,29 @@ tabbox_item= tabItem(tabName = "mytabbox",
                                                     tags$span(class="label label-danger", "beta"))),
                                   pastalert_display)
                        ),width = 9)
+                       
                      ))
+#layer of the forecast page:
 source("forecast_ui.R")
 forecast_item=tabItem(tabName="myforecast",myforecast_ui)
+
+#layer of the summary report and download page:
+choose_disease_report= box(title="Reporting",
+                           status = "primary", 
+                           solidHeader = TRUE,
+                           collapsible = TRUE,
+                           tags$p("This report includes historical alerts about Malaria, diarrhea and PFA across 54 sentinel sites. Algorithm used is 90th percentile.
+                                   It also contains information about lack of data and RDT+ compared to reported number of fever's consultation diagnosis."),
+                           downloadButton('downloadReport','Download',class="primary")
+                           ,width=12)
 disease_item=tabItem(tabName = "diparam",
-                     fluidRow(choose_disease_report)  )
+                     fluidRow(tabBox(width = 12,
+                                     tabPanel("Summary report"),
+                                     tabPanel("HTC report"),
+                                     tabPanel("Malaria report"),
+                                     tabPanel("Diarrhea report"),
+                                     tabPanel("ILI report"),
+                                     tabPanel("PFA report"),
+                                     tabPanel("Missing sent report"))),
+                     fluidRow(choose_disease_report)
+                     )
