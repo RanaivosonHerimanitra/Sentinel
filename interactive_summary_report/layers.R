@@ -1,11 +1,38 @@
 ########################Layers of the interactive summary report #######
-summary_report=list( tags$div( class="jumbotron",
-                     tags$h2("Alerts Summary of the last 02 weeks"),
-                     tags$strong(class="lead","Parameters encompass:"),
-                     tags$ul(
-                       tags$li(tags$p(class="lead","90th percentile is calculated for all weeks expect the ongoing week.")),
-                       tags$li(tags$p(class="lead","03 consecutive weeks are needed to trigger alert when Malaria or Diarrhea exceed 90th percentile.")
-                               ))
+historical_alert=fread("interactive_summary_report/historical_alert.csv")
+#retrieve last 02 finished weeks:
+mycode=unique(historical_alert$code)[1:2]
+historical_alert1=historical_alert[code %in% mycode[1]]
+#initialize a list to store alert in html boostrap-ish:
+listOfAlerts1=list()
+for ( ix in 1:nrow(historical_alert1) )
+{
+  listOfAlerts1[[ix]]=tags$p(class="lead",paste(historical_alert1[ix,sites],historical_alert1[ix,alert]))
+}
+historical_alert2=historical_alert[code %in% mycode[2]]
+#initialize a list to store alert in html boostrap-ish:
+listOfAlerts2=list()
+for ( ix in 1:nrow(historical_alert2) )
+{
+  listOfAlerts2[[ix]]=tags$p(class="lead",paste(historical_alert2[ix,sites],historical_alert2[ix,alert]))
+}
+
+summary_report=list( tags$div(class="container",
+                     tags$div( class="jumbotron",
+                     tags$h2("Alerts summary during the last 02 weeks"),
+                     tags$strong(class="lead","Parameters encompass:",
+                                 tags$ul(
+                                   tags$li(tags$p("90th percentile is calculated for all weeks expect the ongoing week.")),
+                                   tags$li(tags$p("03 consecutive weeks are needed to trigger alert when Malaria or Diarrhea exceed 90th percentile.")
+                                   )))),
+                     tags$div(class="row",tags$div(class="col-sm-8 blog-main",tags$div(class="blog-post",
+                                                                  tags$h2(class="blog-post-title","Alerts outline:"),
+                                                                  tags$p(class="blog-post-meta",mycode[1])))),
+                     listOfAlerts1,
+                     tags$div(class="row",tags$div(class="col-sm-8 blog-main",tags$div(class="blog-post",
+                                                                                       tags$h2(class="blog-post-title","Alerts outline:"),
+                                                                                       tags$p(class="blog-post-meta",mycode[2])))),
+                     listOfAlerts2
 ))
                       
                        # <div class="row marketing">

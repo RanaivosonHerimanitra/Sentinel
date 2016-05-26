@@ -33,8 +33,8 @@ if (mylength_NA>0)
   cat('DONE','\n')
   #NEW 26mey2016:
   cat("store result in a csv...")
-  msg_NA_english= ifelse(mylength_NA==1,"lack of data during one week",
-                         paste("lack of data during ",mylength_NA," consecutive weeks."))
+  msg_NA_english= ifelse(mylength_NA==1,"has a lack of data during one week",
+                         paste("has a lack of data during ",mylength_NA," consecutive weeks."))
   if (historical_alert$code[1]=="" & historical_alert$sites[1]=="" & historical_alert$alert[1]=="" ) {
     historical_alert$code[1]=j
     historical_alert$sites[1]=k
@@ -96,7 +96,7 @@ if (L_palu | L_diar | L_tdr )
       cat('DONE\n')
       #NEW 26mey2016:
       cat("store result in a csv...")
-      msg_palu_english= paste("Malaria alert since",mylength_palu,"weeks","(", myranks_palu[1],";",myranks_palu[2],";",myranks_palu[3],";",myranks_palu[4],";",myranks_palu[5],";",myranks_palu[6],";",myranks_palu[7],";",myranks_palu[8],";",myranks_palu[9],";",myranks_palu[10],").")
+      msg_palu_english= paste("has experienced a Malaria alert since",mylength_palu,"weeks","(", myranks_palu[1],";",myranks_palu[2],";",myranks_palu[3],";",myranks_palu[4],";",myranks_palu[5],";",myranks_palu[6],";",myranks_palu[7],";",myranks_palu[8],";",myranks_palu[9],";",myranks_palu[10],").")
       if (historical_alert$code[1]=="" & historical_alert$sites[1]=="" & historical_alert$alert[1]=="" ) {
         historical_alert$code[1]=j
         historical_alert$sites[1]=k
@@ -127,7 +127,7 @@ if (L_palu | L_diar | L_tdr )
     cat("DONE\n")
     #NEW 26mey2016:
     cat("store result in a csv...")
-    msg_diar_english= paste("Diarrhea alert since",mylength_diar,"weeks","(", myranks_diar[1],";",myranks_diar[2],";",myranks_diar[3],";",myranks_diar[4],";",myranks_diar[5],";",myranks_diar[6],";",myranks_diar[7],";",myranks_diar[8],";",myranks_diar[9],";",myranks_diar[10],").")
+    msg_diar_english= paste("has experienced a Diarrhea alert since",mylength_diar,"weeks","(", myranks_diar[1],";",myranks_diar[2],";",myranks_diar[3],";",myranks_diar[4],";",myranks_diar[5],";",myranks_diar[6],";",myranks_diar[7],";",myranks_diar[8],";",myranks_diar[9],";",myranks_diar[10],").")
     if (historical_alert$code[1]=="" & historical_alert$sites[1]=="" & historical_alert$alert[1]=="" ) {
       historical_alert$code[1]=j
       historical_alert$sites[1]=k
@@ -166,7 +166,7 @@ if (L_palu | L_diar | L_tdr )
       cat("DONE\n")
       #NEW 26mey2016:
       cat("store result in a csv...")
-      tdr_manquant_english= paste("probably a lack of diagnostic kit since",mylength_tdr,"weeks (",N_fiever," fever cases against",N_tdr,"RDT test done).")
+      tdr_manquant_english= paste("probably has a lack of diagnostic kit since",mylength_tdr,"weeks (",N_fiever," fever cases against",N_tdr,"RDT test done).")
       if (historical_alert$code[1]=="" & historical_alert$sites[1]=="" & historical_alert$alert[1]=="" ) {
         historical_alert$code[1]=j
         historical_alert$sites[1]=k
