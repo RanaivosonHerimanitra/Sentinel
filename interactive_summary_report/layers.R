@@ -7,20 +7,50 @@ historical_alert1=historical_alert[code %in% mycode[1]]
 listOfAlerts1=list()
 for ( ix in 1:nrow(historical_alert1) )
 {
-  listOfAlerts1[[ix]]=tags$p(class="lead",paste(historical_alert1[ix,sites],historical_alert1[ix,alert]))
+  #apply style conditionnally:
+  if (length(grep("diagnostic kit",historical_alert1[ix,alert]))>0) {
+    listOfAlerts1[[ix]]=tags$p(class="lead",style="color:#ffb90f;font-weight: bold;" ,paste(historical_alert1[ix,sites],historical_alert1[ix,alert]))
+  } 
+  if (length(grep("Malaria identified",historical_alert1[ix,alert]))>0) {
+    listOfAlerts1[[ix]]=tags$p(class="lead",style="color:blue;font-weight: bold;",paste(historical_alert1[ix,sites],historical_alert1[ix,alert]))
+  }
+  if (length(grep("Malaria alert",historical_alert1[ix,alert]))>0) {
+    listOfAlerts1[[ix]]=tags$p(class="lead",style="color:red;font-weight: bold;",paste(historical_alert1[ix,sites],historical_alert1[ix,alert]))
+  }
+  if (length(grep("Diarrhea alert",historical_alert1[ix,alert]))>0) {
+    listOfAlerts1[[ix]]=tags$p(class="lead",style="color:darkgreen;font-weight: bold;",paste(historical_alert1[ix,sites],historical_alert1[ix,alert]))
+  }
+  if (length(grep("has a lack of data",historical_alert1[ix,alert]))>0) {
+    listOfAlerts1[[ix]]=tags$p(class="lead",paste(historical_alert1[ix,sites],historical_alert1[ix,alert]))
+  }
 }
 historical_alert2=historical_alert[code %in% mycode[2]]
 #initialize a list to store alert in html boostrap-ish:
 listOfAlerts2=list()
 for ( ix in 1:nrow(historical_alert2) )
 {
-  listOfAlerts2[[ix]]=tags$p(class="lead",paste(historical_alert2[ix,sites],historical_alert2[ix,alert]))
+  #apply style conditionnally:
+  if (length(grep("diagnostic kit",historical_alert2[ix,alert]))>0) {
+    listOfAlerts2[[ix]]=tags$p(class="lead",style="color:#ffb90f;font-weight: bold;" ,paste(historical_alert2[ix,sites],historical_alert2[ix,alert]))
+  } 
+  if (length(grep("Malaria identified",historical_alert2[ix,alert]))>0) {
+    listOfAlerts2[[ix]]=tags$p(class="lead",style="color:blue;font-weight: bold;",paste(historical_alert2[ix,sites],historical_alert2[ix,alert]))
+  }
+  if (length(grep("Malaria alert",historical_alert2[ix,alert]))>0) {
+    listOfAlerts2[[ix]]=tags$p(class="lead",style="color:red;font-weight: bold;",paste(historical_alert2[ix,sites],historical_alert2[ix,alert]))
+  }
+  if (length(grep("Diarrhea alert",historical_alert2[ix,alert]))>0) {
+    listOfAlerts2[[ix]]=tags$p(class="lead",style="color:darkgreen;font-weight: bold;",paste(historical_alert2[ix,sites],historical_alert2[ix,alert]))
+  }
+  if (length(grep("has a lack of data",historical_alert2[ix,alert]))>0) {
+    listOfAlerts2[[ix]]=tags$p(class="lead",paste(historical_alert2[ix,sites],historical_alert2[ix,alert]))
+  }
 }
 
 summary_report=list( tags$div(class="container",
                      tags$div( class="jumbotron",
                      tags$h2("Alerts summary during the last 02 weeks"),
-                     tags$strong(class="lead","Parameters encompass:",
+                     tags$p(class="lead","Parameters encompass:",
                                  tags$ul(
                                    tags$li(tags$p("90th percentile is calculated for all weeks except for the ongoing week.")),
                                    tags$li(tags$p("03 consecutive weeks are needed to trigger alert when Malaria or Diarrhea exceed 90th percentile.")
