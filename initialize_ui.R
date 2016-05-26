@@ -6,7 +6,7 @@ myradio2= radioButtons(inputId="Algorithmes_viz", label="Algorithms:",
                                  "RDT+/fever Indicator" = "Ind"))
 
 
-source("heatmap_ui.R",local = T)
+source("UI/heatmap_ui.R",local = T)
 
 ####################################Visualization############################
 graph_choices= selectInput(inputId="Algorithmes_viz", label="Choose algorithms:",
@@ -32,16 +32,16 @@ week_retrospective=sliderInput(inputId="week_choice",
                            ,1,week(Sys.Date())) )
 
 
-source("params_ui.R",local = T)
+source("UI/params_ui.R",local = T)
 
                                    
-source("map_ui.R",local = T)
+source("UI/map_ui.R",local = T)
 algoviz_parameters=box(status = "primary", solidHeader = TRUE,
                        collapsible = TRUE,title="Parameters")
 
-source("viz_ui.R",local = T)
+source("UI/viz_ui.R",local = T)
 #UI for the bubble chart:
-source("pastalert_ui.R",local = T)
+source("UI/pastalert_ui.R",local = T)
 #
 tabbox_item= tabItem(tabName = "mytabbox",
                      fluidRow(
@@ -61,7 +61,7 @@ tabbox_item= tabItem(tabName = "mytabbox",
                        
                      ))
 #layer of the forecast page:
-source("forecast_ui.R")
+source("UI/forecast_ui.R")
 forecast_item=tabItem(tabName="myforecast",myforecast_ui)
 
 #layer of the summary report and download page:
