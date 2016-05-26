@@ -22,7 +22,7 @@ summary_report=list( tags$div(class="container",
                      tags$h2("Alerts summary during the last 02 weeks"),
                      tags$strong(class="lead","Parameters encompass:",
                                  tags$ul(
-                                   tags$li(tags$p("90th percentile is calculated for all weeks expect the ongoing week.")),
+                                   tags$li(tags$p("90th percentile is calculated for all weeks except for the ongoing week.")),
                                    tags$li(tags$p("03 consecutive weeks are needed to trigger alert when Malaria or Diarrhea exceed 90th percentile.")
                                    )))),
                      tags$div(class="row",tags$div(class="col-sm-8 blog-main",tags$div(class="blog-post",
