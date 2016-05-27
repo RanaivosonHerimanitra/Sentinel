@@ -77,7 +77,7 @@ source("interactive_summary_report/layers.R")
 disease_item=tabItem(tabName = "diparam",
                      fluidRow(tabBox(width = 12,
                                      tabPanel("Summary report",summary_report),
-                                     tabPanel("HTC report"),
+                                     tabPanel("HTC report",htc_report),
                                      tabPanel("Malaria report"),
                                      tabPanel("Diarrhea report"),
                                      tabPanel("ILI report"),

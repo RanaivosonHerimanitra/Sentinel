@@ -1001,6 +1001,12 @@ server<-function(input, output,session) {
     p
   })
   
+  #sumary plot of the HTC report:
+  output$htc_report_plot = renderPlotly({
+    load(file = "report/palu_autoch_chart.rda")
+    d = d + xlab("") + ylab("")
+    ggplotly(d)
+  })
   #handle conflict between radio button's input,
   #for algorithm's selection:
   observe({

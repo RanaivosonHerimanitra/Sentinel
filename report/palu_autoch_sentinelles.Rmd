@@ -97,7 +97,7 @@ X$deb_sem=as.Date(X$deb_sem,origin="1970-01-01")
  #vertical axis label 
  d=d+theme(axis.text.x=element_text(angle=90,hjust=1,vjust=0.5))
  d= d + scale_x_date(date_breaks = "1 week")
- 
+ save(d,file="report/palu_autoch_chart.rda")
 print(d)
 ```
 

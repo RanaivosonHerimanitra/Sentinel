@@ -1,4 +1,6 @@
-########################Layers of the interactive summary report #######
+########################Layers of the interactive summary report #################
+
+####################### MAIN REPORT ####################################
 historical_alert=fread("interactive_summary_report/historical_alert.csv")
 #retrieve last 02 finished weeks:
 mycode=unique(historical_alert$code)[1:2]
@@ -37,7 +39,7 @@ for ( ix in 1:nrow(historical_alert2) )
     listOfAlerts2[[ix]]=tags$p(class="lead",style="color:blue;font-weight: bold;",paste(historical_alert2[ix,sites],historical_alert2[ix,alert]))
   }
   if (length(grep("Malaria alert",historical_alert2[ix,alert]))>0) {
-    listOfAlerts2[[ix]]=tags$p(class="lead",style="color:red;font-weight: bold;",paste(historical_alert2[ix,sites],historical_alert2[ix,alert]))
+    listOfAlerts2[[ix]]=tags$p(class="lead",style="color:red;",paste(historical_alert2[ix,sites],historical_alert2[ix,alert]))
   }
   if (length(grep("Diarrhea alert",historical_alert2[ix,alert]))>0) {
     listOfAlerts2[[ix]]=tags$p(class="lead",style="color:darkgreen;font-weight: bold;",paste(historical_alert2[ix,sites],historical_alert2[ix,alert]))
@@ -65,26 +67,5 @@ summary_report=list( tags$div(class="container",
                      listOfAlerts2
 ))
                       
-                       # <div class="row marketing">
-                       # <div class="col-lg-6">
-                       # <h4>Subheading</h4>
-                       # <p>Donec id elit non mi porta gravida at eget metus. Maecenas faucibus mollis interdum.</p>
-                       # 
-                       # <h4>Subheading</h4>
-                       # <p>Morbi leo risus, porta ac consectetur ac, vestibulum at eros. Cras mattis consectetur purus sit amet fermentum.</p>
-                       # 
-                       # <h4>Subheading</h4>
-                       # <p>Maecenas sed diam eget risus varius blandit sit amet non magna.</p>
-                       # </div>
-                       # 
-                       # <div class="col-lg-6">
-                       # <h4>Subheading</h4>
-                       # <p>Donec id elit non mi porta gravida at eget metus. Maecenas faucibus mollis interdum.</p>
-                       # 
-                       # <h4>Subheading</h4>
-                       # <p>Morbi leo risus, porta ac consectetur ac, vestibulum at eros. Cras mattis consectetur purus sit amet fermentum.</p>
-                       # 
-                       # <h4>Subheading</h4>
-                       # <p>Maecenas sed diam eget risus varius blandit sit amet non magna.</p>
-                       # </div>
-                       # </div>
+#####################################Palu autoch##################################
+htc_report=plotlyOutput("htc_report_plot")
