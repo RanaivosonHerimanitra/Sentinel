@@ -108,6 +108,9 @@ mytable4 = addFooterRow( mytable4,
                          value = c("En rouge , les cas <4"),
                          cell.properties = horizontal_text
                          ,colspan = ncol(X4))
+
+
+#
 doc = addFlexTable( doc, mytable1 )
 doc = addParagraph(doc, "        ")
 doc = addFlexTable( doc, mytable2 )

@@ -1025,6 +1025,22 @@ server<-function(input, output,session) {
     d= d + xlab("") + ylab("")
     ggplotly(d)
   })
+  #summary plot of the PFA report:
+  output$pfa_report_plot = renderPlotly({
+    load(file = "report/pfa_chart.rda")
+    d= d + xlab("") + ylab("")
+    ggplotly(d)
+  })
+  #FlexTable to be displayed:
+  mytables =reactive({
+    source("report/miss_sent_report_shiny.R")
+    return (list(X=X))
+  })
+  #summary plot of the missing sent report:
+  output$missing_sent_report = DT::renderDataTable({
+    X=mytables()$X
+    X[,input$CSB]
+  })
   
   #handle conflict between radio button's input,
   #for algorithm's selection:

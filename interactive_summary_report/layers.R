@@ -75,4 +75,16 @@ malaria_report=plotlyOutput("malaria_report_plot")
 diarrhea_report=plotlyOutput("diarrhea_report_plot")
 #####################################Diarrhea#############################
 ili_report=plotlyOutput("ili_report_plot")
+#####################################Diarrhea#############################
+pfa_report=plotlyOutput("pfa_report_plot")
+#########################################################################
+CSB=fread("report/CSB.csv")
+missing_sent_report=list(selectizeInput(inputId="CSB", 
+                                        label="Select CSB to monitor", 
+                                        choice=CSB$x, 
+                                        selected = c("Ambatolahy","Ambatomiady"), 
+                                        multiple = TRUE,
+                                        options = list(maxItems = 6)),
+                         dataTableOutput("missing_sent_report")
+)
 

@@ -25,23 +25,24 @@ mydata[,occurence:=sum(occurence,na.rm = T),by="code"]
 mydata$deb_sem=as.Date(mydata$deb_sem,origin="1970-01-01")
 mydata[,weeks:=week(deb_sem)]
 mydata=mydata[as.Date(deb_sem,origin="1970-01-01")>=as.Date("2015-06-01",origin="1970-01-01"),]
-d=ggplot(unique(mydata[,list(deb_sem,occurence)],by=NULL), aes(x=deb_sem, y=occurence),
-         fill=occurence) 
-d= d + geom_bar(stat = "identity",fill="blue") 
+d=ggplot(unique(mydata[,list(deb_sem,occurence)],by=NULL), 
+         aes(x=deb_sem, y=occurence),fill=occurence) 
+d= d + geom_bar(colour="black",stat = "identity",fill="blue") 
 d= d + ggtitle(label="PFA dans le réseau sentinelle")
 d= d + xlab("Date") + ylab("Nb. Cas")
 debut_annee=as.numeric(unique(mydata[weeks==1,deb_sem]))
 d= d + geom_vline(xintercept = debut_annee,size=1.5,linetype=4,colour="orange")
- d= d + scale_x_date(labels = date_format("%m-%Y"))
+d= d + scale_x_date(labels = date_format("%m-%Y"))
 #set ylim to 10 if <10
 mymax=range(as.numeric(mydata$occurence)[is.na(as.numeric(mydata$occurence))==F])
 mymax[2]=ifelse(mymax[2]<10,10,mymax[2])
 #
-       d = d + scale_y_continuous(breaks= seq.int(from=1,to=mymax[2],by=2) ) 
+d = d + scale_y_continuous(breaks= seq.int(from=1,to=mymax[2],by=2) ) 
 #
-       #vertical axis label 
- d=d+theme(axis.text.x=element_text(angle=90,hjust=1,vjust=0.5))
- d= d + scale_x_date(date_breaks = "1 week")
+#vertical axis label 
+d=d+theme(axis.text.x=element_text(angle=90,hjust=1,vjust=0.5))
+d= d + scale_x_date(date_breaks = "1 week")
+save(d,file="report/pfa_chart.rda")
 print(d)
 
 ```

@@ -13,7 +13,9 @@ require(tidyr);
 require(shinydashboard);
 require(data.table);require(dplyr); 
 #require(rmarkdown)
-require(leaflet);require(dygraphs);
+require(leaflet);
+require(DT)
+#require(dygraphs);
 require(plotly);require(d3heatmap)
 require(ggplot2);require(ggmap);
 require(miniUI);

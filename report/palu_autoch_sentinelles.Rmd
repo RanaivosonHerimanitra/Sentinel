@@ -82,7 +82,7 @@ X= rbind (Z1,Z2); rm(Z1);rm(Z2)
 X$deb_sem=as.Date(X$deb_sem,origin="1970-01-01")
 
  d=ggplot(X, aes(x=deb_sem, y=vals, fill = Légende, colour = Légende)) 
- #adding space between bars:, position = position_dodge(width=0.5)
+ #adding space between bars:
  d= d + geom_bar(colour="black",stat = "identity" ) 
  # add figure within stacked bar,color text:
  d= d + geom_text(aes(label = vals),color="#000000",size = 3)
@@ -137,10 +137,6 @@ setnames(sentinel_code,"Code","sites")
 
 last6_palu_autoch=merge(last6_palu_autoch,
                         sentinel_code,by.x="sites",by.y="sites")
-
-
-
-
  #
  setnames(last6_palu_autoch,c("sites","vals","autoch"),
                  c("Sites","6 semaines précédentes","Semaine dernière"))
