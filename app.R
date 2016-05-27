@@ -303,7 +303,7 @@ server<-function(input, output,session) {
     p <- plot_ly(myprop, x = deb_sem,
                  y = 100*prop,name=input$diseases,
                  line = list(width=line_width,color = "rgb(255, 0, 0)") )
-    p = p %>% layout( legend=list(x = 0.5, y = 0),plot_bgcolor = "#E5E5E5",title="%sites in alert")
+    p = p %>% layout( legend=list(x = 0.5, y = 0),paper_bgcolor="rgb(213, 226, 233)",plot_bgcolor = "rgb(213, 226, 233)",title="%sites in alert")
     #these are only make sense when Malaria (not for other diseases)
     if ( input$diseases=="Malaria")
     {
@@ -329,7 +329,7 @@ server<-function(input, output,session) {
     p = p %>% add_trace(x = deb_sem, y = temperature, name = "Temp.",
                         line = list(width=line_width,color = "#ff8d00"),
                         visible='legendonly')
-    p = p %>% layout( plot_bgcolor = "#E5E5E5",
+    p = p %>% layout( 
                       legend = list(x = 0, y = 100),
                      xaxis =list(title="Weeks"),
                      yaxis =list(title="Values")
@@ -610,7 +610,7 @@ server<-function(input, output,session) {
                  y = prop,name="prop.",
                  line = list(width=line_width))
     p = p %>% layout(title="prop of ILI among medical diagnosis",
-                     plot_bgcolor = "#E5E5E5",
+                     paper_bgcolor="rgb(213, 226, 233)",plot_bgcolor = "rgb(213, 226, 233)",
                      font=list(size=11),
                      xaxis = list(title = "Date(Weeks)"),
                      legend = list(x = 0, 
@@ -651,7 +651,7 @@ server<-function(input, output,session) {
                         marker=list(color = "rgb(204,0,0)"))
     
     #position legend at top of the graph
-    p= p %>% layout( plot_bgcolor = "#E5E5E5",
+    p= p %>% layout( paper_bgcolor="rgb(213, 226, 233)",plot_bgcolor = "rgb(213, 226, 233)",
                      title="ILI & Dengue-LIKE (34 sites)",
                     xaxis = list(title = "Date(weeks)"),
                     yaxis = list(title = "#Cases"),
@@ -755,7 +755,7 @@ server<-function(input, output,session) {
     #position legend at top of the graph
     #90th percentile as horizontal line:
     p = p %>% layout(title=mytitle,
-                     plot_bgcolor = "#E5E5E5",
+                     paper_bgcolor="rgb(213, 226, 233)",plot_bgcolor = "rgb(213, 226, 233)",
                      font=list(size=9),
                      legend = list(x = 0, y =10 ),
                      xaxis =list(title="Weeks"),
@@ -918,7 +918,7 @@ server<-function(input, output,session) {
     X=merge(X,sentinel_latlong,by.x="sites",by.y="sites",all.x=T)
    
     p=plot_ly(X, y = occurence, x=deb_sem,color=name )
-    p = p %>% layout( plot_bgcolor = "#E5E5E5",
+    p = p %>% layout( paper_bgcolor="rgb(213, 226, 233)",plot_bgcolor = "rgb(213, 226, 233)",
                       xaxis =list(title="Weeks"),
                      yaxis =list(title="#Cases"))
    #round(log(occurence+1))
@@ -960,7 +960,7 @@ server<-function(input, output,session) {
                   mode = 'lines+markers',
                   line = list(width=line_width,color = "rgb(250,67,69)"))
       p = p %>% layout(legend = list(x = 0, y = 350),
-                       plot_bgcolor = "#E5E5E5",
+                       paper_bgcolor="rgb(213, 226, 233)",plot_bgcolor = "rgb(213, 226, 233)",
                        title="Actual serie (Farafanga & Mananjary) vs forecasts",
                        xaxis =list(title="",dtick=3, tickangle=90),
                        yaxis =list(title="#Cases"))
@@ -988,7 +988,7 @@ server<-function(input, output,session) {
                   y = occurence,name="Monthly cases of Malaria",
                   line = list(width=line_width,color = "rgb(250,67,69)") )
       p = p %>% layout(legend = list(x = 0, y = 350),
-                       plot_bgcolor = "#E5E5E5",
+                       paper_bgcolor="rgb(213, 226, 233)",plot_bgcolor = "rgb(213, 226, 233)",
                        title="Actual serie (Farafanga & Mananjary) vs forecasts",
                        xaxis =list(title="",dtick=3, tickangle=90),
                        yaxis =list(title="#Cases"))
