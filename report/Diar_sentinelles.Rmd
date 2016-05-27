@@ -18,7 +18,6 @@ output: pdf_document
 setwd("/media/herimanitra/Document/IPM_sentinelle/sentinel_hrmntr 291115/Sentinel")
 #load source code:
 source("./import_data.R");source("./preprocessing.R");require(ggplot2); require(gridExtra)
-#source("var_conversion.R")
 
 mydata= preprocessing_disease()[["Diarrhea"]] #Diarrhée
 setnames(mydata,"occurence","diarh")
@@ -28,7 +27,7 @@ setnames(tmp,"occurence","diarh_feb")
 mydata=merge(mydata,tmp[,list(sites,code,diarh_feb)],
              by.x=c("sites","code"),by.y=c("sites","code"))
 source("reporting_plot.R",local = T) #for plotting nice graphics
-generate_plot(htc="all",
+p=generate_plot(htc="all",
               mydata=mydata,
               disease1.targetvar="diarh_feb",
               disease2.targetvar="diarh",
@@ -36,6 +35,8 @@ generate_plot(htc="all",
               legend.disease2="Diarrhées non fébriles",
               title.label="Diarrhées dans le réseau sentinelle",
               title.ylab="Cas de Diarrhées")
+save(p,file="report/diar_chart.rda")
+p
 ```
 
 

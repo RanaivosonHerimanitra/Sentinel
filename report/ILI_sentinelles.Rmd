@@ -37,7 +37,7 @@ debut_annee=as.numeric(unique(mydata[weeks==1,deb_sem]))
 debut_annee=c(min(debut_annee)-365, as.Date("2013-01-01"), debut_annee)
       
 d= d + geom_vline(xintercept = debut_annee,linetype=4,colour="orange")
-                        
+save(d,file="report/ili_chart.rda")                        
 print(d)
 
 ```

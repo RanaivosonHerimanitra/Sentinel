@@ -1007,11 +1007,23 @@ server<-function(input, output,session) {
     d = d + xlab("") + ylab("")
     ggplotly(d)
   })
-  #sumary plot of the Malaria (global) report:
+  #summary plot of the Malaria (global) report:
   output$malaria_report_plot = renderPlotly({
     load(file = "report/palu_chart.rda")
     p=p + xlab("") + ylab("")
     ggplotly(p)
+  })
+  #summary plot of the Diarrhea report:
+  output$diarrhea_report_plot = renderPlotly({
+    load(file = "report/diar_chart.rda")
+    p= p + xlab("") + ylab("")
+    ggplotly(p)
+  })
+  #summary plot of the ILI report:
+  output$ili_report_plot = renderPlotly({
+    load(file = "report/ili_chart.rda")
+    d= d + xlab("") + ylab("")
+    ggplotly(d)
   })
   
   #handle conflict between radio button's input,
