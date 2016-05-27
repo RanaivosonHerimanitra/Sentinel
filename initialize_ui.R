@@ -78,10 +78,10 @@ disease_item=tabItem(tabName = "diparam",
                      fluidRow(tabBox(width = 12,
                                      tabPanel("Summary report",summary_report),
                                      tabPanel("HTC report",htc_report),
-                                     tabPanel("Malaria report"),
+                                     tabPanel("Malaria-Fever report",malaria_report),
                                      tabPanel("Diarrhea report"),
                                      tabPanel("ILI report"),
-                                     tabPanel("acute flaccid paralysis (AFP) report"),
+                                     tabPanel("Acute Flaccid Paralysis (AFP) report"),
                                      tabPanel("Missing sent report"))),
                      fluidRow(choose_disease_report)
                      )

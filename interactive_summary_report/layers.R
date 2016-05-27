@@ -69,3 +69,5 @@ summary_report=list( tags$div(class="container",
                       
 #####################################Palu autoch##################################
 htc_report=plotlyOutput("htc_report_plot")
+#####################################Malaria (global)#############################
+malaria_report=plotlyOutput("malaria_report_plot")

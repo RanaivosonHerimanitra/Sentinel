@@ -46,7 +46,6 @@ source("./reporting_plot.R",local = T)
   setorder(tmp2,deb_sem)
   tmp=rbind(tmp1,tmp2)
   tmp=tmp[deb_sem>=as.Date("2009-01-01")]
-  #tmp[,deb_sem:=as.numeric(as.Date(deb_sem,origin="1970-01-01"))]
   p =ggplot(data = tmp,aes(x=(as.Date(deb_sem,origin="1970-01-01")),
                            y=cases,fill=Disease))
   #increase space between legend keys:
@@ -62,25 +61,8 @@ source("./reporting_plot.R",local = T)
      p= p + geom_vline(xintercept = as.numeric(as.Date(u,origin = "1970-01-01")),size=0.75,linetype=4,colour="orange")
   }
   p = p + scale_x_date(breaks = date_breaks("1 year"),date_labels = "%Y")
-  #annotate vertical line:
-  # p=p +geom_text(aes(x=(as.Date("2010-01-01",origin = "1970-01-01")),
-  #                    label="1st", y=700),size=5,angle = 45)
-  # p=p +geom_text(aes(x=(as.Date("2014-01-01",origin = "1970-01-01")),
-  #                    label="2nd", y=700),size=5,angle = 45)
-  # p=p +geom_text(aes(x=(as.Date("2015-01-01",origin = "1970-01-01")),
-  #                    label="3rd", y=700),size=5,angle = 45)
-
+  save(p,file="report/palu_chart.rda")
   p
-# generate_plot(htc="all",
-#               mydata=mydata,
-#               add_trend=T,
-#               legend.disease1="Paludisme TDR+",
-#               legend.disease2="Fièvres",
-#               disease1.targetvar="malaria_cases",
-#               disease2.targetvar="SyndF",
-#               title.label="Fièvres et Paludisme dans le réseau sentinelle",
-#               title.label.list="Fièvres et Paludisme à",
-#               title.ylab="Cas de Fièvres et Paludisme")
 ```
 
 

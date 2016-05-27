@@ -1001,12 +1001,19 @@ server<-function(input, output,session) {
     p
   })
   
-  #sumary plot of the HTC report:
+  #sumary plot of the HTC Malaria report:
   output$htc_report_plot = renderPlotly({
     load(file = "report/palu_autoch_chart.rda")
     d = d + xlab("") + ylab("")
     ggplotly(d)
   })
+  #sumary plot of the Malaria (global) report:
+  output$malaria_report_plot = renderPlotly({
+    load(file = "report/palu_chart.rda")
+    p=p + xlab("") + ylab("")
+    ggplotly(p)
+  })
+  
   #handle conflict between radio button's input,
   #for algorithm's selection:
   observe({
