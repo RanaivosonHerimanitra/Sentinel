@@ -16,7 +16,39 @@ A toolkit for visualization, early warning detection and prediction of disease o
 
 <img src="main_report.png" >
 
+* HTC report summary (user can select an HTC site an chart will be displayed)
 
+<img src="htc_report1.png" >
+
+<img src="htc_report2.png" >
+
+* Malaria/Fever report summary (user can select a site an chart will be displayed)
+
+<img src="malaria_report1.png" >
+
+<img src="malaria_report2.png" >
+
+* Diarrhea report summary (user can select a site an chart will be displayed)
+
+<img src="diarrhea_report1.png" >
+
+<img src="diarrhea_report2.png" >
+
+* ILI report summary (user can select a site an chart will be displayed)
+
+<img src="ili_report1.png" >
+
+<img src="ili_report2.png" >
+
+* AFP report summary (user can select a site an chart will be displayed)
+
+<img src="afp_report1.png" >
+
+<img src="afp_report2.png" >
+
+* Missing sent report summary (with cell highlighting when SMS sent `<=3`)
+
+<img src="missing_sent_report.png" >
 
 ## System and Packages requirements:
 * R >= 3.2.3 and RStudio >= 0.99.896
