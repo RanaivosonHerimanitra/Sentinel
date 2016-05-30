@@ -1045,6 +1045,19 @@ server<-function(input, output,session) {
     p$data$Légende=ifelse(p$data$Légende=="Diarrhées fébriles","Febrile","Non Febrile")
     ggplotly(p)
   })
+  #individual summary plot of the Diarrhea report:
+  output$ind_diarrhea_report_plot =renderPlotly({
+    individual_model=list.files(path="report/diarrhea")
+    sitemodel_found= grep(input$CSB_sites_diarrhea,individual_model,value = T)
+    load(file=paste0("report/diarrhea/",sitemodel_found))
+    #finally change legend:
+    str(d)
+    d$data$Légende=ifelse(d$data$Légende=="Diarrhées fébriles",
+                          "Febrile","Non Febrile")
+    #remove titles that are in french
+    d= d + xlab("") + ylab("") + ggtitle("")
+    ggplotly(d)
+  })
   #summary plot of the ILI report:
   output$ili_report_plot = renderPlotly({
     load(file = "report/ili_chart.rda") 

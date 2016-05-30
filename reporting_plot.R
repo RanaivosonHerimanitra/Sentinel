@@ -100,8 +100,12 @@ generate_plot=function(htc="all",
       {
         save(p,d,file=paste0("report/malaria/malaria_",myname[p],".rda"))
       }
+      if(disease.name=="diarrhea")
+      {
+        save(p,d,file=paste0("/media/herimanitra/Document/IPM_sentinelle/sentinel_hrmntr 291115/Sentinel/report/diarrhea/diarrhea_",myname[p],".rda"))
+      }
       myplot[[p]]=d
-     print(myplot[[p]])
+      print(myplot[[p]])
     }
   }
   
