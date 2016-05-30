@@ -8,7 +8,14 @@ A toolkit for visualization, early warning detection and prediction of disease o
 ## Sentinel as a reporting tool (in `report` folder):
 * Produce pdf LateX documents to summarize situation of sentinel sites (plots, trends and tables).
 * Produce word docx documents to display historical alerts and summary report on SMS sent to our postgres database for each sentinel sites.
-* Produce an interactive version of each report in `pdf`
+* Produce an interactive version of each report in `pdf`:
+
+### Main report summary:
+
+* Produce a two weeks outline of alerts taken from the main report:
+
+<img src="main_report.png" >
+
 
 
 ## System and Packages requirements:
