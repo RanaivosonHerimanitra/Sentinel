@@ -1113,8 +1113,20 @@ server<-function(input, output,session) {
     for ( k in input$CSB )
     {
       mytable= mytable %>% formatStyle(k,
-                                       color = styleEqual(c(0),c('red')),
-        backgroundColor = styleEqual(c(0), c( 'yellow'))
+                                       color = styleEqual(0,c('red')),
+        backgroundColor = styleEqual(0, c( 'yellow'))
+      ) 
+      mytable= mytable %>% formatStyle(k,
+                                       color = styleEqual(1,c('red')),
+                                       backgroundColor = styleEqual(1, c( 'yellow'))
+      ) 
+      mytable= mytable %>% formatStyle(k,
+                                       color = styleEqual(2,c('red')),
+                                       backgroundColor = styleEqual(2, c( 'yellow'))
+      )
+      mytable= mytable %>% formatStyle(k,
+                                       color = styleEqual(3,c('red')),
+                                       backgroundColor = styleEqual(3, c( 'yellow'))
       ) 
     }
     mytable
