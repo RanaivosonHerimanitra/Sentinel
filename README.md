@@ -30,7 +30,7 @@ A toolkit for visualization, early warning detection and prediction of disease o
 
 ## MinSan algorithm:
 
-`MinSan` or Ministry of Health (in english) is a simple rule that tells that if occurrences of a given `disease` exceed a certain proportion (`slope parameter (value)`) during `n` ( 3 or 4 ) consecutive weeks or not then an `alert` is triggered.
+`MinSan`: The Ministry of Health defined a simple rule that tells that if occurrences of a given `disease` exceed a certain proportion (`slope parameter (value)`) during `n` ( 3 or 4 ) consecutive weeks or not then an `alert` is triggered.
 
 <img src="minsan.png" >
 
