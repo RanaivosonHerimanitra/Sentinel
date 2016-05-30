@@ -1105,7 +1105,19 @@ server<-function(input, output,session) {
   #summary plot of the missing sent report:
   output$missing_sent_report = DT::renderDataTable({
     X=mytables()$X
-    X[,input$CSB]
+    mytable=datatable(X[,input$CSB], options = list(searchHighlight = TRUE,
+      initComplete = JS(
+        "function(settings, json) {",
+        "$(this.api().table().header()).css({'background-color': '#000', 'color': '#fff'});",
+        "}")))
+    for ( k in input$CSB )
+    {
+      mytable= mytable %>% formatStyle(k,
+                                       color = styleEqual(c(0),c('red')),
+        backgroundColor = styleEqual(c(0), c( 'yellow'))
+      ) 
+    }
+    mytable
   })
   
   #handle conflict between radio button's input,
