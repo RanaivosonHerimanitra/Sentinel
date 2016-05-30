@@ -112,7 +112,7 @@ pfa_report=list(plotlyOutput("pfa_report_plot"),
                 tags$br(),tags$br(),tags$br(),
                 selectizeInput(inputId="CSB_sites_pfa",
                                label="Select a site", 
-                               choice=site34$name, 
+                               choice=c(site20$Centre,site34$name), 
                                selected = c("Toamasina"), 
                                multiple = F),
                 plotlyOutput("ind_pfa_report_plot"))

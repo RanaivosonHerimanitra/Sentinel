@@ -1089,7 +1089,7 @@ server<-function(input, output,session) {
     sitemodel_found= grep(input$CSB_sites_pfa,individual_model,value = T)
     load(file=paste0("report/pfa/",sitemodel_found))
     #finally change legend:
-    str(d)
+    #str(d)
     # d$data$Légende=ifelse(d$data$Légende=="Diarrhées fébriles",
     #                       "Febrile","Non Febrile")
     #remove titles that are in french
