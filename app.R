@@ -703,7 +703,6 @@ server<-function(input, output,session) {
       cat("DONE\n")
       
     } else {
-      print(head(mydata))
       mydata=mydata[sites %in% selected_site_leaflet(),]
       # RainFall ou Precipitation:
       cat("merge rainfall or precipitation with mydata for chosen site(s)...")
@@ -1112,7 +1111,7 @@ server<-function(input, output,session) {
         "function(settings, json) {",
         "$(this.api().table().header()).css({'background-color': '#000', 'color': '#fff'});",
         "}")))
-    for ( k in input$CSB )
+    for ( k in input$CSB_missing_sent )
     {
       mytable= mytable %>% formatStyle(k,
                                        color = styleEqual(0,c('red')),
