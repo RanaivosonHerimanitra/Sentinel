@@ -24,17 +24,12 @@ server<-function(input, output,session) {
     cat("keep only sites that already have historical values...\n")
     include_index= match(include,names(mydata)) #introduce dplyr
     mydata=mydata[,include,with=F]
-    #mydata= mydata %>% select(include_index) %>% as.data.frame()
-    
     cat('reshape PaluConf...')
     mydata=as.data.table(gather(mydata,key=sites,value=occurence,-c(code,deb_sem)))
     cat('DONE\n')
     
     source("create_facies.R")
     mydata=create_facies(mydata)
-    
-    
-    
     cat('Extract weeks and years from PaluConf...')
     mydata[,weeks:=as.numeric(substr(code,6,8))]
     mydata[,years:=as.numeric(substr(code,1,4))]
@@ -876,6 +871,7 @@ server<-function(input, output,session) {
     
     
     cat('spreading data...')
+    #print(head(X))
      X[,years:=year(as.Date(deb_sem,origin="1970-01-01"))]
      X=merge(X,sentinel_latlong[,list(sites,name)],by.x="sites",by.y="sites",all.x=T)
      X=X[years %in% (2016-as.numeric(input$nbyear)):2016,]
@@ -918,12 +914,10 @@ server<-function(input, output,session) {
     X=merge(X,sentinel_latlong,by.x="sites",by.y="sites",all.x=T)
    
     p=plot_ly(X, y = occurence, x=deb_sem,color=name )
-    p = p %>% layout( paper_bgcolor="rgb(213, 226, 233)",plot_bgcolor = "rgb(213, 226, 233)",
+    p = p %>% layout( paper_bgcolor="rgb(213, 226, 233)",
+                      plot_bgcolor = "rgb(213, 226, 233)",
                       xaxis =list(title="Weeks"),
                      yaxis =list(title="#Cases"))
-   #round(log(occurence+1))
-  # size = occurence,
-    # mode = "markers"
     p
   })
   #download report handler (for Malaria and Diarrhea):
@@ -1004,31 +998,69 @@ server<-function(input, output,session) {
   #sumary plot of the HTC Malaria report:
   output$htc_report_plot = renderPlotly({
     load(file = "report/palu_autoch_chart.rda")
-    d = d + xlab("") + ylab("")
+    d = d + xlab("") + ylab("") + ggtitle("")
+    d = d + ggtitle("Malaria cases (autochtone vs imported)")
+    #finally change legend:
+    d$data$Légende=ifelse(d$data$Légende=="Palu importé","Imported","Autochtone")
     ggplotly(d)
+  })
+  #individual plot for the HTC malaria report:
+  output$ind_htc_report_plot= renderPlotly({
+    site20=fread("report/site20.csv")
+    individual_model=list.files(path="report/palu_autoch")
+    #looking for code corresponding to site's name:
+    # if (input$CSB_sites=="Antsampandrano")
+    # {
+    #   code_site="ants"
+    # } else {
+      code_site= site20[Centre==input$CSB_sites,Centre2]
+    #}
+    sitemodel_found= grep(code_site,individual_model,value = T)
+    load(file=paste0("report/palu_autoch/",sitemodel_found))
+    ggplotly(d)
+    #initialize an empty list to store models
+    #mymodels=list();
+    # mycounter=1
+    # for ( each_model in individual_model)
+    # {
+    #   load(file = paste0("report/palu_autoch/",each_model))
+    #   mymodels[[mycounter]]=ggplotly(d)
+    #   mycounter = mycounter +1 
+    # }
+    # #print(mymodels)
+    # #return subplot:
+    # subplot(mymodels,nrows=20, margin = 0.05)%>% layout(showlegend = FALSE)
   })
   #summary plot of the Malaria (global) report:
   output$malaria_report_plot = renderPlotly({
     load(file = "report/palu_chart.rda")
-    p=p + xlab("") + ylab("")
+    p = p + xlab("") + ylab("") + ggtitle("")
+    p = p + ggtitle("Malaria-Fever cases")
+    #finally change legend:
+    p$data$Disease=ifelse(p$data$Disease=="Palu(TDR+)","RDT+","Fever")
     ggplotly(p)
   })
   #summary plot of the Diarrhea report:
   output$diarrhea_report_plot = renderPlotly({
     load(file = "report/diar_chart.rda")
-    p= p + xlab("") + ylab("")
+    p = p + xlab("") + ylab("") + ggtitle("")
+    p = p + ggtitle("Diarrhea cases")
+    #finally change legend:
+    p$data$Légende=ifelse(p$data$Légende=="Diarrhées fébriles","Febrile","Non Febrile")
     ggplotly(p)
   })
   #summary plot of the ILI report:
   output$ili_report_plot = renderPlotly({
-    load(file = "report/ili_chart.rda")
-    d= d + xlab("") + ylab("")
+    load(file = "report/ili_chart.rda") 
+    d= d + xlab("") + ylab("")+ ggtitle("")
+    d=d + ggtitle("ILI cases")
     ggplotly(d)
   })
   #summary plot of the PFA report:
   output$pfa_report_plot = renderPlotly({
     load(file = "report/pfa_chart.rda")
-    d= d + xlab("") + ylab("")
+    d= d + xlab("") + ylab("")+ ggtitle("")
+    d=d + ggtitle("AFP cases")
     ggplotly(d)
   })
   #FlexTable to be displayed:
@@ -1079,10 +1111,10 @@ ui = list(dashboardPage(skin = "blue",
   dashboardSidebar(
     sidebarMenu(
       menuItem(text="Main",tabName="mytabbox", icon = icon("database")),
+      menuItem(text="Reporting Summary",tabName="diparam",   icon = icon("file-zip-o")),
       menuItem(text="Diseases",.list=diseases_choices,icon=icon("cog")),
       menuItem(text="Map",.list=map_choices,icon=icon("map-marker")),
       menuItem(text="Aggregation",.list=myfacies_algo,icon=icon("group")),
-      menuItem(text="Reporting Summary",tabName="diparam",   icon = icon("file-zip-o")),
       menuItem(text=list("Forecasting", 
                          tags$small(class="media-heading",tags$span(class="label label-danger", "beta release"))
                          ),

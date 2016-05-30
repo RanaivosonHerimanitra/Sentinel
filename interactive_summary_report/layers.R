@@ -68,7 +68,15 @@ summary_report=list( tags$div(class="container",
 ))
                       
 #####################################Palu autoch##################################
-htc_report=plotlyOutput("htc_report_plot")
+site20=fread("report/site20.csv")
+htc_report=list(plotlyOutput("htc_report_plot"),
+                tags$br(),tags$br(),tags$br(),
+                selectizeInput(inputId="CSB_sites", 
+                               label="Select a site", 
+                               choice=site20$Centre, 
+                               selected = c("Antsampandrano"), 
+                               multiple = F),
+                plotlyOutput("ind_htc_report_plot"))
 #####################################Malaria (global)#############################
 malaria_report=plotlyOutput("malaria_report_plot")
 #####################################Diarrhea#############################
@@ -79,12 +87,12 @@ ili_report=plotlyOutput("ili_report_plot")
 pfa_report=plotlyOutput("pfa_report_plot")
 #########################################################################
 CSB=fread("report/CSB.csv")
-missing_sent_report=list(selectizeInput(inputId="CSB", 
+missing_sent_report=list(tags$br(),tags$br(),
+                         selectizeInput(inputId="CSB", 
                                         label="Select CSB to monitor", 
                                         choice=CSB$x, 
                                         selected = c("Ambatolahy","Ambatomiady"), 
                                         multiple = TRUE,
                                         options = list(maxItems = 6)),
-                         dataTableOutput("missing_sent_report")
-)
+                         dataTableOutput("missing_sent_report"))
 

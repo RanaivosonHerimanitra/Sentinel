@@ -9,10 +9,8 @@ doc=addImage(doc, "/media/herimanitra/Document/IPM_sentinelle/sentinel_hrmntr 29
              height=1.5)
 # Change the default font size and font family
 options('ReporteRs-fontsize'=10, 'ReporteRs-default-font'='Arial')
-# Add a formatted paragraph of texts
-#++++++++++++++++++++++++++++++
+# Add a formatted paragraph of texts:
 doc = addTitle(doc, "Sms hebdomadaire du réseau sentinelle", level=1)
-
 doc = addParagraph(doc , pot( Sys.Date(), textItalic() ) )
 doc = addParagraph(doc, "        ")
 baseCellProp = cellProperties( padding = 2 )
@@ -21,7 +19,7 @@ vertical_text= cellProperties(text.direction = "btlr",
 horizontal_text= cellProperties(text.direction = "lrtb",
                               padding = 2)
 
-cat("load data and preprocess missing sent..")
+cat("load data and preprocess missing sent...")
 require(data.table)
 missing_sent= fread("/media/herimanitra/Document/IPM_sentinelle/sentinel_hrmntr 291115/Sentinel/data/missing_sent.csv")
 missing_sent[,code:=paste0(substr(Annee,3,4),"/",ifelse(nchar(Semaine)<2,paste0("0",Semaine),Semaine))]
@@ -56,7 +54,10 @@ X3=X[95:nrow(X),other_site[1:10]]
 X4=X[95:nrow(X),c(1,other_site[11:length(other_site)])]
 cat("DONE\n")
 
-
+#save 20 sites in HTC:
+# missing_sent[,Centre2:=tolower(Centre2)]
+# write.table(unique(missing_sent[Centre %in% colnames(X)[other_site[-1]],list(Centre,Centre2)]),
+#              "report/site20.csv",row.names=F,sep=";")
 
 #vertical test for headers
 mytable1 = vanilla.table(X1,text.direction = "btlr")

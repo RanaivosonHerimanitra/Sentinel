@@ -59,9 +59,7 @@ mydata=mydata[as.Date(deb_sem,origin="1970-01-01")>=as.Date("2015-06-01",origin=
 #patch fix after 10h55 24avril2016
 mydata[complete.cases(palu,autoch),palu_importe:=as.numeric(palu-autoch)]
 mydata[complete.cases(palu) & complete.cases(palu,autoch)==F,palu_importe:=as.numeric(palu-0)]
-#Comment calculer les palu importes 
-#Si manque de BD palu alors que palu autoch existe?
-#==>impossible!
+
 
 
 #make a copy of data because we're going to transform it during plotting
@@ -155,47 +153,48 @@ setnames(mydata,"occurence","palu")
 myname = as.character(unique(mydata$sites))
 mydata=mydata[as.Date(deb_sem,origin="1970-01-01")>=as.Date("2015-06-01"),]
 for ( p in myname )
-       {
-        disease1=mydata[sites==p,list(sites,deb_sem,palu)]
-        disease1[is.na(palu)==T,palu:=0]
-        disease1[,Légende:="Importé"]
-        disease2= palu_autoch[sites==p,list(sites,deb_sem,autoch)]
-        disease2[is.na(autoch)==T,autoch:=0] 
-        #merge to calculate palu_importe
-        disease1[,deb_sem:=as.character(deb_sem)]
-        disease2[,deb_sem:=as.character(deb_sem)]
-        
-        disease1=merge(disease1,disease2[,list(deb_sem,autoch)],
+  {
+  disease1=mydata[sites==p,list(sites,deb_sem,palu)]
+  disease1[is.na(palu)==T,palu:=0]
+  disease1[,Légende:="Importé"]
+  disease2= palu_autoch[sites==p,list(sites,deb_sem,autoch)]
+  disease2[is.na(autoch)==T,autoch:=0] 
+  #merge to calculate palu_importe
+  disease1[,deb_sem:=as.character(deb_sem)]
+  disease2[,deb_sem:=as.character(deb_sem)]
+  disease1=merge(disease1,disease2[,list(deb_sem,autoch)],
                      by.x="deb_sem",by.y="deb_sem")
-        disease1[is.na(autoch)==T,autoch:=0] 
-        disease1[,palu_importe:=palu-autoch]
-        setnames(disease1,"palu_importe","value")
-        disease1=disease1[,list(sites,deb_sem,value,Légende)]
-      
-        setnames(disease2,"autoch","value")
-        disease2[,Légende:="autoch"]
-        X=rbind(disease2, disease1)
-        X$deb_sem=as.Date(as.numeric(X$deb_sem),origin="1970-01-01")
-        setnames(X,"deb_sem","Date")
-        d = ggplot(data=X,aes(x=Date,y=value,fill=Légende,colour=Légende)) 
-        #set ylim to 10 if <10
-        mymax=range(as.numeric(X$value)[is.na(as.numeric(X$value))==F])
-        mymax[2]=ifelse(mymax[2]<10,10,mymax[2])
-        d = d + scale_y_continuous(breaks= seq.int(from=1,to=mymax[2],by=2) ) 
-        d = d + geom_bar(colour="black",stat = "identity") 
-        d = d + scale_fill_manual(values=c("#CC6666", "#9999CC"))
-        d = d + scale_color_manual(values=c("#CC6666", "#9999CC"))
-        
-        d = d + ggtitle(label=last6_palu_autoch[Sites==p,get("Centre")])
-        d = d + xlab("Date") + ylab("Nb. Cas")
-         #increase space between legend keys:
-  d= d + theme(legend.position="bottom", legend.direction="horizontal",  legend.key=element_rect(size=7),legend.key.size = unit(1.5, "lines"))
+  disease1[is.na(autoch)==T,autoch:=0] 
+  disease1[,palu_importe:=palu-autoch]
+  setnames(disease1,"palu_importe","value")
+  disease1=disease1[,list(sites,deb_sem,value,Légende)]
+  setnames(disease2,"autoch","value")
+  disease2[,Légende:="autoch"]
+  X=rbind(disease2, disease1)
+  X$deb_sem=as.Date(as.numeric(X$deb_sem),origin="1970-01-01")
+  setnames(X,"deb_sem","Date")
+  d = ggplot(data=X,aes(x=Date,y=value,fill=Légende,colour=Légende)) 
+  #set ylim to 10 if <10
+  mymax=range(as.numeric(X$value)[is.na(as.numeric(X$value))==F])
+  mymax[2]=ifelse(mymax[2]<10,10,mymax[2])
+  d = d + scale_y_continuous(breaks= seq.int(from=1,to=mymax[2],by=2) ) 
+  d = d + geom_bar(colour="black",stat = "identity") 
+  d = d + scale_fill_manual(values=c("#CC6666", "#9999CC"))
+  d = d + scale_color_manual(values=c("#CC6666", "#9999CC"))
+  d = d + ggtitle(label=last6_palu_autoch[Sites==p,get("Centre")])
+  d = d + xlab("Date") + ylab("Nb. Cas")
+  #increase space between legend keys:
+  d= d + theme(legend.position="bottom", 
+               legend.direction="horizontal",
+               legend.key=element_rect(size=7),
+               legend.key.size = unit(1.5, "lines"))
   #remove legend title:
   d=d+ guides(fill=guide_legend(title=NULL))
-       # d= d + scale_x_date(labels = date_format("%m-%Y"))
-        d=d+theme(axis.text.x=element_text(angle=90,hjust=1,vjust=0.5))
-        d= d + scale_x_date(date_breaks = "2 weeks")
-      print(d)
+  d=d+theme(axis.text.x=element_text(angle=90,hjust=1,vjust=0.5))
+  d= d + scale_x_date(date_breaks = "2 weeks")
+  #save graphic to be reused later on
+  save(p,d,file=paste0("report/palu_autoch/palu_autoch_",p,".rda"))
+  print(d)
   }
   
 ```
