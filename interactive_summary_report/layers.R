@@ -74,7 +74,7 @@ htc_report=list(plotlyOutput("htc_report_plot"),
                 selectizeInput(inputId="CSB_sites", 
                                label="Select a site", 
                                choice=site20$Centre, 
-                               selected = c("Antsampandrano"), 
+                               selected = c("Morarano"), 
                                multiple = F),
                 plotlyOutput("ind_htc_report_plot"))
 #####################################Malaria (global)#############################
@@ -119,7 +119,7 @@ pfa_report=list(plotlyOutput("pfa_report_plot"),
 #########################################################################
 CSB=fread("report/CSB.csv")
 missing_sent_report=list(tags$br(),tags$br(),
-                         selectizeInput(inputId="CSB", 
+                         selectizeInput(inputId="CSB_missing_sent", 
                                         label="Select CSB to monitor", 
                                         choice=CSB$x, 
                                         selected = c("Ambatolahy","Ambatomiady"), 

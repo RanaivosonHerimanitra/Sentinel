@@ -536,6 +536,7 @@ server<-function(input, output,session) {
   #click event handler for leaflet:
   selected_site_leaflet=eventReactive(input$madagascar_map_marker_click,{
     event= input$madagascar_map_marker_click
+    
     return(sentinel_latlong[Long==event$lng & Lat==event$lat,get("sites")])
   },ignoreNULL=F)
  
@@ -702,6 +703,7 @@ server<-function(input, output,session) {
       cat("DONE\n")
       
     } else {
+      print(head(mydata))
       mydata=mydata[sites %in% selected_site_leaflet(),]
       # RainFall ou Precipitation:
       cat("merge rainfall or precipitation with mydata for chosen site(s)...")
@@ -1105,7 +1107,7 @@ server<-function(input, output,session) {
   #summary plot of the missing sent report:
   output$missing_sent_report = DT::renderDataTable({
     X=mytables()$X
-    mytable=datatable(X[,input$CSB], options = list(searchHighlight = TRUE,
+    mytable=datatable(X[,input$CSB_missing_sent], options = list(searchHighlight = TRUE,
       initComplete = JS(
         "function(settings, json) {",
         "$(this.api().table().header()).css({'background-color': '#000', 'color': '#fff'});",
@@ -1114,7 +1116,7 @@ server<-function(input, output,session) {
     {
       mytable= mytable %>% formatStyle(k,
                                        color = styleEqual(0,c('red')),
-        backgroundColor = styleEqual(0, c( 'yellow'))
+                                       backgroundColor = styleEqual(0, c( 'yellow'))
       ) 
       mytable= mytable %>% formatStyle(k,
                                        color = styleEqual(1,c('red')),

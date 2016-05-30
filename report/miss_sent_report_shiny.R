@@ -18,7 +18,7 @@ X=cbind(Semaine=row.names(X),X)
 cat("DONE\n")
 
 cat("load sentinel lat/long define 34sites vs other...")
-sentinel_latlong = fread("/media/herimanitra/Document/IPM_sentinelle/sentinel_hrmntr 291115/Sentinel/data/sentinel.csv")
+#sentinel_latlong = fread("/media/herimanitra/Document/IPM_sentinelle/sentinel_hrmntr 291115/Sentinel/data/sentinel.csv")
 sites34 = which( tolower(colnames(X)) %in% tolower(c("CSBU MANANJARY MNJ",
                                                      "TSIMADILO",
                                                      sentinel_latlong$centre) ))
