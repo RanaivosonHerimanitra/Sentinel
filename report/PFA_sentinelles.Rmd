@@ -123,10 +123,11 @@ setwd("/media/herimanitra/Document/IPM_sentinelle/sentinel_hrmntr 291115/Sentine
       mymax=range(as.integer(X$occurence)[is.na(as.integer(X$occurence))==F])
       mymax[2]=ifelse(mymax[2]<10,10,mymax[2])
       d = d + scale_y_continuous(breaks= seq.int(from=0,to=mymax[2],by=1) ) 
-      # d= d + scale_x_date(labels = date_format("%m-%Y"))
       #vertical axis label 
       d=d+theme(axis.text.x=element_text(angle=90,hjust=1,vjust=0.5))
       d= d + scale_x_date(date_breaks = "2 weeks")
+      #save graph to be re-used later:
+      save(p,d,file=paste0("report/pfa/pfa_",myname[p],".rda"))
       print(d)
     }
 ```

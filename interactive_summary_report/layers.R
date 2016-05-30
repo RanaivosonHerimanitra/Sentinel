@@ -108,7 +108,14 @@ ili_report=list(plotlyOutput("ili_report_plot"),
                 plotlyOutput("ind_ili_report_plot"))
                 
 #####################################Diarrhea#############################
-pfa_report=plotlyOutput("pfa_report_plot")
+pfa_report=list(plotlyOutput("pfa_report_plot"),
+                tags$br(),tags$br(),tags$br(),
+                selectizeInput(inputId="CSB_sites_pfa",
+                               label="Select a site", 
+                               choice=site34$name, 
+                               selected = c("Toamasina"), 
+                               multiple = F),
+                plotlyOutput("ind_pfa_report_plot"))
 #########################################################################
 CSB=fread("report/CSB.csv")
 missing_sent_report=list(tags$br(),tags$br(),

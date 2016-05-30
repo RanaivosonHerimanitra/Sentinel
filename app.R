@@ -1084,6 +1084,19 @@ server<-function(input, output,session) {
     d=d + ggtitle("AFP cases")
     ggplotly(d)
   })
+  output$ind_pfa_report_plot = renderPlotly({
+    individual_model=list.files(path="report/pfa")
+    sitemodel_found= grep(input$CSB_sites_pfa,individual_model,value = T)
+    load(file=paste0("report/pfa/",sitemodel_found))
+    #finally change legend:
+    str(d)
+    # d$data$Légende=ifelse(d$data$Légende=="Diarrhées fébriles",
+    #                       "Febrile","Non Febrile")
+    #remove titles that are in french
+    d= d + xlab("") + ylab("") + ggtitle("")
+    ggplotly(d)
+    
+  })
   #FlexTable to be displayed:
   mytables =reactive({
     source("report/miss_sent_report_shiny.R")
