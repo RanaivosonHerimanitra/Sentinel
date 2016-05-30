@@ -1,5 +1,5 @@
 # Sentinel
-A toolkit for visualization, early detection and prediction of disease outbreaks (Malaria, Diarrhea, etc.)
+A toolkit for visualization, early warning detection and prediction of disease outbreaks (Malaria, Diarrhea, etc.)
 
 ## Goals:
 * Build a package that could receive any kind of algorithms for epidemiologists to play with.
@@ -8,10 +8,11 @@ A toolkit for visualization, early detection and prediction of disease outbreaks
 ## Sentinel as a reporting tool (in `report` folder):
 * Produce pdf LateX documents to summarize situation of sentinel sites (plots, trends and tables).
 * Produce word docx documents to display historical alerts and summary report on SMS sent to our postgres database for each sentinel sites.
+* Produce an interactive version of each report in `pdf`
 
 
-## Packages requirements:
-
+## System and Packages requirements:
+* R >= 3.2.3 and RStudio >= 0.99.896
 * Have a look at `libraries.R`
 
 ## Algorithms used to trigger alert:
