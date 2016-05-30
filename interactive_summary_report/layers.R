@@ -78,7 +78,16 @@ htc_report=list(plotlyOutput("htc_report_plot"),
                                multiple = F),
                 plotlyOutput("ind_htc_report_plot"))
 #####################################Malaria (global)#############################
-malaria_report=plotlyOutput("malaria_report_plot")
+site34=fread("data/sentinel.csv")
+malaria_report=list(plotlyOutput("malaria_report_plot"),
+                    tags$br(),tags$br(),tags$br(),
+                    selectizeInput(inputId="CSB_sites_malaria", 
+                                   label="Select a site", 
+                                   choice=site34$name, 
+                                   selected = c("Toamasina"), 
+                                   multiple = F),
+                    plotlyOutput("ind_malaria_report_plot")
+                   )
 #####################################Diarrhea#############################
 diarrhea_report=plotlyOutput("diarrhea_report_plot")
 #####################################Diarrhea#############################

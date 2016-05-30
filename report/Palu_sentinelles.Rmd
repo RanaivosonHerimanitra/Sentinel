@@ -200,6 +200,7 @@ mydata=merge(mydata,sentinel_latlong, by.x="sites",by.y="sites")
                     
 generate_plot(htc="dsd",
               mydata=mydata,
+              disease.name="malaria",
               disease1=malaria,
               disease2=fievre,
               disease1.targetvar="malaria_cases",

@@ -2,6 +2,7 @@
 generate_plot=function(htc="all",
                        add_trend=FALSE,
                        mydata=PaluConf_tdr,
+                       disease.name=NULL,
                        disease1=NULL,
                        disease2=NULL,
                        disease1.targetvar="malaria_cases",
@@ -94,6 +95,11 @@ generate_plot=function(htc="all",
                         linetype=4,colour="orange")
       d=d + ggtitle(label=paste(title.label.list, myname[p]))
       d=d + xlab("Date (ligne orange=1er janvier)") + ylab(title.ylab)
+      #save plot to be re-used later:
+      if(disease.name=="malaria")
+      {
+        save(p,d,file=paste0("report/malaria/malaria_",myname[p],".rda"))
+      }
       myplot[[p]]=d
      print(myplot[[p]])
     }

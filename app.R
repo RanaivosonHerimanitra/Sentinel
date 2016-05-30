@@ -1009,27 +1009,12 @@ server<-function(input, output,session) {
     site20=fread("report/site20.csv")
     individual_model=list.files(path="report/palu_autoch")
     #looking for code corresponding to site's name:
-    # if (input$CSB_sites=="Antsampandrano")
-    # {
-    #   code_site="ants"
-    # } else {
-      code_site= site20[Centre==input$CSB_sites,Centre2]
-    #}
+    code_site= site20[Centre==input$CSB_sites,Centre2]
     sitemodel_found= grep(code_site,individual_model,value = T)
     load(file=paste0("report/palu_autoch/",sitemodel_found))
+    #finally change legend:
+    d$data$Légende=ifelse(d$data$Légende=="autoch","Autochtone","Imported")
     ggplotly(d)
-    #initialize an empty list to store models
-    #mymodels=list();
-    # mycounter=1
-    # for ( each_model in individual_model)
-    # {
-    #   load(file = paste0("report/palu_autoch/",each_model))
-    #   mymodels[[mycounter]]=ggplotly(d)
-    #   mycounter = mycounter +1 
-    # }
-    # #print(mymodels)
-    # #return subplot:
-    # subplot(mymodels,nrows=20, margin = 0.05)%>% layout(showlegend = FALSE)
   })
   #summary plot of the Malaria (global) report:
   output$malaria_report_plot = renderPlotly({
@@ -1039,6 +1024,17 @@ server<-function(input, output,session) {
     #finally change legend:
     p$data$Disease=ifelse(p$data$Disease=="Palu(TDR+)","RDT+","Fever")
     ggplotly(p)
+  })
+  # individual summary plot of the Malaria (global) report:
+  output$ind_malaria_report_plot = renderPlotly({
+    individual_model=list.files(path="report/malaria")
+    sitemodel_found= grep(input$CSB_sites_malaria,individual_model,value = T)
+    load(file=paste0("report/malaria/",sitemodel_found))
+    #finally change legend:
+    d$data$Légende=ifelse(d$data$Légende=="Palu(TDR+)","RDT+","Fever")
+    #remove titles that are in french
+    d= d + xlab("") + ylab("") + ggtitle("")
+    ggplotly(d)
   })
   #summary plot of the Diarrhea report:
   output$diarrhea_report_plot = renderPlotly({
