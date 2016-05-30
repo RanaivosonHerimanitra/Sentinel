@@ -96,10 +96,17 @@ diarrhea_report=list(plotlyOutput("diarrhea_report_plot"),
                                     choice=site34$name, 
                                     selected = c("Toamasina"), 
                                     multiple = F),
-                     plotlyOutput("ind_diarrhea_report_plot")
-)
+                     plotlyOutput("ind_diarrhea_report_plot"))
 #####################################Diarrhea#############################
-ili_report=plotlyOutput("ili_report_plot")
+ili_report=list(plotlyOutput("ili_report_plot"),
+                tags$br(),tags$br(),tags$br(),
+                selectizeInput(inputId="CSB_sites_ili", 
+                               label="Select a site", 
+                               choice=site34$name, 
+                               selected = c("Toamasina"), 
+                               multiple = F),
+                plotlyOutput("ind_ili_report_plot"))
+                
 #####################################Diarrhea#############################
 pfa_report=plotlyOutput("pfa_report_plot")
 #########################################################################

@@ -1051,7 +1051,6 @@ server<-function(input, output,session) {
     sitemodel_found= grep(input$CSB_sites_diarrhea,individual_model,value = T)
     load(file=paste0("report/diarrhea/",sitemodel_found))
     #finally change legend:
-    str(d)
     d$data$Légende=ifelse(d$data$Légende=="Diarrhées fébriles",
                           "Febrile","Non Febrile")
     #remove titles that are in french
@@ -1064,6 +1063,19 @@ server<-function(input, output,session) {
     d= d + xlab("") + ylab("")+ ggtitle("")
     d=d + ggtitle("ILI cases")
     ggplotly(d)
+  })
+  #individual summary plot of the ILI report:
+  output$ind_ili_report_plot = renderPlotly({
+    individual_model=list.files(path="report/ili")
+    sitemodel_found= grep(input$CSB_sites_ili,individual_model,value = T)
+    load(file=paste0("report/ili/",sitemodel_found))
+    #finally change legend:
+    # d$data$Légende=ifelse(d$data$Légende=="Diarrhées fébriles",
+    #                       "Febrile","Non Febrile")
+    #remove titles that are in french
+    d= d + xlab("") + ylab("") + ggtitle("")
+    ggplotly(d)
+    
   })
   #summary plot of the PFA report:
   output$pfa_report_plot = renderPlotly({
