@@ -103,7 +103,7 @@ print(d)
 setwd("/media/herimanitra/Document/IPM_sentinelle/sentinel_hrmntr 291115/Sentinel")
 semaine=array()
 max_deb_sem=max(as.Date(palu_autoch$deb_sem,origin="1970-01-01"))
-semaine[6]= max_deb_sem-2*7 
+semaine[6]= max_deb_sem-1*7 #semaine dernière par rapport à la semaine en cours
 p=1
 for ( k in 2:6 )
 {
