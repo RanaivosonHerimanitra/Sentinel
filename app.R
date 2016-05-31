@@ -1114,21 +1114,21 @@ server<-function(input, output,session) {
     for ( k in input$CSB_missing_sent )
     {
       mytable= mytable %>% formatStyle(k,
-                                       color = styleEqual(0,c('red')),
-                                       backgroundColor = styleEqual(0, c( 'yellow'))
+                                       color = styleEqual(0:3,rep('red',4)),
+                                       backgroundColor = styleEqual(0:3, rep( 'yellow',4))
       ) 
-      mytable= mytable %>% formatStyle(k,
-                                       color = styleEqual(1,c('red')),
-                                       backgroundColor = styleEqual(1, c( 'yellow'))
-      ) 
-      mytable= mytable %>% formatStyle(k,
-                                       color = styleEqual(2,c('red')),
-                                       backgroundColor = styleEqual(2, c( 'yellow'))
-      )
-      mytable= mytable %>% formatStyle(k,
-                                       color = styleEqual(3,c('red')),
-                                       backgroundColor = styleEqual(3, c( 'yellow'))
-      ) 
+      # mytable= mytable %>% formatStyle(k,
+      #                                  color = styleEqual(1,c('red')),
+      #                                  backgroundColor = styleEqual(1, c( 'yellow'))
+      # ) 
+      # mytable= mytable %>% formatStyle(k,
+      #                                  color = styleEqual(2,c('red')),
+      #                                  backgroundColor = styleEqual(2, c( 'yellow'))
+      # )
+      # mytable= mytable %>% formatStyle(k,
+      #                                  color = styleEqual(3,c('red')),
+      #                                  backgroundColor = styleEqual(3, c( 'yellow'))
+      # ) 
     }
     mytable
   })
