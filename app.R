@@ -1000,7 +1000,7 @@ server<-function(input, output,session) {
     ggplotly(d)
   })
   output$table_htc_report = DT::renderDataTable({
-    require(DT)
+
     load(file="interactive_summary_report/last6_palu_autoch.rda")
     last6_palu_autoch=last6_palu_autoch[,c("Centre","6 semaines précédentes","Semaine dernière"),with=F]
     colnames(last6_palu_autoch)=c("Sites","Last 06 weeks","Last week")
