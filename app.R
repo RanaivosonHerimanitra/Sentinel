@@ -1066,6 +1066,18 @@ server<-function(input, output,session) {
     p$data$Légende=ifelse(p$data$Légende=="Diarrhées fébriles","Febrile","Non Febrile")
     ggplotly(p)
   })
+  output$table_diarrhea_report = DT::renderDataTable({
+    load(file="interactive_summary_report/last6_diarrhea.rda")
+    Diarrh=Diarrh[,c("Sites","6 semaines précédentes","Semaine dernière"),with=F]
+    colnames(Diarrh)=c("Sites","Last 06 weeks","Last week")
+    datatable(Diarrh)
+  })
+  output$table_diarrhea_febrile_report = DT::renderDataTable({
+    load(file="interactive_summary_report/last6_diarrhea.rda")
+    Diarrh_feb=Diarrh_feb[,c("Sites","6 semaines précédentes","Semaine dernière"),with=F]
+    colnames(Diarrh_feb)=c("Sites","Last 06 weeks","Last week")
+    datatable(Diarrh_feb)
+  })
   #individual summary plot of the Diarrhea report:
   output$ind_diarrhea_report_plot =renderPlotly({
     individual_model=list.files(path="report/diarrhea")

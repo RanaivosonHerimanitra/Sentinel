@@ -102,6 +102,8 @@ Diarrh= merge(Diarrh,sentinel_latlong[,list(name,sites)],
 Diarrh[,sites:=NULL]; 
 setnames(Diarrh,c("name","vals","diarh"),
                 c("Sites","6 semaines précédentes","Semaine dernière"))
+#save to be re-used later:
+save(Diarrh,Diarrh_feb,file="/media/herimanitra/Document/IPM_sentinelle/sentinel_hrmntr 291115/Sentinel/interactive_summary_report/last6_diarrhea.rda")
 #generate tables:
 knitr::kable(Diarrh[,c("Sites","6 semaines précédentes","Semaine dernière"),with=F],
              caption="Diarrhées dans le réseau sentinelle HTC")
