@@ -972,7 +972,6 @@ server<-function(input, output,session) {
       X[,mymonth:=paste0(mymonth,"/",substr(myyear,3,4))]
       ########################### plotting begins #########################
       line_width=1.5
-      #should be:cat ("MAE of holt prospective:",mae(X$occurence[(L-(L_preds-1)+1):L],preds[-1]),"\n")
       cat ("MAE of holt prospective:",mae(X$occurence[(L-L_preds+1):L],preds),"\n")
       p = plot_ly(X, x=mymonth,
                   mode = 'lines+markers',
@@ -983,7 +982,6 @@ server<-function(input, output,session) {
                        title="Actual serie (Farafanga & Mananjary) vs forecasts",
                        xaxis =list(title="",dtick=3, tickangle=90),
                        yaxis =list(title="#Cases"))
-      #before 15h04 [1:(L-L_preds)]
       p = p %>% add_trace(x = mymonth, y = c(X$occurence[1:(L-L_preds+1)],round(preds)),
                           name = "prospective forecast",
                           mode = 'lines+markers',
@@ -1002,6 +1000,7 @@ server<-function(input, output,session) {
     ggplotly(d)
   })
   output$table_htc_report = DT::renderDataTable({
+    require(DT)
     load(file="interactive_summary_report/last6_palu_autoch.rda")
     last6_palu_autoch=last6_palu_autoch[,c("Centre","6 semaines précédentes","Semaine dernière"),with=F]
     colnames(last6_palu_autoch)=c("Sites","Last 06 weeks","Last week")
