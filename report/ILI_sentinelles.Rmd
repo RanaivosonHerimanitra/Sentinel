@@ -29,7 +29,6 @@ mydata[,weeks:=week(deb_sem)]
 d=ggplot(unique(mydata[,list(deb_sem,occurence)],by=NULL), 
          aes(x=deb_sem, y=occurence), fill=occurence) 
 d= d + geom_bar(stat = "identity",fill="blue") 
-
 d= d + ggtitle(label="ILI dans le réseau sentinelle")
 d= d + xlab("Date(ligne orange=1er janvier)") + ylab("Nb. Cas")
  
@@ -79,6 +78,8 @@ X= merge(X,sentinel_latlong[,list(name,sites)],by.x="sites",by.y="sites")
 X[,sites:=NULL]; 
 setnames(X,c("name","vals","occurence"),
                  c("Sites","6 semaines précédentes","Semaine dernière"))
+#save table to be re-used later:
+save(X,file="interactive_summary_report/last6_ili.rda")
 #generate tables:
 knitr::kable(X[,c("Sites","6 semaines précédentes","Semaine dernière"),with=F],
              caption="ILI dans le réseau sentinelle")

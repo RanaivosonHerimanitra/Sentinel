@@ -1009,7 +1009,21 @@ server<-function(input, output,session) {
     load(file="interactive_summary_report/last6_palu_autoch.rda")
     last6_palu_autoch=last6_palu_autoch[,c("Centre","6 semaines précédentes","Semaine dernière"),with=F]
     colnames(last6_palu_autoch)=c("Sites","Last 06 weeks","Last week")
-    datatable(last6_palu_autoch)
+    mytable=datatable(last6_palu_autoch, options = list(searchHighlight = TRUE,
+                                                initComplete = JS(
+                                                  "function(settings, json) {",
+                                                  "$(this.api().table().header()).css({'background-color': '#000', 'color': '#fff'});",
+                                                  "}")))
+    #formating style of Site column
+    mytable = mytable %>% 
+      formatStyle(
+        'Sites',
+        #transform = 'rotateX(15deg) rotateY(10deg) rotateZ(10deg)',
+        backgroundColor = styleEqual(
+          unique(last6_palu_autoch$Sites), rep('lightblue',length(unique(last6_palu_autoch$Sites)))
+        )
+      )
+    mytable
   })
   #individual plot for the HTC malaria report:
   output$ind_htc_report_plot= renderPlotly({
@@ -1037,14 +1051,42 @@ server<-function(input, output,session) {
     load(file="interactive_summary_report/last6_fever_malaria.rda")
     malaria=malaria[,c("Sites","6 semaines précédentes","Semaine dernière"),with=F]
     colnames(malaria)=c("Sites","Last 06 weeks","Last week")
-    datatable(malaria)
+    mytable=datatable(malaria, options = list(searchHighlight = TRUE,
+                                      initComplete = JS(
+                                        "function(settings, json) {",
+                                        "$(this.api().table().header()).css({'background-color': '#000', 'color': '#fff'});",
+                                        "}")))
+    #formating style of Site column
+    mytable = mytable %>% 
+      formatStyle(
+        'Sites',
+        #transform = 'rotateX(15deg) rotateY(10deg) rotateZ(10deg)',
+        backgroundColor = styleEqual(
+          unique(malaria$Sites), rep('lightblue',length(unique(malaria$Sites)))
+        )
+      )
+    mytable
   })
   #interactive Fever table:
   output$table_fever_report = DT::renderDataTable({
     load(file="interactive_summary_report/last6_fever_malaria.rda")
     fievre=fievre[,c("Sites","6 semaines précédentes","Semaine dernière"),with=F]
     colnames(fievre)=c("Sites","Last 06 weeks","Last week")
-    datatable(fievre)
+    mytable=datatable(fievre, options = list(searchHighlight = TRUE,
+                                     initComplete = JS(
+                                       "function(settings, json) {",
+                                       "$(this.api().table().header()).css({'background-color': '#000', 'color': '#fff'});",
+                                       "}")))
+    #formating style of Site column
+    mytable = mytable %>% 
+      formatStyle(
+        'Sites',
+        #transform = 'rotateX(15deg) rotateY(10deg) rotateZ(10deg)',
+        backgroundColor = styleEqual(
+          unique(fievre$Sites), rep('lightblue',length(unique(fievre$Sites)))
+        )
+      )
+    mytable
   })
   # individual summary plot of the Malaria (global) report:
   output$ind_malaria_report_plot = renderPlotly({
@@ -1070,13 +1112,41 @@ server<-function(input, output,session) {
     load(file="interactive_summary_report/last6_diarrhea.rda")
     Diarrh=Diarrh[,c("Sites","6 semaines précédentes","Semaine dernière"),with=F]
     colnames(Diarrh)=c("Sites","Last 06 weeks","Last week")
-    datatable(Diarrh)
+    mytable=datatable(Diarrh, options = list(searchHighlight = TRUE,
+                                     initComplete = JS(
+                                       "function(settings, json) {",
+                                       "$(this.api().table().header()).css({'background-color': '#000', 'color': '#fff'});",
+                                       "}")))
+    #formating style of Site column
+    mytable = mytable %>% 
+      formatStyle(
+        'Sites',
+        #transform = 'rotateX(15deg) rotateY(10deg) rotateZ(10deg)',
+        backgroundColor = styleEqual(
+          unique(Diarrh$Sites), rep('lightblue',length(unique(Diarrh$Sites)))
+        )
+      )
+    mytable
   })
   output$table_diarrhea_febrile_report = DT::renderDataTable({
     load(file="interactive_summary_report/last6_diarrhea.rda")
     Diarrh_feb=Diarrh_feb[,c("Sites","6 semaines précédentes","Semaine dernière"),with=F]
     colnames(Diarrh_feb)=c("Sites","Last 06 weeks","Last week")
-    datatable(Diarrh_feb)
+    mytable=datatable(Diarrh_feb, options = list(searchHighlight = TRUE,
+                                         initComplete = JS(
+                                           "function(settings, json) {",
+                                           "$(this.api().table().header()).css({'background-color': '#000', 'color': '#fff'});",
+                                           "}")))
+    #formating style of Site column
+    mytable = mytable %>% 
+      formatStyle(
+        'Sites',
+        #transform = 'rotateX(15deg) rotateY(10deg) rotateZ(10deg)',
+        backgroundColor = styleEqual(
+          unique(Diarrh_feb$Sites), rep('lightblue',length(unique(Diarrh_feb$Sites)))
+        )
+      )
+    mytable
   })
   #individual summary plot of the Diarrhea report:
   output$ind_diarrhea_report_plot =renderPlotly({
@@ -1097,6 +1167,26 @@ server<-function(input, output,session) {
     d=d + ggtitle("ILI cases")
     ggplotly(d)
   })
+  output$table_ili_report = DT::renderDataTable({
+    load(file="interactive_summary_report/last6_ili.rda")
+    X=X[,c("Sites","6 semaines précédentes","Semaine dernière"),with=F]
+    colnames(X)=c("Sites","Last 06 weeks","Last week")
+    mytable=datatable(X, options = list(searchHighlight = TRUE,
+                                initComplete = JS(
+                                  "function(settings, json) {",
+                                  "$(this.api().table().header()).css({'background-color': '#000', 'color': '#fff'});",
+                                  "}")))
+    #formating style of Site column
+    mytable = mytable %>% 
+      formatStyle(
+        'Sites',
+        #transform = 'rotateX(15deg) rotateY(10deg) rotateZ(10deg)',
+        backgroundColor = styleEqual(
+          unique(X$Sites), rep('lightblue',length(unique(X$Sites)))
+        )
+      )
+    mytable
+  })
   #individual summary plot of the ILI report:
   output$ind_ili_report_plot = renderPlotly({
     individual_model=list.files(path="report/ili")
@@ -1113,6 +1203,26 @@ server<-function(input, output,session) {
     d= d + xlab("") + ylab("")+ ggtitle("")
     d=d + ggtitle("AFP cases")
     ggplotly(d)
+  })
+  output$table_pfa_report = DT::renderDataTable({
+    load(file="interactive_summary_report/last6_pfa.rda")
+    X=X[,c("Sites","6 semaines précédentes","Semaine dernière"),with=F]
+    colnames(X)=c("Sites","Last 06 weeks","Last week")
+    mytable=datatable(X, options = list(searchHighlight = TRUE,
+                                initComplete = JS(
+                                  "function(settings, json) {",
+                                  "$(this.api().table().header()).css({'background-color': '#000', 'color': '#fff'});",
+                                  "}")))
+    #formating style of Site column
+    mytable = mytable %>% 
+      formatStyle(
+        'Sites',
+        #transform = 'rotateX(15deg) rotateY(10deg) rotateZ(10deg)',
+        backgroundColor = styleEqual(
+          unique(X$Sites), rep('lightblue',length(unique(X$Sites)))
+        )
+      )
+    mytable
   })
   output$ind_pfa_report_plot = renderPlotly({
     individual_model=list.files(path="report/pfa")

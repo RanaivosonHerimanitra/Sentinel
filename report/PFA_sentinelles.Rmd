@@ -92,6 +92,8 @@ X= merge(X,sentinel_latlong[,list(name,sites)],by.x="sites",by.y="sites")
 X[,sites:=NULL]; 
 setnames(X,c("name","vals","occurence"),
                  c("Sites","6 semaines précédentes","Semaine dernière"))
+#save table to be re-used later:
+save(X,file="interactive_summary_report/last6_pfa.rda")
 #generate tables:
 knitr::kable(X[,c("Sites","6 semaines précédentes","Semaine dernière"),with=F],
              caption="PFA dans le réseau sentinelle")
