@@ -38,7 +38,8 @@ source("./reporting_plot.R",local = T)
   ili=unique(ili[,list(deb_sem,code,Synd_g)],by=NULL)
   #plotting...
   require(ggplot2)
-  tmp1 = Malaria[,list(code,deb_sem,occurence)];setnames(tmp1,"occurence","cases")
+  tmp1 = Malaria[,list(code,deb_sem,occurence)];
+  setnames(tmp1,"occurence","cases")
   tmp1[,Disease:="Palu(TDR+)"]
   setorder(tmp1,deb_sem)
   tmp2 = ili[,list(code,deb_sem,Synd_g)];setnames(tmp2,"Synd_g","cases")
@@ -102,7 +103,6 @@ for ( s in unique(malaria$deb_sem) ) #foreach unique semaine
       missing_site=liste_sites[which(!(liste_sites %in%  currentsiteweek))]
     for ( p in missing_site)
       {
-      #cat(p," is missing for semaine (malaria):",as.Date(s),"\n")
       tmp1 = data.table(deb_sem=as.Date(s,origin="1970-01-01"),sites=p,malaria_cases="na")
       var_conv(malaria,tmp1)
       malaria=rbind(malaria,tmp1)
@@ -180,16 +180,14 @@ fievre= merge(unique(fievre[,list(sites,vals)],by=NULL),
 #merge with sentinel_latlong to display name
 fievre=merge(fievre,sentinel_latlong[,list(sites,name)],
              by.x="sites",by.y="sites")
-#                
+# set names:               
 setnames(fievre,c("name","vals","SyndF"),
                 c("Sites","6 semaines précédentes","Semaine dernière"))
-
+#save data to be re-used later:
+save(fievre,malaria,file="interactive_summary_report/last6_fever_malaria.rda")
 #generate tables:
-    knitr::kable(fievre[,c("Sites","6 semaines précédentes","Semaine dernière"),with=F],
-                caption="Fièvres dans le réseau sentinelle")
-
-  knitr::kable(malaria[,c("Sites","6 semaines précédentes","Semaine dernière"),with=F],
-              caption="Paludisme dans le réseau sentinelle")
+knitr::kable(fievre[,c("Sites","6 semaines précédentes","Semaine dernière"),with=F],caption="Fièvres dans le réseau sentinelle")
+knitr::kable(malaria[,c("Sites","6 semaines précédentes","Semaine dernière"),with=F],caption="Paludisme dans le réseau sentinelle")
 ```
 
 ```{r,echo=F, fig.show = "hold" ,out.width = '50%', out.extra='',comment='', message=FALSE , warning=FALSE}

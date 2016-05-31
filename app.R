@@ -1032,6 +1032,20 @@ server<-function(input, output,session) {
     p$data$Disease=ifelse(p$data$Disease=="Palu(TDR+)","RDT+","Fever")
     ggplotly(p)
   })
+  #interactive Malaria table:
+  output$table_malaria_report = DT::renderDataTable({
+    load(file="interactive_summary_report/last6_fever_malaria.rda")
+    malaria=malaria[,c("Sites","6 semaines précédentes","Semaine dernière"),with=F]
+    colnames(malaria)=c("Sites","Last 06 weeks","Last week")
+    datatable(malaria)
+  })
+  #interactive Fever table:
+  output$table_fever_report = DT::renderDataTable({
+    load(file="interactive_summary_report/last6_fever_malaria.rda")
+    fievre=fievre[,c("Sites","6 semaines précédentes","Semaine dernière"),with=F]
+    colnames(fievre)=c("Sites","Last 06 weeks","Last week")
+    datatable(fievre)
+  })
   # individual summary plot of the Malaria (global) report:
   output$ind_malaria_report_plot = renderPlotly({
     individual_model=list.files(path="report/malaria")
