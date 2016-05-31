@@ -166,6 +166,13 @@ Version: 1.1.8
 Hash: 23add9f8b14b07e316563efff793b9ff
 Requires: magrittr, whisker
 
+Package: devtools
+Source: CRAN
+Version: 1.11.1
+Hash: 4c6aa014d917044bf376a363c3c8ee1a
+Requires: digest, git2r, httr, jsonlite, memoise, rstudioapi, whisker,
+    withr
+
 Package: dichromat
 Source: CRAN
 Version: 2.0-0
@@ -229,6 +236,11 @@ Source: CRAN
 Version: 2.1.0
 Hash: 50e297b0191179c39c7dcae0eff72b51
 Requires: digest, gtable, plyr, reshape2, scales
+
+Package: git2r
+Source: CRAN
+Version: 0.15.0
+Hash: 92d5a9f3cba5e146b92a76dabbc29fbb
 
 Package: gridExtra
 Source: CRAN
@@ -352,6 +364,12 @@ Version: 0.7.7
 Hash: fea2343a1119d61b0cc5c0a950d103a3
 Requires: mime
 
+Package: memoise
+Source: CRAN
+Version: 1.0.0
+Hash: 56e7087c3559eb7ba72a9afb349bf896
+Requires: digest
+
 Package: mime
 Source: CRAN
 Version: 0.4
@@ -435,6 +453,11 @@ Version: 0.9.6
 Hash: c60250bb3dd9107d6d3ecf626e86d8a6
 Requires: caTools, htmltools, knitr, yaml
 
+Package: rstudioapi
+Source: CRAN
+Version: 0.5
+Hash: f942db72a8f51e968b061f28058e2c57
+
 Package: rvg
 Source: CRAN
 Version: 0.0.9
@@ -514,6 +537,11 @@ Package: whisker
 Source: CRAN
 Version: 0.3-2
 Hash: 803d662762e532705c2c066a82d066e7
+
+Package: withr
+Source: CRAN
+Version: 1.0.1
+Hash: e3d37838719e5d66652364e2aefebcee
 
 Package: xml2
 Source: CRAN

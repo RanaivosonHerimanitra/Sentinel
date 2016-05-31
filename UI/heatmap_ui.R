@@ -1,5 +1,6 @@
 ##############################Heatmap UI #################################
 myheatmap=d3heatmapOutput("heatmap_percentile")
+#myheatmap=plotlyOutput("heatmap_percentile")
 heatmap_legend_details=list(
   helpText("Click and drag on the graph to zoom on the weeks(Double-Click to unzoom)"),
   helpText("More options can be found on the corner right of the heatmap."),
@@ -17,6 +18,4 @@ heatmap_display = list(sliderInput(inputId = "nbyear",
                                   ),
                        myheatmap,
                        includeHTML("www/legende_heatmap.html"),
-                       #tags$strong("Normal"),
-                       #tags$strong("Alert-Normal-No Data"),
                        heatmap_legend_details)

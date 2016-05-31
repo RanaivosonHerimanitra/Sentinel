@@ -832,7 +832,6 @@ server<-function(input, output,session) {
         source("csum.R") 
         X=calculate_csum(data=mydata,
                          Csum_year_map=input$Csum_year_map,
-                         #Csum_week_map=input$Csum_week_map,
                          Sd_csum_map=input$Sd_csum_map,
                          week_choice=ifelse(Sys.Date()-as.Date(paste0(year(Sys.Date()),"-01-01"))<8
                                             ,1,week(Sys.Date())),
@@ -851,9 +850,6 @@ server<-function(input, output,session) {
         
       }
     }
-    
-    
-    
     #selection by facies:
     if (input$Cluster_algo !="Total")
     {
@@ -869,8 +865,6 @@ server<-function(input, output,session) {
      X[alert_status=="alert",alert_status2:=2]
     cat('DONE\n')
     
-    
-    
     cat('spreading data...')
     #print(head(X))
      X[,years:=year(as.Date(deb_sem,origin="1970-01-01"))]
@@ -881,7 +875,9 @@ server<-function(input, output,session) {
      myz= as.data.frame(spread(unique(X[,list(name,deb_sem,alert_status2)],by=NULL),
                               deb_sem,alert_status2))
     cat("DONE\n")
-   
+   #  require(heatmaply)
+   # heatmaply(myz[,names(myz)[-1]],colors=c("grey","darkgreen","red"),
+   #           column_text_angle = 90,dendrogram = "none") %>% layout(margin = list(l = 130, b = 40))
     row.names(myz) <- myz$name
     d3heatmap(myz[,-1], dendrogram = "none",scale = "none",
               xaxis_font_size="9px",
