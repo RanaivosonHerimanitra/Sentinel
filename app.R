@@ -1005,6 +1005,12 @@ server<-function(input, output,session) {
     d$data$Légende=ifelse(d$data$Légende=="Palu importé","Imported","Autochtone")
     ggplotly(d)
   })
+  output$table_htc_report = DT::renderDataTable({
+    load(file="interactive_summary_report/last6_palu_autoch.rda")
+    last6_palu_autoch=last6_palu_autoch[,c("Centre","6 semaines précédentes","Semaine dernière"),with=F]
+    colnames(last6_palu_autoch)=c("Sites","Last 06 weeks","Last week")
+    datatable(last6_palu_autoch)
+  })
   #individual plot for the HTC malaria report:
   output$ind_htc_report_plot= renderPlotly({
     site20=fread("report/site20.csv")
@@ -1070,9 +1076,6 @@ server<-function(input, output,session) {
     individual_model=list.files(path="report/ili")
     sitemodel_found= grep(input$CSB_sites_ili,individual_model,value = T)
     load(file=paste0("report/ili/",sitemodel_found))
-    #finally change legend:
-    # d$data$Légende=ifelse(d$data$Légende=="Diarrhées fébriles",
-    #                       "Febrile","Non Febrile")
     #remove titles that are in french
     d= d + xlab("") + ylab("") + ggtitle("")
     ggplotly(d)
@@ -1089,10 +1092,6 @@ server<-function(input, output,session) {
     individual_model=list.files(path="report/pfa")
     sitemodel_found= grep(input$CSB_sites_pfa,individual_model,value = T)
     load(file=paste0("report/pfa/",sitemodel_found))
-    #finally change legend:
-    #str(d)
-    # d$data$Légende=ifelse(d$data$Légende=="Diarrhées fébriles",
-    #                       "Febrile","Non Febrile")
     #remove titles that are in french
     d= d + xlab("") + ylab("") + ggtitle("")
     ggplotly(d)
@@ -1117,18 +1116,7 @@ server<-function(input, output,session) {
                                        color = styleEqual(0:3,rep('red',4)),
                                        backgroundColor = styleEqual(0:3, rep( 'yellow',4))
       ) 
-      # mytable= mytable %>% formatStyle(k,
-      #                                  color = styleEqual(1,c('red')),
-      #                                  backgroundColor = styleEqual(1, c( 'yellow'))
-      # ) 
-      # mytable= mytable %>% formatStyle(k,
-      #                                  color = styleEqual(2,c('red')),
-      #                                  backgroundColor = styleEqual(2, c( 'yellow'))
-      # )
-      # mytable= mytable %>% formatStyle(k,
-      #                                  color = styleEqual(3,c('red')),
-      #                                  backgroundColor = styleEqual(3, c( 'yellow'))
-      # ) 
+      
     }
     mytable
   })

@@ -70,6 +70,7 @@ summary_report=list( tags$div(class="container",
 #####################################Palu autoch##################################
 site20=fread("report/site20.csv")
 htc_report=list(plotlyOutput("htc_report_plot"),
+                dataTableOutput("table_htc_report"),
                 tags$br(),tags$br(),tags$br(),
                 selectizeInput(inputId="CSB_sites", 
                                label="Select a site", 
