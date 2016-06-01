@@ -3,7 +3,7 @@ myradio2= radioButtons(inputId="Algorithmes_viz", label="Algorithms:",
                           list(  "Percentile" = "Percentile",
                                  "MinSan" = "MinSan",
                                  "C-SUM" = "Csum",
-                                 "RDT+/fever Indicator" = "Ind"))
+                                 "RDT+ among Fever cases" = "Ind"))
 
 
 source("UI/heatmap_ui.R",local = T)
@@ -14,7 +14,7 @@ graph_choices= selectInput(inputId="Algorithmes_viz", label="Choose algorithms:"
                                           "MinSan",
                                           "Percentile",
                                           "C-SUM",
-                                          "RDT+/fever Indicator"),
+                                          "RDT+ among Fever cases"),
                            selected = "Percentile"
                    )
 #map parameters:

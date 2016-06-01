@@ -2,7 +2,7 @@
 # sudo gedit /etc/R/Rprofile.site
 require(shiny)
 require(ReporteRs);
-require(RPostgreSQL);
+#require(RPostgreSQL);
 #require(rCharts);
 require(xts)
 require(lubridate);
@@ -18,7 +18,7 @@ require(DT)
 #require(dygraphs);
 require(plotly);require(d3heatmap)
 require(ggplot2);require(ggmap);
-require(miniUI);
+#require(miniUI);
 require(shinyjs)
 #require(rbokeh)
 require(scales)

@@ -146,7 +146,7 @@ server<-function(input, output,session) {
                       length(unique(sites)),by="code"]
     setnames(Nbsite_beyond,"V1","eff_beyond")
     Nbsite_beyond=merge(Nbsite_beyond,unique(PaluConf_SyndF[,list(code,deb_sem)],by=NULL),
-                       by.x="code",by.y="code",all.x=T) #,all.x=T
+                       by.x="code",by.y="code",all.x=T) 
     Nbsite_withdata=PaluConf_SyndF[is.na(alert_status_hist)==F,length(unique(sites)),by="code"]
     setnames(Nbsite_withdata,"V1","eff_total")
     propsite_alerte_fever=merge(x=Nbsite_withdata,y=Nbsite_beyond,
@@ -298,7 +298,10 @@ server<-function(input, output,session) {
     p <- plot_ly(myprop, x = deb_sem,
                  y = 100*prop,name=input$diseases,
                  line = list(width=line_width,color = "rgb(255, 0, 0)") )
-    p = p %>% layout( legend=list(x = 0.5, y = 0),paper_bgcolor="rgb(213, 226, 233)",plot_bgcolor = "rgb(213, 226, 233)",title="%sites in alert")
+    p = p %>% layout( legend=list(x = 0.5, y = 0),
+                      paper_bgcolor="rgb(213, 226, 233)",
+                      plot_bgcolor = "rgb(213, 226, 233)",
+                      title="%sites in alert")
     #these are only make sense when Malaria (not for other diseases)
     if ( input$diseases=="Malaria")
     {
@@ -411,13 +414,13 @@ server<-function(input, output,session) {
     mada_map=mada_map %>% setView(lng = 47.051532 , 
                                               lat =-19.503781 , zoom = 5) 
     mada_map=mada_map %>% addTiles(urlTemplate="http://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}")  
-    addLegend(map=mada_map,"bottomleft", title="legend",
-                  colors = c("orange","green", "red", "black"),
-                  labels = c("Cleanup in progress.",
-                             "Cleanup complete.",
-                             "Status unclear.",
-                             "No potential for radioactive contamination."), 
-                  opacity = 0.8)
+    # addLegend(map=mada_map,"bottomleft", title="legend",
+    #               colors = c("orange","green", "red", "black"),
+    #               labels = c("Cleanup in progress.",
+    #                          "Cleanup complete.",
+    #                          "Status unclear.",
+    #                          "No potential for radioactive contamination."), 
+    #               opacity = 0.8)
                                                                                                                                                              
     #change color to red when alert is triggered:
     #navy
@@ -516,7 +519,6 @@ server<-function(input, output,session) {
                                                            size=myradius
                                                            ),show.legend  = T)
         madagascar_map2 = madagascar_map2 + scale_colour_manual(values=c("#f05249", "#808284", "#69c39a"))
-        #madagascar_map2 = madagascar_map2 + scale_size_discrete(guide = F)
       } else {
         madagascar_map2 = madagascar_map2 + geom_point(data = sentinel_latlong,
                                                        alpha=0.8,
@@ -576,8 +578,7 @@ server<-function(input, output,session) {
                        by.y=c("code","sites","deb_sem"),all.x=T)
     
     propili_2015[,prop := 100*sum(Synd_g,na.rm = T)/sum(NxConsltTotal,na.rm=T) ,by="deb_sem"]
-    #propili_2015[,mean_ili := 100*mean(Synd_g,na.rm = T),by="deb_sem"]
-    
+
     propili_2015= unique(propili_2015[,list(deb_sem,prop)],by=NULL)
     #create a key to merge later:
     propili_2015[,weekOfday:=week(as.Date(deb_sem,origin="1970-01-01"))]  
@@ -632,7 +633,6 @@ server<-function(input, output,session) {
     ili[,Synd_g:=sum(Synd_g,na.rm = T),by="code"]
     ili[,ArboSusp:=sum(ArboSusp,na.rm = T),by="code"]
     #data processing:
-    # ili[,Synd_g := GrippSusp + AutrVirResp ]
     ili=unique(ili,by=NULL)
 
     #34 sites we need:
@@ -913,6 +913,7 @@ server<-function(input, output,session) {
     p=plot_ly(X, y = occurence, x=deb_sem,color=name )
     p = p %>% layout( paper_bgcolor="rgb(213, 226, 233)",
                       plot_bgcolor = "rgb(213, 226, 233)",
+                      #legend=list(orientation="h"),
                       xaxis =list(title="Weeks"),
                      yaxis =list(title="#Cases"))
     p

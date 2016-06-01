@@ -33,7 +33,7 @@ algo_params1= conditionalPanel(
                           choices=list(  "Percentile" = "Percentile",
                                  "MinSan" = "MinSan",
                                  "C-SUM" = "Csum",
-                                 "RDT+/fever Indicator" = "Ind")
+                                 "RDT+ among Fever cases" = "Ind")
                           ))
 #available algorithm when Malaria is displayed
 algo_params2 =conditionalPanel(
