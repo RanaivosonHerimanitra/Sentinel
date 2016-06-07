@@ -1280,7 +1280,6 @@ server<-function(input, output,session) {
 }
 
 ##############################################User interface ##############
-#
 mydashheader=dashboardHeader(title="Sentinel surveillance",titleWidth="233")
 
 #skeleton of the user interface:

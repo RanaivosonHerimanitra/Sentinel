@@ -117,8 +117,7 @@ calculate_percentile=function(data=mydata,
     percentile_alerte=data[code %in% code_range,list(sites,code,alert_status,deb_sem,myradius)]
     cat('DONE\n')
     
-    #cat("prepare alert to be displayed on the map (latest finished week)...")
-   
+
     
     if (max_code==paste0(year(Sys.Date()),"_",isoweek(Sys.Date())) ) {
       #if max_date == current week then exclude this current week

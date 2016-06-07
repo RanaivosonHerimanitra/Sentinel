@@ -11,7 +11,8 @@ require(RColorBrewer);
 require(shinythemes);
 require(tidyr); 
 require(shinydashboard);
-require(data.table);require(dplyr); 
+require(data.table);
+require(dplyr); 
 #require(rmarkdown)
 require(leaflet);
 require(DT)

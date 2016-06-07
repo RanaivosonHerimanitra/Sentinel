@@ -35,7 +35,7 @@ algo_params1= conditionalPanel(
                                  "C-SUM" = "Csum",
                                  "RDT+ among Fever cases" = "Ind")
                           ))
-#available algorithm when Malaria is displayed
+#available algorithm when Malaria isn't chosen
 algo_params2 =conditionalPanel(
   #id="myalgo_params2",
   condition = "input.diseases!='Malaria'",
@@ -47,7 +47,7 @@ algo_params2 =conditionalPanel(
                selected = ""
   ))                          
 myradio_map = list(algo_params1,algo_params2)                                 
-########################################################################################
+#############################parameters for percentile algo####################
 mycondparam_map_percentile=conditionalPanel(
   condition = "input.Algorithmes_eval1 == 'Percentile' | input.Algorithmes_eval2 == 'Percentile'",
   tags$hr(),
@@ -121,7 +121,7 @@ mycondparam_map_mcases=conditionalPanel(
   selectInput("sites", "Sentinel Sites", 
               choices = c("Farafangana","Ambovombe","Ambatondrazaka","Antsohihy","Anjozorobe","Antsirabe","Belo sur Tsiribihina","Behoririka","Ambato Boeny","Ambositra","Cd Andohatapenaka","Diego","Mandritsara","Edjeda","Fianarantsoa","Ihosy","Maevatanana","Morondava","Mahajanga","Miandrivazo","Manjakaray","Mananjary","Morombe","Moramanga","Maroantsetra","Maintirano","Nosy Be","Sambava","Sainte-Marie","Tsiroanomandidy","Tolagnaro","Toliary","Toamasina","Tsaralalana")),
   selected=("Farafangana"))
-############## proportion indicator #Malaria/#fiever
+############## proportion indicator #Malaria/#fever
 mycondparam_map_ind=  conditionalPanel(
   condition = "input.Algorithmes_eval1 == 'Ind' & input.diseases=='Malaria'",
   br(),

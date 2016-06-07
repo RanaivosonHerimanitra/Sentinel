@@ -18,7 +18,7 @@ graph_choices= selectInput(inputId="Algorithmes_viz", label="Choose algorithms:"
                            selected = "Percentile"
                    )
 #map parameters:
-source("handle_dates.R")
+#source("handle_dates.R")
 year_retrospective=selectInput("year_choice", label="Select a year",
                                year(Sys.Date()):(year(Sys.Date())-1),
                                selected= year(Sys.Date()))
