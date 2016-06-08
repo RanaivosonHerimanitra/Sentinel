@@ -142,7 +142,7 @@ mydocument = list()
 #initialize a data.frame to be saved in a csv for historical alerts:
 historical_alert=data.table(code="",sites="",alert="")
 #report only years>=2012
-for ( j in mycode[as.numeric(substr(mycode,1,4))>=2012] )
+for ( j in mycode[as.numeric(substr(mycode,1,4))>=2012][1:10] )
 {
   cat("writing report for Semaine épidémiologique:",j,'\n')
   semaine = as.numeric(unlist(strsplit(j,"_"))[2])

@@ -1276,11 +1276,28 @@ server<-function(input, output,session) {
                                       "RDT+/fever Indicator" = "Ind"),
                        selected = x)
   })
- 
+  ####################################Put alert on dashboard header ########
+  # output$alerts <- renderMenu({
+  #   # Code to generate each of the messageItems here, in a list. This assumes
+  #   # that messageData is a data frame with two columns, 'from' and 'message'.
+  #   messageData=fread("interactive_summary_report/historical_alert.csv")
+  #   messageData= messageData[1:10,]
+  #   msgs <- apply(messageData, 1, function(row) {
+  #     notificationItem(text = paste(row[["sites"]],row[["alert"]]),
+  #                      icon = icon("exclamation-triangle"),
+  #                      status = "warning")
+  #   })
+  #   
+  #   # This is equivalent to calling:
+  #   #   dropdownMenu(type="messages", msgs[[1]], msgs[[2]], ...)
+  #   dropdownMenu(badgeStatus="warning",type = "notifications", .list = msgs)
+  # })
 }
 
 ##############################################User interface ##############
-mydashheader=dashboardHeader(title="Sentinel surveillance",titleWidth="233")
+mydashheader=dashboardHeader(title="Sentinel surveillance",titleWidth="233"
+                             #,dropdownMenuOutput("alerts") 
+                             )
 
 #skeleton of the user interface:
 source('initialize_ui.R')

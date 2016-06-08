@@ -77,9 +77,9 @@ calculate_percentile=function(data=mydata,
       data[,mylag2:=lg(mylag1),by="sites"]
       data[,mylag3:=lg(mylag2),by="sites"]
       
-      data[,alert_status4:=ifelse(occurence>=n_percentile & mylag1>=n_percentile & mylag2>=n_percentile & mylag3>=n_percentile, "alert","normal")]
-      data[,alert_status3:=ifelse(occurence>=n_percentile & mylag1>=n_percentile & mylag2>=n_percentile,"alert","normal")]
-      data[,alert_status2:=ifelse(occurence>=n_percentile &  mylag1>=n_percentile ,"alert","normal")]
+      data[,alert_status4:=ifelse(occurence>=n_percentile & occurence>0 & mylag1>=n_percentile & mylag2>=n_percentile & mylag3>=n_percentile, "alert","normal")]
+      data[,alert_status3:=ifelse(occurence>=n_percentile & occurence>0 & mylag1>=n_percentile & mylag2>=n_percentile,"alert","normal")]
+      data[,alert_status2:=ifelse(occurence>=n_percentile & occurence>0  &  mylag1>=n_percentile ,"alert","normal")]
       data[,alert_status1:=ifelse(occurence>=n_percentile,"alert","normal")]
    
     #chosen week length to be renamed:

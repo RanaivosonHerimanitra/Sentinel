@@ -6,6 +6,7 @@ N_tdr= alerte_manque_tdr[name==k,get("TestPalu")]
 L_tdr = length(N_fiever)>0 & length(N_tdr)>0 
 L_tana= k %in% tana_centre
 L_hautplateau= k %in% tana_haut_plateau
+
 ##############################Sniffing NA values in the database #################
 source("manque_bd_narration.R",local = T)
 ###########################################################################################
