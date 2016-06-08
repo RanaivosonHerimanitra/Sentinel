@@ -116,7 +116,8 @@ PaluConf_tdr=merge(PaluConf_tdr,sentinel_latlong[,list(sites,name)],
 
 ##########################################################################
 
-tana_centre = c("Manjakaray","Andohatapenaka","Tsaralalana","Behoririka")
+tana_centre = c("Manjakaray","Andohatapenaka","Tsaralalana",
+                "Behoririka","")
 tana_haut_plateau= c("Fianarantsoa","Antsirabe","Anjozorobe")
 
 #reorder time (very important step!)
@@ -152,8 +153,14 @@ for ( j in mycode[as.numeric(substr(mycode,1,4))>=2012] )
   alerte_diar= percentile_diar_alerte[code == j & alert_status=="alert",c("code","name",grep("^alert",names(percentile_diar_alerte),value=T)),with=F] 
   #15h39 (5 avril,'16)==>manque_tdr==1
   alerte_manque_tdr=PaluConf_tdr[code==j & manque_tdr>0,list(code,name,manque_tdr,TestPalu,SyndF)]
-  palu_NA= percentile_palu_alerte[code == j & is.na(occurence)==T,get("name")]
-  diar_NA= percentile_diar_alerte[code == j & is.na(occurence)==T,get("name")]
+  
+  #currently (8juin2016) cannot handle NA in HTC sites because there is no HTC site in percentile_palu_alerte
+  #palu_NA= percentile_palu_alerte[code == j & is.na(occurence)==T,get("name")]
+  #diar_NA= percentile_diar_alerte[code == j & is.na(occurence)==T,get("name")]
+  #so switch to :
+  palu_NA =sentinel_latlong[sites %in% names(PaluConf)[which(is.na(PaluConf[code == j ])==T)],get("name") ]
+  diar_NA =sentinel_latlong[sites %in%  names(Diarrh)[which(is.na(Diarrh[code == j ])==T)],get("name") ]
+  #
   mydate = pot(paste0(annee,"-",semaine,":"),format=textBoldItalic(underline = TRUE ))
   #add space between semaine épidémiologique:
   doc <- addParagraph(doc, "          ")
