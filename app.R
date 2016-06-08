@@ -1276,22 +1276,46 @@ server<-function(input, output,session) {
                                       "RDT+/fever Indicator" = "Ind"),
                        selected = x)
   })
-  ####################################Put alert on dashboard header ########
-  # output$alerts <- renderMenu({
-  #   # Code to generate each of the messageItems here, in a list. This assumes
-  #   # that messageData is a data frame with two columns, 'from' and 'message'.
-  #   messageData=fread("interactive_summary_report/historical_alert.csv")
-  #   messageData= messageData[1:10,]
-  #   msgs <- apply(messageData, 1, function(row) {
-  #     notificationItem(text = paste(row[["sites"]],row[["alert"]]),
-  #                      icon = icon("exclamation-triangle"),
-  #                      status = "warning")
-  #   })
-  #   
-  #   # This is equivalent to calling:
-  #   #   dropdownMenu(type="messages", msgs[[1]], msgs[[2]], ...)
-  #   dropdownMenu(badgeStatus="warning",type = "notifications", .list = msgs)
-  # })
+  ####################################Put MAE of model on dahsboard ########
+  output$mymae <- renderValueBox({
+    
+    mymodel=input$mymodel
+    source("prepare_data_forecast.R",local = T)
+    source("forecasting_functions.R",local = T)
+    X=prepare_load(mymodel=mymodel)
+    
+    
+    
+    if ( input$mymodel=="HLT" & input$forecast_type=="retrospective")
+    {
+      load(file = "holt_retrospective.rda")
+      L_preds= length(preds)
+      L=length(X$occurence)
+      X[,mymonth:=paste0(mymonth,"/",substr(myyear,3,4))]
+      myvaluebox=valueBox(
+        round(mae(X$occurence[1:L_preds],preds)), 
+        "Mean Average Error", 
+        icon = icon("fa-line-chart"),
+        color = "red")
+    }
+    if ( input$mymodel=="HLT" & input$forecast_type=="prospective")
+    {
+      load(file = "holt_prospective.rda")
+      L_preds= length(preds)
+      L=length(X$occurence)
+      #add next month : VERY IMPORTANT NEED TO FIND DURABLE SOLUTION
+      X=rbind(X,data.table(mymonth=6,myyear=2016,occurence=NA))
+      X[,mymonth:=paste0(mymonth,"/",substr(myyear,3,4))]
+     
+      myvaluebox=valueBox(
+       round(mae(X$occurence[(L-L_preds+1):L],preds)), 
+        "Mean Average Error", 
+        icon = icon("fa-line-chart"),
+        color = "red")
+    }
+    myvaluebox
+   
+  })
 }
 
 ##############################################User interface ##############
