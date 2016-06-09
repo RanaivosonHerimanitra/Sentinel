@@ -117,7 +117,7 @@ PaluConf_tdr=merge(PaluConf_tdr,sentinel_latlong[,list(sites,name)],
 ##########################################################################
 
 tana_centre = c("Manjakaray","Andohatapenaka","Tsaralalana",
-                "Behoririka","")
+                "Behoririka")
 tana_haut_plateau= c("Fianarantsoa","Antsirabe","Anjozorobe")
 
 #reorder time (very important step!)
