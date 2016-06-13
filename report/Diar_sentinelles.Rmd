@@ -15,7 +15,14 @@ output: pdf_document
 
 
 ```{r,echo=F,fig.width=10, out.extra='',comment='', message=FALSE , warning=FALSE}
-setwd("/media/herimanitra/Document/IPM_sentinelle/sentinel_hrmntr 291115/Sentinel")
+if ( getwd()!="/srv/shiny-server/sentinel_hrmntr/Sentinel" )
+{
+  mypath="/srv/shiny-server/sentinel_hrmntr/Sentinel"
+  setwd(mypath)
+} else {
+  mypath= "/media/herimanitra/Document/IPM_sentinelle/sentinel_hrmntr 291115/Sentinel"
+  setwd(mypath)
+}
 #load source code:
 source("./import_data.R");source("./preprocessing.R");require(ggplot2); require(gridExtra)
 
@@ -41,6 +48,12 @@ p
 
 
 ```{r,echo=F,out.extra='',comment='', message=FALSE , warning=FALSE}
+if ( getwd()!="/srv/shiny-server/sentinel_hrmntr/Sentinel" )
+{
+  mypath="/srv/shiny-server/sentinel_hrmntr/Sentinel"
+} else {
+  mypath= "/media/herimanitra/Document/IPM_sentinelle/sentinel_hrmntr 291115/Sentinel"
+}
 
 semaine=array()
 max_deb_sem=max(as.Date(mydata$deb_sem,origin="1970-01-01"))
@@ -103,7 +116,8 @@ Diarrh[,sites:=NULL];
 setnames(Diarrh,c("name","vals","diarh"),
                 c("Sites","6 semaines précédentes","Semaine dernière"))
 #save to be re-used later:
-save(Diarrh,Diarrh_feb,file="/media/herimanitra/Document/IPM_sentinelle/sentinel_hrmntr 291115/Sentinel/interactive_summary_report/last6_diarrhea.rda")
+save(Diarrh,Diarrh_feb,
+     file=paste0(mypath,"/interactive_summary_report/last6_diarrhea.rda"))
 #generate tables:
 knitr::kable(Diarrh[,c("Sites","6 semaines précédentes","Semaine dernière"),with=F],
              caption="Diarrhées dans le réseau sentinelle HTC")

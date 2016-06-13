@@ -102,7 +102,7 @@ generate_plot=function(htc="all",
       }
       if(disease.name=="diarrhea")
       {
-        save(p,d,file=paste0("/media/herimanitra/Document/IPM_sentinelle/sentinel_hrmntr 291115/Sentinel/report/diarrhea/diarrhea_",myname[p],".rda"))
+        save(p,d,file=paste0("/srv/shiny-server/sentinel_hrmntr/Sentinel/report/diarrhea/diarrhea_",myname[p],".rda"))
       }
       myplot[[p]]=d
       print(myplot[[p]])

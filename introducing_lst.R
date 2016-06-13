@@ -13,10 +13,5 @@ if ( input$Cluster_algo=="Total")
   setnames(lst,"V1","temperature")
   cat('DONE\n')
   
-  # setkeyv(lst,c("code","facies"))
-  # lst=create_facies(lst)
-  # cat('calculating mean of temperature by code (date) and by facies...')
-  # lst=lst[,mean(temperature,na.rm = T),by="code,facies"];
-  # setnames(lst,"V1","temperature")
-  # cat('DONE\n')
+ 
 }

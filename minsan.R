@@ -15,11 +15,15 @@ calculate_minsan=function(data=mydata,
   }
  
   max_deb_sem= max(as.Date(data$deb_sem))
+  
+  
   max_code=paste0(year(max_deb_sem),"_",isoweek(max_deb_sem))
   if (max_code==paste0(year(Sys.Date()),"_",isoweek(Sys.Date())) ) {
     #if we are on the current week, update max_deb_sem
     max_code_prev = paste0(year(Sys.Date()-7),"_",isoweek(Sys.Date()-7))
-    max_deb_sem =data[code==max_code_prev,get("deb_sem")]
+    max_deb_sem =as.Date(data[code==max_code_prev,get("deb_sem")][1],origin="1970-01-01")
+  
+    
   } 
   
   
@@ -28,18 +32,19 @@ calculate_minsan=function(data=mydata,
     cat('Are these weeks consecutive? :',minsan_consecutive_week,'\n')
     
     
-     
-      
+    print(max_deb_sem)
+    print(class(max_deb_sem))
+  
     cat('merging data for MinSan algorithm...')
-      S0=data[as.Date(deb_sem)==max_deb_sem,list(code,sites,occurence)]
-      S1=data[as.Date(deb_sem)==max_deb_sem-1*7,list(sites,occurence)]
+      S0=data[as.Date(deb_sem,origin="1970-01-01")==max_deb_sem,list(code,sites,occurence)]
+      S1=data[as.Date(deb_sem,origin="1970-01-01")==max_deb_sem-1*7,list(sites,occurence)]
       setnames(S1,"occurence","occurence_1")
       minsan=merge(S0,S1,by.x="sites",by.y="sites")
-      S2=data[as.Date(deb_sem)==max_deb_sem-2*7,list(sites,occurence)]
+      S2=data[as.Date(deb_sem,origin="1970-01-01")==max_deb_sem-2*7,list(sites,occurence)]
       setnames(S2,"occurence","occurence_2")
       minsan=merge(minsan,S2,by.x="sites",by.y="sites")
     cat('DONE\n')
-    
+   
     # 04 consecutive weeks or 03:
     if ( as.numeric(minsan_weekrange) ==4 )
     {

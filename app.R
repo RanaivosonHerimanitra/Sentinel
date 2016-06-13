@@ -1,7 +1,7 @@
 #required libraries
 source("libraries.R")
 #versatile app:
-if ( getwd()!="/srv/shiny-server/sentinel_hrmntr") 
+if ( getwd()!="/srv/shiny-server/sentinel_hrmntr/Sentinel") 
 {
   setwd('/media/herimanitra/Document/IPM_sentinelle/sentinel_hrmntr 291115/Sentinel')
 } else {

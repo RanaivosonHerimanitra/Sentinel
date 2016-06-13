@@ -19,9 +19,19 @@ output: pdf_document
 
 
 ```{r,echo=F,fig.width=10, out.extra='',comment='', message=FALSE , warning=FALSE}
-setwd("/media/herimanitra/Document/IPM_sentinelle/sentinel_hrmntr 291115/Sentinel")
-source("/media/herimanitra/Document/IPM_sentinelle/sentinel_hrmntr 291115/Sentinel/import_data.R");
-source("/media/herimanitra/Document/IPM_sentinelle/sentinel_hrmntr 291115/Sentinel/preprocessing.R");require(ggplot2); require(gridExtra)
+if ( getwd()!="/srv/shiny-server/sentinel_hrmntr/Sentinel" )
+{
+  mypath="/srv/shiny-server/sentinel_hrmntr/Sentinel"
+  setwd(mypath)
+} else {
+  mypath= "/media/herimanitra/Document/IPM_sentinelle/sentinel_hrmntr 291115/Sentinel"
+  setwd(mypath)
+}
+
+source(paste0(mypath,"/import_data.R"));
+source(paste0(mypath,"/preprocessing.R"));
+
+require(ggplot2); require(gridExtra)
 #Retrieve Malaria (TDR+ ~~PaluConf) for HTC sites
 mydata= preprocessing_disease(select_htc=TRUE)[["Malaria"]]
 
@@ -100,7 +110,15 @@ print(d)
 ```
 
 ```{r,echo=F,out.extra='',comment='', message=FALSE , warning=FALSE}
-setwd("/media/herimanitra/Document/IPM_sentinelle/sentinel_hrmntr 291115/Sentinel")
+if ( getwd()!="/srv/shiny-server/sentinel_hrmntr/Sentinel" )
+{
+  mypath="/srv/shiny-server/sentinel_hrmntr/Sentinel"
+  setwd(mypath)
+} else {
+  mypath= "/media/herimanitra/Document/IPM_sentinelle/sentinel_hrmntr 291115/Sentinel"
+  setwd(mypath)
+}
+
 semaine=array()
 max_deb_sem=max(as.Date(palu_autoch$deb_sem,origin="1970-01-01"))
 semaine[6]= max_deb_sem-2*7 
@@ -149,8 +167,12 @@ knitr::kable(last6_palu_autoch[, c("Centre","6 semaines précédentes","Semaine 
 ```
 
 ```{r,echo=F, fig.show = "hold"  ,out.width ='50%',out.extra='',comment='',message=FALSE , warning=FALSE}
-setwd("/media/herimanitra/Document/IPM_sentinelle/sentinel_hrmntr 291115/Sentinel")
-
+if ( getwd()!="/srv/shiny-server/sentinel_hrmntr/Sentinel" )
+{
+  setwd("/srv/shiny-server/sentinel_hrmntr/Sentinel")
+} else {
+  setwd("/media/herimanitra/Document/IPM_sentinelle/sentinel_hrmntr 291115/Sentinel")
+}
 #loop and plot:
 mydata= preprocessing_disease(select_htc=TRUE)[["Malaria"]]
 setnames(mydata,"occurence","palu")
