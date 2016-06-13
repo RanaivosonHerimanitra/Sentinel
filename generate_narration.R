@@ -27,7 +27,7 @@ source("append_narration_subtitle.R",local = T)
 #title if any of the conditions above are fullfilled
 if (mylength_NA>0)
 {
-  cat('generate narration for lack of database...')
+  cat('generate narration for ',k,' at week ',j,' because of lack of database...')
   msg_NA=  pot("  .   manque de base de données depuis ") 
   msg_NA = msg_NA + pot(ifelse (mylength_NA==1,"une semaine",paste(mylength_NA," semaines consécutives")))
   point_virgule=1
@@ -56,15 +56,15 @@ if (mylength_NA>0)
 }
 if (L_palu | L_diar | L_tdr )
 {
-  cat("at least a disease will be reported...\n")
+  cat("at least a disease will be reported at week ",j,"\n")
   if (L_palu )
   {
-    cat("at least a PALU will be reported..\n")
+    cat("at least a PALU will be reported at week ",j,"\n")
     if (L_tana | L_hautplateau)
     {
       if (Nbcases>0)
       {
-        cat("generating narration for Palu in ",k,"...")
+        cat("generating narration for Palu in ",k," at week:",j,"\n")
           msg_palu=  pot(paste("  .  PALUDISME à ",k,"(",Nbcases," cas). Vérifier au CSB si cas importé."),en_gras_blue)
         cat('DONE\n')
         #NEW 26mey2016:
@@ -153,7 +153,7 @@ if (L_palu | L_diar | L_tdr )
     #to handle case when both N_fiever and N_tdr == 0
     if ( N_fiever>0 | N_tdr>0 )
     {
-      cat("generating narration for TDR manquant...")
+      cat("generating narration for TDR manquant for ",k," at week",j,"\n")
      
         tdr_manquant= pot("  .   est") + pot(" PROBABLEMENT en manque de TDR ",highlight_tdr )
         tdr_manquant=tdr_manquant + pot("cette semaine")
