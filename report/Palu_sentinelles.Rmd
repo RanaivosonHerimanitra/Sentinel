@@ -15,7 +15,7 @@ output: pdf_document
 
 
 ```{r,echo=F, fig.width=10, out.extra='',comment='', message=FALSE , warning=FALSE}
-if ( getwd()!="/srv/shiny-server/sentinel_hrmntr/Sentinel" )
+if ( getwd()!="/srv/shiny-server/sentinel_hrmntr/Sentinel/report" )
 {
   setwd("/srv/shiny-server/sentinel_hrmntr/Sentinel")
 } else {
@@ -74,7 +74,7 @@ source("./reporting_plot.R",local = T)
 
 
 ```{r,echo=F,out.extra='',comment='', message=FALSE , warning=FALSE}
-if ( getwd()!="/srv/shiny-server/sentinel_hrmntr/Sentinel" )
+if ( getwd()!="/srv/shiny-server/sentinel_hrmntr/Sentinel/report" )
 {
   setwd("/srv/shiny-server/sentinel_hrmntr/Sentinel")
 } else {
@@ -203,7 +203,7 @@ knitr::kable(malaria[,c("Sites","6 semaines précédentes","Semaine dernière"),
 ```
 
 ```{r,echo=F, fig.show = "hold" ,out.width = '50%', out.extra='',comment='', message=FALSE , warning=FALSE}
-if ( getwd()!="/srv/shiny-server/sentinel_hrmntr/Sentinel" )
+if ( getwd()!="/srv/shiny-server/sentinel_hrmntr/Sentinel/report" )
 {
   setwd("/srv/shiny-server/sentinel_hrmntr/Sentinel")
 } else {

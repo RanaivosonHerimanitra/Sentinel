@@ -15,11 +15,12 @@ output: pdf_document
 
 
 ```{r,echo=F, fig.width=10, out.extra='',comment='', message=FALSE , warning=FALSE}
-if ( getwd()!="/srv/shiny-server/sentinel_hrmntr/Sentinel" )
+if ( getwd()!="/srv/shiny-server/sentinel_hrmntr/Sentinel/report" )
 {
-  setwd("/srv/shiny-server/sentinel_hrmntr/Sentinel/report")
+   setwd("/media/herimanitra/Document/IPM_sentinelle/sentinel_hrmntr 291115/Sentinel/report")
+ 
 } else {
-  setwd("/media/herimanitra/Document/IPM_sentinelle/sentinel_hrmntr 291115/Sentinel/report")
+  setwd("/srv/shiny-server/sentinel_hrmntr/Sentinel/report")
   
 }
 source("./import_data.R");source("./preprocessing.R");require(ggplot2); require(gridExtra)
@@ -48,11 +49,13 @@ print(d)
 ```
 
 ```{r,echo=F,out.extra='',comment='', message=FALSE , warning=FALSE}
-if ( getwd()!="/srv/shiny-server/sentinel_hrmntr/Sentinel" )
+if ( getwd()!="/srv/shiny-server/sentinel_hrmntr/Sentinel/report" )
 {
-  setwd("/srv/shiny-server/sentinel_hrmntr/Sentinel/report")
-} else {
   setwd("/media/herimanitra/Document/IPM_sentinelle/sentinel_hrmntr 291115/Sentinel/report")
+  
+} else {
+    setwd("/srv/shiny-server/sentinel_hrmntr/Sentinel/report")
+
   
 }
 mydata= preprocessing_disease()[["ILI"]]
@@ -99,11 +102,11 @@ knitr::kable(X[,c("Sites","6 semaines précédentes","Semaine dernière"),with=F
 ```
 
 ```{r,echo=F, fig.show = "hold" ,out.width = '50%', out.extra='',comment='', message=FALSE , warning=FALSE}
-if ( getwd()!="/srv/shiny-server/sentinel_hrmntr/Sentinel" )
+if ( getwd()!="/srv/shiny-server/sentinel_hrmntr/Sentinel/report" )
 {
-  setwd("/srv/shiny-server/sentinel_hrmntr/Sentinel")
+   setwd("/media/herimanitra/Document/IPM_sentinelle/sentinel_hrmntr 291115/Sentinel")
 } else {
-  setwd("/media/herimanitra/Document/IPM_sentinelle/sentinel_hrmntr 291115/Sentinel")
+ setwd("/srv/shiny-server/sentinel_hrmntr/Sentinel")
 }
     #merge with sentinel_latlong:
     mydata=merge(mydata,sentinel_latlong, by.x="sites",by.y="sites")

@@ -15,13 +15,15 @@ output: pdf_document
 
 
 ```{r,echo=F,fig.width=10, out.extra='',comment='', message=FALSE , warning=FALSE}
-if ( getwd()!="/srv/shiny-server/sentinel_hrmntr/Sentinel" )
+if ( getwd()!="/srv/shiny-server/sentinel_hrmntr/Sentinel/report" )
 {
-  mypath="/srv/shiny-server/sentinel_hrmntr/Sentinel"
+   mypath= "/media/herimanitra/Document/IPM_sentinelle/sentinel_hrmntr 291115/Sentinel"
   setwd(mypath)
 } else {
-  mypath= "/media/herimanitra/Document/IPM_sentinelle/sentinel_hrmntr 291115/Sentinel"
+  mypath="/srv/shiny-server/sentinel_hrmntr/Sentinel"
   setwd(mypath)
+  
+ 
 }
 #load source code:
 source("./import_data.R");source("./preprocessing.R");require(ggplot2); require(gridExtra)
@@ -48,11 +50,13 @@ p
 
 
 ```{r,echo=F,out.extra='',comment='', message=FALSE , warning=FALSE}
-if ( getwd()!="/srv/shiny-server/sentinel_hrmntr/Sentinel" )
+if ( getwd()!="/srv/shiny-server/sentinel_hrmntr/Sentinel/report" )
 {
-  mypath="/srv/shiny-server/sentinel_hrmntr/Sentinel"
-} else {
   mypath= "/media/herimanitra/Document/IPM_sentinelle/sentinel_hrmntr 291115/Sentinel"
+  
+  
+} else {
+  mypath="/srv/shiny-server/sentinel_hrmntr/Sentinel"
 }
 
 semaine=array()

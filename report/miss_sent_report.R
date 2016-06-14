@@ -3,7 +3,10 @@
 library(ReporteRs);require(Hmisc)
 
 doc <- docx() 
-doc=addImage(doc, "/media/herimanitra/Document/IPM_sentinelle/sentinel_hrmntr 291115/Sentinel/report/logo.png",
+path1="/media/herimanitra/Document/IPM_sentinelle/sentinel_hrmntr 291115/Sentinel/report/logo.png"
+path2="/srv/shiny-server/sentinel_hrmntr/Sentinel/report/logo.png"
+mylogo=ifelse(file.exists(path1),path1,path2)
+doc=addImage(doc, mylogo,
              par.properties = parProperties(text.align = "left", padding = 5), 
              width=5,
              height=1.5)
@@ -21,7 +24,10 @@ horizontal_text= cellProperties(text.direction = "lrtb",
 
 cat("load data and preprocess missing sent...")
 require(data.table)
-missing_sent= fread("/media/herimanitra/Document/IPM_sentinelle/sentinel_hrmntr 291115/Sentinel/data/missing_sent.csv")
+path1="/media/herimanitra/Document/IPM_sentinelle/sentinel_hrmntr 291115/Sentinel/data/missing_sent.csv"
+path2="/srv/shiny-server/sentinel_hrmntr/Sentinel/data/missing_sent.csv"
+myfile=ifelse(file.exists(path1),path1,path2)
+missing_sent= fread(myfile)
 missing_sent[,code:=paste0(substr(Annee,3,4),"/",ifelse(nchar(Semaine)<2,paste0("0",Semaine),Semaine))]
 cat("DONE\n")
 
@@ -35,7 +41,10 @@ X=cbind(Semaine=row.names(X),X)
 cat("DONE\n")
 
 cat("load sentinel lat/long define 34sites vs other...")
-sentinel_latlong = fread("/media/herimanitra/Document/IPM_sentinelle/sentinel_hrmntr 291115/Sentinel/data/sentinel.csv")
+path1="/media/herimanitra/Document/IPM_sentinelle/sentinel_hrmntr 291115/Sentinel/data/sentinel.csv"
+path2="/srv/shiny-server/sentinel_hrmntr/Sentinel/data/sentinel.csv"
+myfile=ifelse(file.exists(path1),path1,path2)
+sentinel_latlong = fread(myfile)
 sites34 = which( tolower(colnames(X)) %in% tolower(c("CSBU MANANJARY MNJ",
                                     "TSIMADILO",
                                     sentinel_latlong$centre) ))

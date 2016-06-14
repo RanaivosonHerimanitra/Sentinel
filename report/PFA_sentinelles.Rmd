@@ -13,7 +13,7 @@ output: pdf_document
 ---
 
 ```{r,echo=F, fig.width=10, out.extra='',comment='', message=FALSE , warning=FALSE}
-if ( getwd()!="/srv/shiny-server/sentinel_hrmntr/Sentinel" )
+if ( getwd()!="/srv/shiny-server/sentinel_hrmntr/Sentinel/report" )
 {
   mypath= "/srv/shiny-server/sentinel_hrmntr/Sentinel"
   setwd(mypath)
@@ -56,7 +56,7 @@ print(d)
 ```
 
 ```{r,echo=F,out.extra='',comment='', message=FALSE , warning=FALSE}
-if ( getwd()!="/srv/shiny-server/sentinel_hrmntr/Sentinel" )
+if ( getwd()!="/srv/shiny-server/sentinel_hrmntr/Sentinel/report" )
 {
   mypath= "/srv/shiny-server/sentinel_hrmntr/Sentinel"
   setwd(mypath)
@@ -119,7 +119,7 @@ knitr::kable(X[,c("Sites","6 semaines précédentes","Semaine dernière"),with=F
 
 
 ```{r,echo=F, fig.show = "hold" ,out.width = '50%', out.extra='',comment='', message=FALSE , warning=FALSE}
-if ( getwd()!="/srv/shiny-server/sentinel_hrmntr/Sentinel" )
+if ( getwd()!="/srv/shiny-server/sentinel_hrmntr/Sentinel/report" )
 {
   mypath= "/srv/shiny-server/sentinel_hrmntr/Sentinel"
   setwd(mypath)
