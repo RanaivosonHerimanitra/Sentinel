@@ -1,8 +1,16 @@
+if ( getwd()!="/srv/shiny-server/sentinel_hrmntr/Sentinel") 
+{
+  mypath='/media/herimanitra/Document/IPM_sentinelle/sentinel_hrmntr 291115/Sentinel'
+  setwd(mypath)
+} else {
+  mypath="/srv/shiny-server/sentinel_hrmntr/Sentinel"
+  setwd(mypath)
+}
 require(Hmisc)
 
 cat("load data and preprocess missing sent..")
 require(data.table)
-missing_sent= fread("/media/herimanitra/Document/IPM_sentinelle/sentinel_hrmntr 291115/Sentinel/data/missing_sent.csv")
+missing_sent= fread(paste0(mypath,"/data/missing_sent.csv"))
 missing_sent[,code:=paste0(Annee,"_",ifelse(nchar(Semaine)<2,paste0("0",Semaine),Semaine))]
 cat("DONE\n")
 cat("select only >=2016 obs...")
