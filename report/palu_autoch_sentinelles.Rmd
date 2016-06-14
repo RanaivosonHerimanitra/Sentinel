@@ -23,8 +23,6 @@ if ( getwd()!="/srv/shiny-server/sentinel_hrmntr/Sentinel/report" )
 {
   mypath= "/media/herimanitra/Document/IPM_sentinelle/sentinel_hrmntr 291115/Sentinel"
   setwd(mypath)
-
-
 } else {
    mypath="/srv/shiny-server/sentinel_hrmntr/Sentinel"
    setwd(mypath)
@@ -111,13 +109,11 @@ print(d)
 ```{r,echo=F,out.extra='',comment='', message=FALSE , warning=FALSE}
 if ( getwd()!="/srv/shiny-server/sentinel_hrmntr/Sentinel/report" )
 {
-
   mypath= "/media/herimanitra/Document/IPM_sentinelle/sentinel_hrmntr 291115/Sentinel"
   setwd(mypath)
 } else {
    mypath="/srv/shiny-server/sentinel_hrmntr/Sentinel"
    setwd(mypath)
-
 }
 
 semaine=array()
@@ -161,7 +157,8 @@ last6_palu_autoch=merge(last6_palu_autoch,
 require(Hmisc)
 last6_palu_autoch[,Centre:=capitalize(tolower(Centre))]
 #save table to be re-used later:
-save(last6_palu_autoch,file="interactive_summary_report/last6_palu_autoch.rda")
+save(last6_palu_autoch,
+     file="interactive_summary_report/last6_palu_autoch.rda")
 
 #generate tables:
 knitr::kable(last6_palu_autoch[, c("Centre","6 semaines précédentes","Semaine dernière"),with=F], caption="Paludisme autochtone dans le réseau sentinelle HTC")
@@ -201,7 +198,7 @@ for ( p in myname )
   setnames(disease2,"autoch","value")
   disease2[,Légende:="autoch"]
   X=rbind(disease2, disease1)
-  X$deb_sem=as.Date(as.numeric(X$deb_sem),origin="1970-01-01")
+  X$deb_sem=(as.Date( X$deb_sem,origin="1970-01-01"))
   setnames(X,"deb_sem","Date")
   d = ggplot(data=X,aes(x=Date,y=value,fill=Légende,colour=Légende)) 
   #set ylim to 10 if <10
