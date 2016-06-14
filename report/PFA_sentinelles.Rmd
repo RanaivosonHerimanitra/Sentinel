@@ -14,11 +14,12 @@ output: pdf_document
 
 ```{r,echo=F, fig.width=10, out.extra='',comment='', message=FALSE , warning=FALSE}
 if ( getwd()!="/srv/shiny-server/sentinel_hrmntr/Sentinel/report" )
-{
-  mypath= "/srv/shiny-server/sentinel_hrmntr/Sentinel"
-  setwd(mypath)
-} else {
+{ 
   mypath= "/media/herimanitra/Document/IPM_sentinelle/sentinel_hrmntr 291115/Sentinel"
+  setwd(mypath)
+ 
+} else {
+  mypath= "/srv/shiny-server/sentinel_hrmntr/Sentinel"
   setwd(mypath)
 }
 
@@ -58,11 +59,10 @@ print(d)
 ```{r,echo=F,out.extra='',comment='', message=FALSE , warning=FALSE}
 if ( getwd()!="/srv/shiny-server/sentinel_hrmntr/Sentinel/report" )
 {
-  mypath= "/srv/shiny-server/sentinel_hrmntr/Sentinel"
-  setwd(mypath)
-  
-} else {
   mypath= "/media/herimanitra/Document/IPM_sentinelle/sentinel_hrmntr 291115/Sentinel"
+  setwd(mypath)
+} else {
+   mypath= "/srv/shiny-server/sentinel_hrmntr/Sentinel"
   setwd(mypath)
 }
 
@@ -121,12 +121,13 @@ knitr::kable(X[,c("Sites","6 semaines précédentes","Semaine dernière"),with=F
 ```{r,echo=F, fig.show = "hold" ,out.width = '50%', out.extra='',comment='', message=FALSE , warning=FALSE}
 if ( getwd()!="/srv/shiny-server/sentinel_hrmntr/Sentinel/report" )
 {
-  mypath= "/srv/shiny-server/sentinel_hrmntr/Sentinel"
+   mypath= "/media/herimanitra/Document/IPM_sentinelle/sentinel_hrmntr 291115/Sentinel"
   setwd(mypath)
   
 } else {
-  mypath= "/media/herimanitra/Document/IPM_sentinelle/sentinel_hrmntr 291115/Sentinel"
+  mypath= "/srv/shiny-server/sentinel_hrmntr/Sentinel"
   setwd(mypath)
+ 
 }
   
     #merge with sentinel_latlong:
