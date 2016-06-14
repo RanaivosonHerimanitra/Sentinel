@@ -95,14 +95,19 @@ generate_plot=function(htc="all",
                         linetype=4,colour="orange")
       d=d + ggtitle(label=paste(title.label.list, myname[p]))
       d=d + xlab("Date (ligne orange=1er janvier)") + ylab(title.ylab)
+      # path handler:
+      path1="/media/herimanitra/Document/IPM_sentinelle/sentinel_hrmntr 291115/Sentinel/"
+      path2= "/srv/shiny-server/sentinel_hrmntr/Sentinel/"
+      mypath=ifelse(file.exists(path1),path1,path2)
+      
       #save plot to be re-used later:
       if(disease.name=="malaria")
       {
-        save(p,d,file=paste0("report/malaria/malaria_",myname[p],".rda"))
+        save(p,d,file=paste0(mypath,"report/malaria/malaria_",myname[p],".rda"))
       }
       if(disease.name=="diarrhea")
       {
-        save(p,d,file=paste0("/srv/shiny-server/sentinel_hrmntr/Sentinel/report/diarrhea/diarrhea_",myname[p],".rda"))
+        save(p,d,file=paste0(mypath,"report/diarrhea/diarrhea_",myname[p],".rda"))
       }
       myplot[[p]]=d
       print(myplot[[p]])

@@ -53,8 +53,6 @@ p
 if ( getwd()!="/srv/shiny-server/sentinel_hrmntr/Sentinel/report" )
 {
   mypath= "/media/herimanitra/Document/IPM_sentinelle/sentinel_hrmntr 291115/Sentinel"
-  
-  
 } else {
   mypath="/srv/shiny-server/sentinel_hrmntr/Sentinel"
 }
