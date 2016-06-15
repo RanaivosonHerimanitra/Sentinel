@@ -2,8 +2,10 @@
 library(ReporteRs)
 
 doc <- docx() 
-
-doc=addImage(doc, "/media/herimanitra/Document/IPM_sentinelle/sentinel_hrmntr 291115/Sentinel/report/logo.png",
+path1="/media/herimanitra/Document/IPM_sentinelle/sentinel_hrmntr 291115/Sentinel/report/logo.png"
+path2= "/srv/shiny-server/sentinel_hrmntr/Sentinel/report/logo.png"
+mylogo= ifelse(file.exists(path1),path1,path2)
+doc=addImage(doc, mylogo,
          par.properties = parProperties(text.align = "left", padding = 5), 
          width=5,
          height=1.5)
@@ -89,9 +91,7 @@ percentile_palu_alerte=merge(percentile_palu_alerte,sentinel_latlong,
                              by.x=c("sites"),by.y=c("sites"),all.x=T)
 percentile_diar_alerte=merge(percentile_diar_alerte,sentinel_latlong,
                              by.x=c("sites"),by.y=c("sites"),all.x=T)
-#generate reports starting from 2012 only:
-# percentile_diar_alerte=percentile_diar_alerte[years>=2012]
-# percentile_palu_alerte=percentile_palu_alerte[years>=2012]
+
 #################prepare data to detect lack of RDT #######
 PaluConf_tdr[,code:= paste0(Annee,"_",ifelse(nchar(Semaine)<2,paste0("0",Semaine),Semaine))]
 PaluConf_tdr[,SyndF:=sum(SyndF,na.rm=T),by="sites,code"]
@@ -155,8 +155,6 @@ for ( j in mycode[as.numeric(substr(mycode,1,4))>=2012] )
   alerte_manque_tdr=PaluConf_tdr[code==j & manque_tdr>0,list(code,name,manque_tdr,TestPalu,SyndF)]
   
   #currently (8juin2016) cannot handle NA in HTC sites because there is no HTC site in percentile_palu_alerte
-  #palu_NA= percentile_palu_alerte[code == j & is.na(occurence)==T,get("name")]
-  #diar_NA= percentile_diar_alerte[code == j & is.na(occurence)==T,get("name")]
   #so switch to :
   palu_NA =sentinel_latlong[sites %in% names(PaluConf)[which(is.na(PaluConf[code == j ])==T)],get("name") ]
   diar_NA =sentinel_latlong[sites %in%  names(Diarrh)[which(is.na(Diarrh[code == j ])==T)],get("name") ]
@@ -187,6 +185,7 @@ cat("DONE\n")
 cat("Writing document to a word document...")
 writeDoc(doc, file = "report/report.docx")
 #sudo apt-get install unoconv
+Sys.sleep(5)
 system("doc2pdf report/report.docx") #write in pdf using cli command
 cat('DONE\n')
 
