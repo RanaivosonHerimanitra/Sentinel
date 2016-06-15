@@ -44,8 +44,14 @@ p=generate_plot(htc="all",
               legend.disease2="Diarrhées non fébriles",
               title.label="Diarrhées dans le réseau sentinelle",
               title.ylab="Cas de Diarrhées")
+print(p)
+
+p = p + xlab("") + ylab("") + ggtitle("")
+p = p + ggtitle("Diarrhea cases")
+#finally change legend:
+p$data$Légende=ifelse(p$data$Légende=="Diarrhées fébriles","Febrile","Non Febrile")
 save(p,file="report/diar_chart.rda")
-p
+
 ```
 
 

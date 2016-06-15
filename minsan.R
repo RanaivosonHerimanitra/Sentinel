@@ -189,6 +189,7 @@ calculate_minsan=function(data=mydata,
   
 ##########################################################################
   cat('calculate radius for per site for percentile algorithm alert...')
+  # TODO: en fonction du NB cas
   #fixons la taille du cercle à 15 pour les alertes
   #la taille des cercles en situation normale est proportionnelle
   # au nombre de cas mais ne dépasse pas 15.

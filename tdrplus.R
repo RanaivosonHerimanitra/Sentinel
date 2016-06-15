@@ -1,3 +1,4 @@
+#' calculate lack of RDT kit
 tdr_malaria = function (htc=FALSE)
 {
   htc_code= c("deb_sem","code","abon","ambl","ants","bela",
@@ -32,14 +33,9 @@ tdr_malaria = function (htc=FALSE)
                                 key=sites,
                                 value=malaria_cases,-c(code,deb_sem)))
   #preprocessing of tdr_eff
- 
-  #tdr_eff = tdr_eff %>% data.frame() %>% data.table() 
-  
   tdr_eff[,code:=paste0(Annee,"_",Semaine)]
   tdr_eff[,sites:=tolower(sites)]
   tdr_eff[,deb_sem:=NULL]
-  #
-  
   #
   PaluConf_tdr=merge(PaluConf,tdr_eff,
                      by.x=c("code","sites"),

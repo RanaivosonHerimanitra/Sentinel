@@ -17,7 +17,6 @@ if ( getwd()!="/srv/shiny-server/sentinel_hrmntr/Sentinel/report" )
 { 
   mypath= "/media/herimanitra/Document/IPM_sentinelle/sentinel_hrmntr 291115/Sentinel"
   setwd(mypath)
- 
 } else {
   mypath= "/srv/shiny-server/sentinel_hrmntr/Sentinel"
   setwd(mypath)
@@ -51,9 +50,11 @@ d = d + scale_y_continuous(breaks= seq.int(from=1,to=mymax[2],by=2) )
 #vertical axis label 
 d=d+theme(axis.text.x=element_text(angle=90,hjust=1,vjust=0.5))
 d= d + scale_x_date(date_breaks = "1 week")
-save(d,file="report/pfa_chart.rda")
-print(d)
 
+print(d)
+d= d + xlab("") + ylab("")+ ggtitle("")
+d= d + ggtitle("AFP cases")
+save(d,file="report/pfa_chart.rda")
 ```
 
 ```{r,echo=F,out.extra='',comment='', message=FALSE , warning=FALSE}
@@ -155,7 +156,9 @@ if ( getwd()!="/srv/shiny-server/sentinel_hrmntr/Sentinel/report" )
       d=d+theme(axis.text.x=element_text(angle=90,hjust=1,vjust=0.5))
       d= d + scale_x_date(date_breaks = "2 weeks")
       #save graph to be re-used later:
-      save(p,d,file=paste0("report/pfa/pfa_",myname[p],".rda"))
       print(d)
+      #remove titles that are in french:
+      d= d + xlab("") + ylab("") + ggtitle("")
+      save(p,d,file=paste0("report/pfa/pfa_",myname[p],".rda"))
     }
 ```

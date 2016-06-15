@@ -43,8 +43,13 @@ debut_annee=as.numeric(unique(mydata[weeks==1,deb_sem]))
 debut_annee=c(min(debut_annee)-365, as.Date("2013-01-01"), debut_annee)
       
 d= d + geom_vline(xintercept = debut_annee,linetype=4,colour="orange")
-save(d,file="report/ili_chart.rda")                        
+
 print(d)
+
+
+d= d + xlab("") + ylab("")+ ggtitle("")
+d=d + ggtitle("ILI cases")
+save(d,file="report/ili_chart.rda")                        
 
 ```
 
@@ -133,9 +138,14 @@ if ( getwd()!="/srv/shiny-server/sentinel_hrmntr/Sentinel/report" )
       d= d + geom_vline(xintercept = debut_annee,
                         linetype=4,colour="orange")
       d=d + ggtitle(label=paste(myname[p]))
-      #save graph to be re-used later:
-      save(p,d,file=paste0("report/ili/ili_",myname[p],".rda"))
+      
       d=d + xlab("Date (ligne orange=1er janvier)") + ylab("Nb. Cas")
       print(d)
+      
+      #remove titles that are in french
+      d= d + xlab("") + ylab("") + ggtitle("")
+      #save graph to be re-used later:
+      save(p,d,file=paste0("report/ili/ili_",myname[p],".rda"))
+     
     }
 ```

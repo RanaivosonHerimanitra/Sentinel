@@ -994,10 +994,8 @@ server<-function(input, output,session) {
   #sumary plot of the HTC Malaria report:
   output$htc_report_plot = renderPlotly({
     load(file = "report/palu_autoch_chart.rda")
-    d = d + xlab("") + ylab("") + ggtitle("")
-    d = d + ggtitle("Malaria cases (autochtone vs imported)")
-    #finally change legend:
-    d$data$Légende=ifelse(d$data$Légende=="Palu importé","Imported","Autochtone")
+    
+    
     ggplotly(d)
   })
   output$table_htc_report = DT::renderDataTable({
@@ -1029,17 +1027,13 @@ server<-function(input, output,session) {
     code_site= site20[Centre==input$CSB_sites,Centre2]
     sitemodel_found= grep(code_site,individual_model,value = T)
     load(file=paste0("report/palu_autoch/",sitemodel_found))
-    #finally change legend:
-    d$data$Légende=ifelse(d$data$Légende=="autoch","Autochtone","Imported")
+    
     ggplotly(d)
   })
   #summary plot of the Malaria (global) report:
   output$malaria_report_plot = renderPlotly({
     load(file = "report/palu_chart.rda")
-    p = p + xlab("") + ylab("") + ggtitle("")
-    p = p + ggtitle("Malaria-Fever cases")
-    #finally change legend:
-    p$data$Disease=ifelse(p$data$Disease=="Palu(TDR+)","RDT+","Fever")
+   
     ggplotly(p)
   })
   #interactive Malaria table:
@@ -1089,19 +1083,13 @@ server<-function(input, output,session) {
     individual_model=list.files(path="report/malaria")
     sitemodel_found= grep(input$CSB_sites_malaria,individual_model,value = T)
     load(file=paste0("report/malaria/",sitemodel_found))
-    #finally change legend:
-    d$data$Légende=ifelse(d$data$Légende=="Palu(TDR+)","RDT+","Fever")
-    #remove titles that are in french
-    d= d + xlab("") + ylab("") + ggtitle("")
+    
     ggplotly(d)
   })
   #summary plot of the Diarrhea report:
   output$diarrhea_report_plot = renderPlotly({
     load(file = "report/diar_chart.rda")
-    p = p + xlab("") + ylab("") + ggtitle("")
-    p = p + ggtitle("Diarrhea cases")
-    #finally change legend:
-    p$data$Légende=ifelse(p$data$Légende=="Diarrhées fébriles","Febrile","Non Febrile")
+    
     ggplotly(p)
   })
   output$table_diarrhea_report = DT::renderDataTable({
@@ -1149,18 +1137,13 @@ server<-function(input, output,session) {
     individual_model=list.files(path="report/diarrhea")
     sitemodel_found= grep(input$CSB_sites_diarrhea,individual_model,value = T)
     load(file=paste0("report/diarrhea/",sitemodel_found))
-    #finally change legend:
-    d$data$Légende=ifelse(d$data$Légende=="Diarrhées fébriles",
-                          "Febrile","Non Febrile")
-    #remove titles that are in french
-    d= d + xlab("") + ylab("") + ggtitle("")
+   
     ggplotly(d)
   })
   #summary plot of the ILI report:
   output$ili_report_plot = renderPlotly({
     load(file = "report/ili_chart.rda") 
-    d= d + xlab("") + ylab("")+ ggtitle("")
-    d=d + ggtitle("ILI cases")
+    
     ggplotly(d)
   })
   output$table_ili_report = DT::renderDataTable({
@@ -1188,16 +1171,14 @@ server<-function(input, output,session) {
     individual_model=list.files(path="report/ili")
     sitemodel_found= grep(input$CSB_sites_ili,individual_model,value = T)
     load(file=paste0("report/ili/",sitemodel_found))
-    #remove titles that are in french
-    d= d + xlab("") + ylab("") + ggtitle("")
+    
     ggplotly(d)
     
   })
   #summary plot of the PFA report:
   output$pfa_report_plot = renderPlotly({
     load(file = "report/pfa_chart.rda")
-    d= d + xlab("") + ylab("")+ ggtitle("")
-    d=d + ggtitle("AFP cases")
+    
     ggplotly(d)
   })
   output$table_pfa_report = DT::renderDataTable({
@@ -1224,8 +1205,7 @@ server<-function(input, output,session) {
     individual_model=list.files(path="report/pfa")
     sitemodel_found= grep(input$CSB_sites_pfa,individual_model,value = T)
     load(file=paste0("report/pfa/",sitemodel_found))
-    #remove titles that are in french
-    d= d + xlab("") + ylab("") + ggtitle("")
+   
     ggplotly(d)
     
   })

@@ -100,17 +100,27 @@ generate_plot=function(htc="all",
       path2= "/srv/shiny-server/sentinel_hrmntr/Sentinel/"
       mypath=ifelse(file.exists(path1),path1,path2)
       
+      
+      myplot[[p]]=d
+      print(myplot[[p]])
       #save plot to be re-used later:
       if(disease.name=="malaria")
       {
+        #finally change legend:
+        d$data$Légende=ifelse(d$data$Légende=="Palu(TDR+)","RDT+","Fever")
+        #remove titles that are in french
+        d= d + xlab("") + ylab("") + ggtitle("")
         save(p,d,file=paste0(mypath,"report/malaria/malaria_",myname[p],".rda"))
       }
       if(disease.name=="diarrhea")
       {
+        #finally change legend:
+        d$data$Légende=ifelse(d$data$Légende=="Diarrhées fébriles",
+                              "Febrile","Non Febrile")
+        #remove titles that are in french
+        d= d + xlab("") + ylab("") + ggtitle("")
         save(p,d,file=paste0(mypath,"report/diarrhea/diarrhea_",myname[p],".rda"))
       }
-      myplot[[p]]=d
-      print(myplot[[p]])
     }
   }
   
