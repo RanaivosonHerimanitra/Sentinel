@@ -4,8 +4,8 @@ if ( getwd()!="/srv/shiny-server/sentinel_hrmntr/Sentinel" )
 {
   mypath = "/media/herimanitra/Document/IPM_sentinelle/sentinel_hrmntr 291115/Sentinel/report"
   setwd(mypath)
-  
-  
+
+
 } else {
   mypath= "/srv/shiny-server/sentinel_hrmntr/Sentinel/report"
   setwd(mypath)

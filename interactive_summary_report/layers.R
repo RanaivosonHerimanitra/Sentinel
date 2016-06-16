@@ -3,7 +3,7 @@
 ####################### MAIN REPORT ####################################
 historical_alert=fread("interactive_summary_report/historical_alert.csv")
 #retrieve last month alert:
-mycode=unique(historical_alert$code)[1:4]
+mycode=unique(historical_alert$code)[1:8]
 historical_alert1=historical_alert[code %in% mycode[1]]
 #initialize a list to store alert in html boostrap-ish:
 listOfAlerts1=list()
@@ -94,10 +94,121 @@ for ( ix in 1:nrow(historical_alert4) )
     listOfAlerts4[[ix]]=tags$p(class="lead",paste(historical_alert4[ix,sites],historical_alert4[ix,alert]))
   }
 }
+
+historical_alert5=historical_alert[code %in% mycode[5]]
+#initialize a list to store alert in html boostrap-ish:
+listOfAlerts5=list()
+for ( ix in 1:nrow(historical_alert5) )
+{
+  #apply style conditionnally:
+  if (length(grep("diagnostic kit",historical_alert5[ix,alert]))>0) {
+    listOfAlerts5[[ix]]=tags$p(class="lead",style="color:#ffb90f;font-weight: bold;" ,
+                               paste(historical_alert5[ix,sites],historical_alert5[ix,alert]))
+  } 
+  if (length(grep("Malaria identified",historical_alert1[ix,alert]))>0) {
+    listOfAlerts5[[ix]]=tags$p(class="lead",style="color:blue;font-weight: bold;",
+                               paste(historical_alert5[ix,sites],historical_alert5[ix,alert]))
+  }
+  if (length(grep("Malaria alert",historical_alert5[ix,alert]))>0) {
+    listOfAlerts5[[ix]]=tags$p(class="lead",style="color:red;font-weight: bold;",
+                               paste(historical_alert5[ix,sites],historical_alert5[ix,alert]))
+  }
+  if (length(grep("Diarrhea alert",historical_alert5[ix,alert]))>0) {
+    listOfAlerts5[[ix]]=tags$p(class="lead",style="color:darkgreen;font-weight: bold;",
+                               paste(historical_alert5[ix,sites],historical_alert5[ix,alert]))
+  }
+  if (length(grep("has a lack of data",historical_alert5[ix,alert]))>0) {
+    listOfAlerts5[[ix]]=tags$p(class="lead",
+                               paste(historical_alert5[ix,sites],historical_alert5[ix,alert]))
+  }
+}
+historical_alert6=historical_alert[code %in% mycode[6]]
+#initialize a list to store alert in html boostrap-ish:
+listOfAlerts6=list()
+for ( ix in 1:nrow(historical_alert6) )
+{
+  #apply style conditionnally:
+  if (length(grep("diagnostic kit",historical_alert6[ix,alert]))>0) {
+    listOfAlerts6[[ix]]=tags$p(class="lead",style="color:#ffb90f;font-weight: bold;" ,
+                               paste(historical_alert6[ix,sites],historical_alert6[ix,alert]))
+  } 
+  if (length(grep("Malaria identified",historical_alert6[ix,alert]))>0) {
+    listOfAlerts6[[ix]]=tags$p(class="lead",style="color:blue;font-weight: bold;",
+                               paste(historical_alert6[ix,sites],historical_alert6[ix,alert]))
+  }
+  if (length(grep("Malaria alert",historical_alert6[ix,alert]))>0) {
+    listOfAlerts6[[ix]]=tags$p(class="lead",style="color:red;",
+                               paste(historical_alert6[ix,sites],historical_alert6[ix,alert]))
+  }
+  if (length(grep("Diarrhea alert",historical_alert6[ix,alert]))>0) {
+    listOfAlerts6[[ix]]=tags$p(class="lead",style="color:darkgreen;font-weight: bold;",
+                               paste(historical_alert6[ix,sites],historical_alert6[ix,alert]))
+  }
+  if (length(grep("has a lack of data",historical_alert6[ix,alert]))>0) {
+    listOfAlerts6[[ix]]=tags$p(class="lead",
+                               paste(historical_alert6[ix,sites],historical_alert6[ix,alert]))
+  }
+}
+##################################################################################
+historical_alert7=historical_alert[code %in% mycode[7]]
+#initialize a list to store alert in html boostrap-ish:
+listOfAlerts7=list()
+for ( ix in 1:nrow(historical_alert3) )
+{
+  #apply style conditionnally:
+  if (length(grep("diagnostic kit",historical_alert7[ix,alert]))>0) {
+    listOfAlerts3[[ix]]=tags$p(class="lead",style="color:#ffb90f;font-weight: bold;" ,
+                               paste(historical_alert7[ix,sites],historical_alert7[ix,alert]))
+  } 
+  if (length(grep("Malaria identified",historical_alert7[ix,alert]))>0) {
+    listOfAlerts7[[ix]]=tags$p(class="lead",style="color:blue;font-weight: bold;",
+                               paste(historical_alert7[ix,sites],historical_alert7[ix,alert]))
+  }
+  if (length(grep("Malaria alert",historical_alert7[ix,alert]))>0) {
+    listOfAlerts7[[ix]]=tags$p(class="lead",style="color:red;",
+                               paste(historical_alert7[ix,sites],historical_alert7[ix,alert]))
+  }
+  if (length(grep("Diarrhea alert",historical_alert7[ix,alert]))>0) {
+    listOfAlerts7[[ix]]=tags$p(class="lead",style="color:darkgreen;font-weight: bold;",
+                               paste(historical_alert7[ix,sites],historical_alert7[ix,alert]))
+  }
+  if (length(grep("has a lack of data",historical_alert7[ix,alert]))>0) {
+    listOfAlerts7[[ix]]=tags$p(class="lead",
+                               paste(historical_alert7[ix,sites],historical_alert7[ix,alert]))
+  }
+}
+###################################################################################
+historical_alert8=historical_alert[code %in% mycode[8]]
+#initialize a list to store alert in html boostrap-ish:
+listOfAlerts8=list()
+for ( ix in 1:nrow(historical_alert8) )
+{
+  #apply style conditionnally:
+  if (length(grep("diagnostic kit",historical_alert8[ix,alert]))>0) {
+    listOfAlerts8[[ix]]=tags$p(class="lead",style="color:#ffb90f;font-weight: bold;" ,
+                               paste(historical_alert8[ix,sites],historical_alert8[ix,alert]))
+  } 
+  if (length(grep("Malaria identified",historical_alert8[ix,alert]))>0) {
+    listOfAlerts8[[ix]]=tags$p(class="lead",style="color:blue;font-weight: bold;",
+                               paste(historical_alert8[ix,sites],historical_alert8[ix,alert]))
+  }
+  if (length(grep("Malaria alert",historical_alert8[ix,alert]))>0) {
+    listOfAlerts8[[ix]]=tags$p(class="lead",style="color:red;",
+                               paste(historical_alert8[ix,sites],historical_alert8[ix,alert]))
+  }
+  if (length(grep("Diarrhea alert",historical_alert8[ix,alert]))>0) {
+    listOfAlerts8[[ix]]=tags$p(class="lead",style="color:darkgreen;font-weight: bold;",
+                               paste(historical_alert8[ix,sites],historical_alert8[ix,alert]))
+  }
+  if (length(grep("has a lack of data",historical_alert8[ix,alert]))>0) {
+    listOfAlerts8[[ix]]=tags$p(class="lead",
+                               paste(historical_alert8[ix,sites],historical_alert8[ix,alert]))
+  }
+}
 ####################################################################################
 summary_report=list( tags$div(class="container",
                      tags$div( class="jumbotron",
-                     tags$h2("Alerts summary during the last month"),
+                     tags$h2("Alerts summary during the last 02 months"),
                      tags$p(class="lead","Parameters encompass:",
                                  tags$ul(
                                    tags$li(tags$p("90th percentile is calculated for all weeks except for the ongoing week.")),
@@ -118,7 +229,23 @@ summary_report=list( tags$div(class="container",
                      tags$div(class="row",tags$div(class="col-sm-8 blog-main",tags$div(class="blog-post",
                                                                                        tags$h2(class="blog-post-title","Alerts outline:"),
                                                                                        tags$p(class="blog-post-meta",mycode[4])))),
-                     listOfAlerts4
+                     listOfAlerts4,
+                     tags$div(class="row",tags$div(class="col-sm-8 blog-main",tags$div(class="blog-post",
+                                                                                       tags$h2(class="blog-post-title","Alerts outline:"),
+                                                                                       tags$p(class="blog-post-meta",mycode[5])))),
+                     listOfAlerts5,
+                     tags$div(class="row",tags$div(class="col-sm-8 blog-main",tags$div(class="blog-post",
+                                                                                       tags$h2(class="blog-post-title","Alerts outline:"),
+                                                                                       tags$p(class="blog-post-meta",mycode[6])))),
+                     listOfAlerts6,
+                     tags$div(class="row",tags$div(class="col-sm-8 blog-main",tags$div(class="blog-post",
+                                                                                       tags$h2(class="blog-post-title","Alerts outline:"),
+                                                                                       tags$p(class="blog-post-meta",mycode[7])))),
+                     listOfAlerts7,
+                     tags$div(class="row",tags$div(class="col-sm-8 blog-main",tags$div(class="blog-post",
+                                                                                       tags$h2(class="blog-post-title","Alerts outline:"),
+                                                                                       tags$p(class="blog-post-meta",mycode[8])))),
+                     listOfAlerts8
 ))
                       
 #####################################Palu autoch##################################

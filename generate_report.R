@@ -58,7 +58,7 @@ doc=addParagraph( doc, value = alert_parameter, stylename="BulletList")
 
 ######################### R code to generate the report ##########################
 require(tidyr);source("import_data.R");
-source("percentile.R");
+source("algorithms/percentile.R");
 source("preprocessing.R");
 #source("tdrplus.R");
 

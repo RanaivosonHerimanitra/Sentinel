@@ -22,14 +22,9 @@ if ( getwd()!="/srv/shiny-server/sentinel_hrmntr/Sentinel/report" )
 } else {
   mypath="/srv/shiny-server/sentinel_hrmntr/Sentinel"
   setwd(mypath)
-  
- 
 }
 #load source code:
-source("./import_data.R");
-source("./preprocessing.R");
-require(ggplot2); 
-require(gridExtra)
+source("./import_data.R");source("./preprocessing.R");require(ggplot2); require(gridExtra)
 
 mydata= preprocessing_disease()[["Diarrhea"]] #Diarrhée
 setnames(mydata,"occurence","diarh")
@@ -48,7 +43,7 @@ p=generate_plot(htc="all",
               title.label="Diarrhées dans le réseau sentinelle",
               title.ylab="Cas de Diarrhées")
 print(p)
-#change into english to display
+
 p = p + xlab("") + ylab("") + ggtitle("")
 p = p + ggtitle("Diarrhea cases")
 #finally change legend:
