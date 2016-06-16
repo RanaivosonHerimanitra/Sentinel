@@ -1,6 +1,6 @@
 if ( input$diseases=="Malaria")
 {
-  source("csum.R")
+  source("algorithms/csum.R")
   if ( input$Algorithmes_eval1=="Csum") {
     cat('You choose',input$Algorithmes_eval,'algorithm for data visualization...\n')
     if ( input$Cluster_algo=="Total" )
@@ -17,7 +17,7 @@ if ( input$diseases=="Malaria")
     myprop=myprop[year(as.Date(deb_sem,origin="1970-01-01"))>2009]
   }
 } else {
-  source("csum.R")
+  source("algorithms/csum.R")
   if ( input$Algorithmes_eval2=="Csum") {
     cat('You choose',input$Algorithmes_eval,'algorithm for data visualization...\n')
     if ( input$Cluster_algo=="Total" )

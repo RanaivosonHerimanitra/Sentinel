@@ -51,14 +51,12 @@ server<-function(input, output,session) {
   })
   percentile_algorithm = reactive({
     #some sort of cache of preprocessed data to speed up things:
-    #if ( paste0(input$diseases,".csv") %in% list.files(paste0(getwd(),"/temp")) ) 
-   # {
+  
       cat("reading ",input$diseases," from a temporary file\n")
       mydata=fread(paste0("temp/",input$diseases,".csv"))
-    #} 
     
     cat('Calculation of percentile and proportion of sites in alert begin...\n')
-    source("percentile.R")
+    source("algorithms/percentile.R")
     mylist= calculate_percentile(data=mydata,
                                  week_length=input$comet_map,
                                  percentile_value=input$Centile_map
@@ -67,16 +65,13 @@ server<-function(input, output,session) {
   })
   minsan_algorithm = reactive({
     #some sort of cache of preprocessed data to speed up things:
-    # if ( paste0(input$diseases,".csv") %in% list.files(paste0(getwd(),"/temp")) ) 
-    # {
+   
       cat("reading ",input$diseases," from a temporary file\n")
       mydata=fread(paste0("temp/",input$diseases,".csv"))
-    # } else {
-    #   mydata=preprocessing()
-    # }
+   
     #####################################Doublement du nb de cas (MinSan algo) ###################
     cat('Calculation of minsan and proportion of sites in alert begin...\n')
-    source("minsan.R")
+    source("algorithms/minsan.R")
     mylist=calculate_minsan(data=mydata,slope_minsan=input$slope_minsan,
                             minsan_weekrange=input$minsan_weekrange,
                             minsan_consecutive_week=input$minsan_consecutive_week,
@@ -84,17 +79,13 @@ server<-function(input, output,session) {
     return (mylist)
   })
   csum_algorithm = reactive({
-    #some sort of cache of preprocessed data to speed up things:
-    # if ( paste0(input$diseases,".csv") %in% list.files(paste0(getwd(),"/temp")) ) 
-    # {
+   
       cat("reading ",input$diseases," from a temporary file\n")
       mydata=fread(paste0("temp/",input$diseases,".csv"))
-    # } else {
-    #   mydata=preprocessing()
-    # }
+   
     ######################################Cumulative sum (cumsum algo) ##########################
     cat('Calculation of csum and proportion of sites in alert begin...')
-    source("csum.R")
+    source("algorithms/csum.R")
     cat('DONE\n')
     mylist= calculate_csum(data=mydata,
                            Csum_year_map=input$Csum_year_map,
@@ -442,13 +433,7 @@ server<-function(input, output,session) {
     mada_map=mada_map %>% setView(lng = 47.051532 , 
                                               lat =-19.503781 , zoom = 5) 
     mada_map=mada_map %>% addTiles(urlTemplate="http://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}")  
-    # addLegend(map=mada_map,"bottomleft", title="legend",
-    #               colors = c("orange","green", "red", "black"),
-    #               labels = c("Cleanup in progress.",
-    #                          "Cleanup complete.",
-    #                          "Status unclear.",
-    #                          "No potential for radioactive contamination."), 
-    #               opacity = 0.8)
+   
                                                                                                                                                              
     #change color to red when alert is triggered:
     #navy
@@ -767,8 +752,7 @@ server<-function(input, output,session) {
     setnames(mydata,"deb_sem","Semaine")
     #handle title programmatically (depends on user choice of disease, site)
      mytitle=paste0("Weekly ",input$diseases," cases number in ",sentinel_latlong[sites==selected_site_leaflet(),get("name")])
-    #handle date format:
-    #mydata[,Semaine:=as.character(Semaine)]
+    
     #
     line_width=1
     p=plot_ly(data=mydata,
@@ -810,26 +794,23 @@ server<-function(input, output,session) {
   #Health heatmap plot with plotly and using percentile algorithm:
   output$heatmap_percentile = renderD3heatmap({
     #some sort of cache of preprocessed data to speed up things:
-    # if ( paste0(input$diseases,".csv") %in% list.files(paste0(getwd(),"/temp")) ) 
-    # {
+   
       cat("reading ",input$diseases," from a temporary file\n")
       mydata=fread(paste0("temp/",input$diseases,".csv"))
-    # } else {
-    #   mydata=preprocessing()
-    # }
+   
     
     if ( input$diseases=="Malaria" )
     {
       #depending on the algorithm chosen, display heatmap:
       if ( input$Algorithmes_eval1 == 'Percentile' ) { 
-        source("percentile.R")
+        source("algorithms/percentile.R")
         X=calculate_percentile(data=mydata,
                                week_length=input$comet_map,
                                percentile_value=input$Centile_map)$propsite_alerte_percentile
         
       }
       if ( input$Algorithmes_eval1 == 'Csum'  ) { 
-        source("csum.R") 
+        source("algorithms/csum.R") 
         X=calculate_csum(data=mydata,
                          Csum_year_map=input$Csum_year_map,
                          #Csum_week_map=input$Csum_week_map,
@@ -840,7 +821,7 @@ server<-function(input, output,session) {
                          year_choice=year(Sys.Date()),byvar="code")$propsite_alerte_csum
       }
       if ( input$Algorithmes_eval1 == 'MinSan'  ) { 
-        source("minsan.R") 
+        source("algorithms/minsan.R") 
         
         X=calculate_minsan(data=mydata,slope_minsan=input$slope_minsan,
                            year_choice=year(Sys.Date()),
@@ -857,14 +838,14 @@ server<-function(input, output,session) {
     } else {
       if ( input$Algorithmes_eval2 == 'Percentile' ) { 
        
-        source("percentile.R")
+        source("algorithms/percentile.R")
         X=calculate_percentile(data=mydata,
                                week_length=input$comet_map,
                                percentile_value=input$Centile_map)$propsite_alerte_percentile
         
       }
       if ( input$Algorithmes_eval2 == 'Csum'  ) { 
-        source("csum.R") 
+        source("algorithms/csum.R") 
         X=calculate_csum(data=mydata,
                          Csum_year_map=input$Csum_year_map,
                          Sd_csum_map=input$Sd_csum_map,
@@ -874,7 +855,7 @@ server<-function(input, output,session) {
                          year_choice=year(Sys.Date()),byvar="code")$propsite_alerte_csum
       }
       if ( input$Algorithmes_eval2 == 'MinSan'  ) { 
-        source("minsan.R") 
+        source("algorithms/minsan.R") 
        
         X=calculate_minsan(data=mydata,slope_minsan=input$slope_minsan,
                            year_choice=year(Sys.Date()),
@@ -901,11 +882,11 @@ server<-function(input, output,session) {
     cat('DONE\n')
     
     cat('spreading data...')
-    #print(head(X))
+ 
      X[,years:=year(as.Date(deb_sem,origin="1970-01-01"))]
      X=merge(X,sentinel_latlong[,list(sites,name)],by.x="sites",by.y="sites",all.x=T)
      X=X[years %in% (2016-as.numeric(input$nbyear)):2016,]
-     #try selection using dplyr so then avoid data.frame conversion!
+     
      #as.data.frame otherwise It won't work
      myz= as.data.frame(spread(unique(X[,list(name,deb_sem,alert_status2)],by=NULL),
                               deb_sem,alert_status2))
@@ -922,15 +903,12 @@ server<-function(input, output,session) {
   #Bubble chart to display past alert:
   output$mybubble = renderPlotly({
     #some sort of cache of preprocessed data to speed up things:
-    # if ( paste0(input$diseases,".csv") %in% list.files(paste0(getwd(),"/temp")) ) 
-    # {
+    
       cat("reading ",input$diseases," from a temporary file\n")
       mydata=fread(paste0("temp/",input$diseases,".csv"))
-    # } else {
-    #   mydata=preprocessing()
-    # }
+
       cat('Calculation of percentile and proportion of sites in alert begin...')
-      source("percentile.R")
+      source("algorithms/percentile.R")
       X=calculate_percentile(data=mydata,
                              week_length=input$comet_map,
                              percentile_value=input$Centile_map)$mydata
@@ -1092,7 +1070,6 @@ server<-function(input, output,session) {
     mytable = mytable %>% 
       formatStyle(
         'Sites',
-        #transform = 'rotateX(15deg) rotateY(10deg) rotateZ(10deg)',
         backgroundColor = styleEqual(
           unique(malaria$Sites), rep('lightblue',length(unique(malaria$Sites)))
         )
