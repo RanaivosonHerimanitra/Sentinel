@@ -16,32 +16,47 @@ server<-function(input, output,session) {
   #reactive computation of detection algorithms 
   #(centile,MinSan,C-sum,TDR+/fiever==>case of Malaria) 
   #depending on different parameters:
-  preprocessing = reactive({
-    ##############selection of disease data depending on user input choice##
-    source("diseases_control.R")
-    mydata=select_disease(disease=input$diseases)
-    ####################################data preprocessing############
-    cat("keep only sites that already have historical values...\n")
-    include_index= match(include,names(mydata)) #introduce dplyr
-    mydata=mydata[,include,with=F]
-    cat('reshape PaluConf...')
-    mydata=as.data.table(gather(mydata,key=sites,value=occurence,-c(code,deb_sem)))
-    cat('DONE\n')
+ 
+  preprocessing = observeEvent(input$diseases,{
     
-    source("create_facies.R")
-    mydata=create_facies(mydata)
-    cat('Extract weeks and years from PaluConf...')
-    mydata[,weeks:=as.numeric(substr(code,6,8))]
-    mydata[,years:=as.numeric(substr(code,1,4))]
-    cat('DONE\n')
-    cat("convert site to character...")
-    mydata[,sites:=as.character(sites)]
-    setkeyv(mydata,c('sites','weeks','years','code'))
-    cat("DONE\n")
-    return(mydata)
+    if ( !(paste0(input$diseases,".csv") %in% list.files(paste0(getwd(),"/temp"))) ) 
+    {
+      ##############selection of disease data depending on user input choice##
+      source("diseases_control.R")
+      mydata=select_disease(disease=input$diseases)
+      ####################################data preprocessing############
+      cat("keep only sites that already have historical values...\n")
+      include_index= match(include,names(mydata)) #introduce dplyr
+      mydata=mydata[,include,with=F]
+      cat('reshape select data...')
+      mydata=as.data.table(gather(mydata,key=sites,value=occurence,-c(code,deb_sem)))
+      cat('DONE\n')
+      source("create_facies.R")
+      mydata=create_facies(mydata)
+      cat('Extract weeks and years from PaluConf...')
+      mydata[,weeks:=as.numeric(substr(code,6,8))]
+      mydata[,years:=as.numeric(substr(code,1,4))]
+      cat('DONE\n')
+      cat("convert site to character...")
+      mydata[,sites:=as.character(sites)]
+      setkeyv(mydata,c('sites','weeks','years','code'))
+      cat("DONE\n")
+      #some sort of cache of preprocessed data to speed up things:
+      cat("writing ",input$diseases," to a temporary file\n")
+      write.table(mydata,paste0("temp/",input$diseases,".csv"),sep=";",row.names = F)
+    }
+    #return(NULL)
+    
+   
   })
   percentile_algorithm = reactive({
-    mydata=preprocessing()
+    #some sort of cache of preprocessed data to speed up things:
+    #if ( paste0(input$diseases,".csv") %in% list.files(paste0(getwd(),"/temp")) ) 
+   # {
+      cat("reading ",input$diseases," from a temporary file\n")
+      mydata=fread(paste0("temp/",input$diseases,".csv"))
+    #} 
+    
     cat('Calculation of percentile and proportion of sites in alert begin...\n')
     source("percentile.R")
     mylist= calculate_percentile(data=mydata,
@@ -51,7 +66,14 @@ server<-function(input, output,session) {
     return(mylist)
   })
   minsan_algorithm = reactive({
-    mydata=preprocessing()
+    #some sort of cache of preprocessed data to speed up things:
+    # if ( paste0(input$diseases,".csv") %in% list.files(paste0(getwd(),"/temp")) ) 
+    # {
+      cat("reading ",input$diseases," from a temporary file\n")
+      mydata=fread(paste0("temp/",input$diseases,".csv"))
+    # } else {
+    #   mydata=preprocessing()
+    # }
     #####################################Doublement du nb de cas (MinSan algo) ###################
     cat('Calculation of minsan and proportion of sites in alert begin...\n')
     source("minsan.R")
@@ -62,7 +84,14 @@ server<-function(input, output,session) {
     return (mylist)
   })
   csum_algorithm = reactive({
-    mydata=preprocessing()
+    #some sort of cache of preprocessed data to speed up things:
+    # if ( paste0(input$diseases,".csv") %in% list.files(paste0(getwd(),"/temp")) ) 
+    # {
+      cat("reading ",input$diseases," from a temporary file\n")
+      mydata=fread(paste0("temp/",input$diseases,".csv"))
+    # } else {
+    #   mydata=preprocessing()
+    # }
     ######################################Cumulative sum (cumsum algo) ##########################
     cat('Calculation of csum and proportion of sites in alert begin...')
     source("csum.R")
@@ -84,7 +113,6 @@ server<-function(input, output,session) {
     cat('DONE\n')
     
     cat("variables selection in PaluConf...")
- #    PaluConf=as.data.table(as.data.frame(PaluConf))
      PaluConf=PaluConf[,include,with=F]
     cat('DONE\n')
     
@@ -658,7 +686,7 @@ server<-function(input, output,session) {
   })
   #render weekly diseases cases for a clicked site
   output$weekly_disease_cases_persite = renderPlotly({
-    #mydata=preprocessing()
+  
     mydata=percentile_algorithm()$mydata
     #recupere date d'alerte percentile (seuleument pour cet algo) pour chaque site
     #cree une nouvelle variable = valeur de cette alerte
@@ -781,12 +809,19 @@ server<-function(input, output,session) {
   })
   #Health heatmap plot with plotly and using percentile algorithm:
   output$heatmap_percentile = renderD3heatmap({
-    mydata=preprocessing()
+    #some sort of cache of preprocessed data to speed up things:
+    # if ( paste0(input$diseases,".csv") %in% list.files(paste0(getwd(),"/temp")) ) 
+    # {
+      cat("reading ",input$diseases," from a temporary file\n")
+      mydata=fread(paste0("temp/",input$diseases,".csv"))
+    # } else {
+    #   mydata=preprocessing()
+    # }
+    
     if ( input$diseases=="Malaria" )
     {
       #depending on the algorithm chosen, display heatmap:
       if ( input$Algorithmes_eval1 == 'Percentile' ) { 
-        #mydata=preprocessing()
         source("percentile.R")
         X=calculate_percentile(data=mydata,
                                week_length=input$comet_map,
@@ -806,7 +841,7 @@ server<-function(input, output,session) {
       }
       if ( input$Algorithmes_eval1 == 'MinSan'  ) { 
         source("minsan.R") 
-        #mydata=preprocessing()
+        
         X=calculate_minsan(data=mydata,slope_minsan=input$slope_minsan,
                            year_choice=year(Sys.Date()),
                            week_choice=ifelse(Sys.Date()-as.Date(paste0(year(Sys.Date()),"-01-01"))<8
@@ -821,7 +856,7 @@ server<-function(input, output,session) {
       }
     } else {
       if ( input$Algorithmes_eval2 == 'Percentile' ) { 
-        #mydata=preprocessing()
+       
         source("percentile.R")
         X=calculate_percentile(data=mydata,
                                week_length=input$comet_map,
@@ -840,7 +875,7 @@ server<-function(input, output,session) {
       }
       if ( input$Algorithmes_eval2 == 'MinSan'  ) { 
         source("minsan.R") 
-        #mydata=preprocessing()
+       
         X=calculate_minsan(data=mydata,slope_minsan=input$slope_minsan,
                            year_choice=year(Sys.Date()),
                            week_choice=ifelse(Sys.Date()-as.Date(paste0(year(Sys.Date()),"-01-01"))<8
@@ -886,7 +921,14 @@ server<-function(input, output,session) {
   })
   #Bubble chart to display past alert:
   output$mybubble = renderPlotly({
-      mydata=preprocessing()
+    #some sort of cache of preprocessed data to speed up things:
+    # if ( paste0(input$diseases,".csv") %in% list.files(paste0(getwd(),"/temp")) ) 
+    # {
+      cat("reading ",input$diseases," from a temporary file\n")
+      mydata=fread(paste0("temp/",input$diseases,".csv"))
+    # } else {
+    #   mydata=preprocessing()
+    # }
       cat('Calculation of percentile and proportion of sites in alert begin...')
       source("percentile.R")
       X=calculate_percentile(data=mydata,
