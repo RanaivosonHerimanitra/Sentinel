@@ -175,7 +175,6 @@ for ( s in unique(fievre$deb_sem) ) #foreach unique semaine
       missing_site=liste_sites[which(!(liste_sites %in%  currentsiteweek))]
     for ( p in missing_site)
       {
-      #cat(p," is missing for semaine(fiever):",s,"\n")
       tmp1 = data.table(deb_sem=as.Date(s,origin="1970-01-01"),sites=p,SyndF="na")
       var_conv(fievre,tmp1)
       fievre=rbind(fievre,tmp1)

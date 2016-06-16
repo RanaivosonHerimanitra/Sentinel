@@ -25,4 +25,4 @@ for ( u in paste0(2009:2016,"-01-01") )
 }
 p = p + scale_x_date(breaks = date_breaks("1 year"),date_labels = "%Y")
 save(p,file="report/palu_chart.rda")
-p
+print(p)
