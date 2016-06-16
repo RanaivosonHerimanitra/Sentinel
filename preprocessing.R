@@ -4,16 +4,12 @@ preprocessing_disease = function (select_htc=FALSE,include_all_sites=F)
 {
   #initialize a list:
   data_list=list()
-  source("diseases_control.R")
+  source("utils/diseases_control.R")
   #--ensure that list here are the same as in source("diseases_control.R")
   for ( j in c("Malaria","Diarrhea","Diarrhée fébrile","ILI","PFA") )
   {
     #cat("Disease:",j,"\n")
     data=select_disease(disease=j)
-    
-    #cat("convert data table to data.table format...")
-    #data=as.data.table(as.data.frame(data))
-    
     #sites for the display
     include<-c("deb_sem","code","abv","abz","ahh","ajb","atb","bel","bhk","boe","bos",
                "cda","die","dri","ejd","far","fns","iho","mae","mdv","mhj","mia","mjr",
@@ -64,7 +60,7 @@ preprocessing_disease = function (select_htc=FALSE,include_all_sites=F)
     data=as.data.table(gather(data,key=sites,value=occurence,-c(code,deb_sem)))
     #cat('DONE\n')
     
-    source("create_facies.R")
+    source("utils/create_facies.R")
     data=create_facies(data)
     
     #cat('merge with different facies...')

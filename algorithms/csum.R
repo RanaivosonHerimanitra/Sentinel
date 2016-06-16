@@ -1,7 +1,6 @@
 
 calculate_csum = function (data=mydata,
                            Csum_year_map=input$Csum_year_map,
-                           #Csum_week_map=input$Csum_week_map,
                            Sd_csum_map=input$Sd_csum_map,
                            week_choice=ifelse(Sys.Date()-as.Date(paste0(year(Sys.Date()),"-01-01"))<8
                                               ,1,isoweek(Sys.Date())),

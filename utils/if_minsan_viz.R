@@ -8,7 +8,8 @@ if ( input$diseases=="Malaria" )
       
     } else {
       cat('You choose to display by:',input$Cluster_algo,"\n")
-      mydata=preprocessing()
+      #mydata=preprocessing()
+      mydata=fread(paste0("temp/",input$diseases,".csv"))
       myprop=minsan_algorithm()$propsite_alerte_minsan_byfacies
       #effectively select facies that has been chosen by user:
       myprop=myprop[facies==input$Cluster_algo]
@@ -28,7 +29,8 @@ if ( input$diseases=="Malaria" )
       
     } else {
       cat('You choose to display by:',input$Cluster_algo,"\n")
-      mydata=preprocessing()
+      #mydata=preprocessing()
+      mydata=fread(paste0("temp/",input$diseases,".csv"))
       myprop=minsan_algorithm()$propsite_alerte_minsan_byfacies
       #effectively select facies that has been chosen by user:
       myprop=myprop[facies==input$Cluster_algo]

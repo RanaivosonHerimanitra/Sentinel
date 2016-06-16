@@ -63,10 +63,6 @@ X3=X[95:nrow(X),other_site[1:10]]
 X4=X[95:nrow(X),c(1,other_site[11:length(other_site)])]
 cat("DONE\n")
 
-#save 20 sites in HTC:
-# missing_sent[,Centre2:=tolower(Centre2)]
-# write.table(unique(missing_sent[Centre %in% colnames(X)[other_site[-1]],list(Centre,Centre2)]),
-#              "report/site20.csv",row.names=F,sep=";")
 
 #vertical test for headers
 mytable1 = vanilla.table(X1,text.direction = "btlr")

@@ -1,5 +1,5 @@
 #required libraries
-source("libraries.R")
+source("utils/libraries.R")
 #versatile app:
 if ( getwd()!="/srv/shiny-server/sentinel_hrmntr/Sentinel") 
 {
@@ -10,7 +10,7 @@ if ( getwd()!="/srv/shiny-server/sentinel_hrmntr/Sentinel")
 
 
 ############################################## server ######################
-source("facies_class.R")
+source("utils/facies_class.R")
 server<-function(input, output,session) {
   source("import_data.R")
   #reactive computation of detection algorithms 
@@ -22,7 +22,7 @@ server<-function(input, output,session) {
     if ( !(paste0(input$diseases,".csv") %in% list.files(paste0(getwd(),"/temp"))) ) 
     {
       ##############selection of disease data depending on user input choice##
-      source("diseases_control.R")
+      source("utils/diseases_control.R")
       mydata=select_disease(disease=input$diseases)
       ####################################data preprocessing############
       cat("keep only sites that already have historical values...\n")
@@ -31,7 +31,7 @@ server<-function(input, output,session) {
       cat('reshape select data...')
       mydata=as.data.table(gather(mydata,key=sites,value=occurence,-c(code,deb_sem)))
       cat('DONE\n')
-      source("create_facies.R")
+      source("utils/create_facies.R")
       mydata=create_facies(mydata)
       cat('Extract weeks and years from PaluConf...')
       mydata[,weeks:=as.numeric(substr(code,6,8))]
@@ -98,57 +98,11 @@ server<-function(input, output,session) {
   })
   tdrplus_fever_ind = reactive({
     ##############################TDR + / Fever Indicator algorithm###################
-    cat('variables selection in Consultations...')
-    #Consultations=as.data.table(as.data.frame(Consultations))
-    Consultations=Consultations[,include,with=F]
-    cat('DONE\n')
-    
-    cat("variables selection in PaluConf...")
-     PaluConf=PaluConf[,include,with=F]
-    cat('DONE\n')
-    
-    cat("variables selection in SyndF...")
-     #SyndF=as.data.table(as.data.frame(SyndF))
-     SyndF=SyndF[,include,with=F]
-    cat('DONE\n')
-    
-    cat('reshape Consultations...')
-    Consultations=as.data.table(gather(Consultations,
-                                  key=sites,
-                                  value=nb_consultation,-c(code,deb_sem)))
-    cat('DONE\n')
-    cat('reshape PaluConf...')
-    PaluConf=as.data.table(gather(PaluConf,
-                                  key=sites,
-                                  value=malaria_cases,-c(code,deb_sem)))
-    cat('DONE\n')
-    cat('reshape SyndF...')
-    SyndF=as.data.table(gather(SyndF,
-                                 key=sites,
-                                 value=nb_fievre,-c(code,deb_sem)))
-    cat('DONE\n')
-    cat("merge PaluConf and SyndF...")
-    PaluConf_SyndF=merge(PaluConf,
-                         SyndF[,list(sites,deb_sem,nb_fievre)],
-                         by.x=c("sites","deb_sem"),
-                         by.y=c("sites","deb_sem"),all.x=T)
-    cat('DONE\n')
-   
-    cat("merge PaluConf_SyndF and Consultations...")
-     PaluConf_SyndF=merge(PaluConf_SyndF,
-                         Consultations[,list(sites,deb_sem,nb_consultation)],
-                         by.x=c("sites","deb_sem"),
-                         by.y=c("sites","deb_sem"),all.x=T)
-    cat('DONE\n')
-   
-   cat('Extract weeks and years from PaluConf...')
-    PaluConf_SyndF[,weeks:=as.numeric(substr(code,6,8))]
-    PaluConf_SyndF[,years:=as.numeric(substr(code,1,4))]
-   cat('DONE\n')
-   cat("convert site to character...")
-    PaluConf_SyndF[,sites:=as.character(sites)]
-   cat("DONE\n")
-   
+    if ( !(paste0("PaluConf_SyndF",".rda") %in% list.files(paste0(getwd(),"/temp"))) ) {
+      source("utils/preprocess_PaluConf_SyndF.R",local = T)
+    } else {
+      load(file=paste0("temp/PaluConf_SyndF",".rda"))
+    }
    cat('looking for an alert when Malaria cases among fever cases exceed:',
        input$exp_map,'% or malaria cases among consultation number...',
        input$expC_map,'...')
@@ -174,7 +128,7 @@ server<-function(input, output,session) {
                                         eff_beyond/eff_total)]
    cat('DONE\n')
    
-   source("create_facies.R")
+   source("utils/create_facies.R")
    PaluConf_SyndF=create_facies(data=PaluConf_SyndF)
    ####################new method to handle facies###################################
    list_facies= c("East","South","High_land","Fringe","excepted_East","excepted_High_land")
@@ -250,7 +204,7 @@ server<-function(input, output,session) {
   
   #display proportion of sites in alert with these HFI
   output$propsite_alerte = renderPlotly({
-    source("create_facies.R")
+    source("utils/create_facies.R")
     cat("loading and transforming HF Indicators...")
      hfi=data.table(gather(hfi,key=sites,
                           value=myvalue,-c(code,deb_sem,type_val)))
@@ -263,16 +217,16 @@ server<-function(input, output,session) {
      lst = hfi[type_val=="LST_DAY"];setnames(lst,old="myvalue",new="temperature")
      ndvi = hfi[type_val=="NDVI"];setnames(ndvi,old="myvalue",new="ndvi_value")
     cat("DONE\n")
-    source("introducing_caid.R",local = T) #==>now in caid
-    source("introducing_mild.R",local = T)
-    source("introducing_pmm.R",local = T) #==>now in hfi
-    source("introducing_lst.R",local = T) #==>now in hfi
-    source("introducing_ndvi.R",local = T) #==>now in hfi
+    source("utils/introducing_caid.R",local = T) #==>now in caid
+    source("utils/introducing_mild.R",local = T)
+    source("utils/introducing_pmm.R",local = T) #==>now in hfi
+    source("utils/introducing_lst.R",local = T) #==>now in hfi
+    source("utils/introducing_ndvi.R",local = T) #==>now in hfi
    
-    source("if_percentile_viz.R",local = T)
-    source("if_minsan_viz.R",local = T)
-    source("if_csum_viz.R",local = T)
-    source("if_tdrfever_viz.R",local = T)  
+    source("utils/if_percentile_viz.R",local = T)
+    source("utils/if_minsan_viz.R",local = T)
+    source("utils/if_csum_viz.R",local = T)
+    source("utils/if_tdrfever_viz.R",local = T)  
    
           setkey(myprop,"code");setkey(caid,"code")
          
@@ -731,7 +685,7 @@ server<-function(input, output,session) {
     #handle case where no site hasn't yet been selected !
     if ( length(selected_site_leaflet())==0 ) 
     {
-      source("introducing_mild.R",local = T)
+      source("utils/introducing_mild.R",local = T)
       mild_tmp=mild
     } else {
       cat('selection of LLIN corresponding to: ',selected_site_leaflet() )

@@ -14,41 +14,41 @@ A toolkit for visualization, early warning detection and prediction of disease o
 
 * Produce a two weeks outline of alerts taken from the main report:
 
-<img src="main_report.png" >
+<img src="static/main_report.png" >
 
 * HTC report summary (user can select an HTC site an chart will be displayed)
 
-<img src="htc_report1.png" >
+<img src="static/htc_report1.png" >
 
-<img src="htc_report2.png" >
+<img src="static/htc_report2.png" >
 
 * Malaria/Fever report summary (user can select a site an chart will be displayed)
 
-<img src="malaria_report1.png" >
+<img src="static/malaria_report1.png" >
 
-<img src="malaria_report2.png" >
+<img src="static/malaria_report2.png" >
 
 * Diarrhea report summary (user can select a site an chart will be displayed)
 
-<img src="diarrhea_report1.png" >
+<img src="static/diarrhea_report1.png" >
 
-<img src="diarrhea_report2.png" >
+<img src="static/diarrhea_report2.png" >
 
 * ILI report summary (user can select a site an chart will be displayed)
 
-<img src="ili_report1.png" >
+<img src="static/ili_report1.png" >
 
-<img src="ili_report2.png" >
+<img src="static/ili_report2.png" >
 
 * AFP report summary (user can select a site an chart will be displayed)
 
-<img src="afp_report1.png" >
+<img src="static/afp_report1.png" >
 
-<img src="afp_report2.png" >
+<img src="static/afp_report2.png" >
 
 * Missing sent report summary (with cell highlighting when SMS sent `<=3`)
 
-<img src="missing_sent_report.png" >
+<img src="static/missing_sent_report.png" >
 
 ## System and Packages requirements:
 * R >= 3.2.3 and RStudio >= 0.99.896
@@ -56,7 +56,7 @@ A toolkit for visualization, early warning detection and prediction of disease o
 
 ## Algorithms used to trigger alert:
 
-<img src="app_snap.png" >
+<img src="static/app_snap.png" >
 
 ## Percentile algorithm:
 
@@ -71,12 +71,12 @@ A toolkit for visualization, early warning detection and prediction of disease o
 
 `MinSan`: The Ministry of Health defined a simple rule that tells that if occurrences of a given `disease` exceed a certain proportion (`slope parameter (value)`) during `n` ( 3 or 4 ) consecutive weeks or not then an `alert` is triggered.
 
-<img src="minsan.png" >
+<img src="static/minsan.png" >
 
 ## CSum algorithm:
 
 `CSum` algorithm consists of comparing `52 lastest weeks` with smoothed mean of past years. Comparison is made week by week. For example,`week 02` of this month is compared with the smoothed mean of `week 02` for past years excluding the 52 latest. Parameters can be tuned such as number of past years from which mean will be calculated, `sd`, degree of smoothing (number of weeks for mean calculation) .It is only efficient when disease presents weekly strong seasonal pattern.
 
-<img src="csum.png" >
+<img src="static/csum.png" >
 
 
