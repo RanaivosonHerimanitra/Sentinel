@@ -59,7 +59,8 @@ server<-function(input, output,session) {
     source("algorithms/percentile.R")
     mylist= calculate_percentile(data=mydata,
                                  week_length=input$comet_map,
-                                 percentile_value=input$Centile_map
+                                 percentile_value=input$Centile_map,
+                                 disease=input$diseases
                                 )
     return(mylist)
   })
@@ -724,11 +725,15 @@ server<-function(input, output,session) {
                      yaxis =list(title="#Cases")
                      )
     
-      if (input$Algorithmes_eval1=="Percentile" | input$Algorithmes_eval2=="Percentile" )
+      if ( length(input$Algorithmes_eval1)>0 | length(input$Algorithmes_eval2)>0)
       {
+        if (input$Algorithmes_eval1=="Percentile"  )
+        {
         p = p %>% add_trace(x=Semaine,y=myalerte,line=list(color="rgb(165,41,157)"),
                             name="percentile alerte")
+        }
       }
+   
     
         p = p %>% add_trace(x = Semaine, 
                         y = rainFall/10, 
@@ -760,7 +765,8 @@ server<-function(input, output,session) {
         source("algorithms/percentile.R")
         X=calculate_percentile(data=mydata,
                                week_length=input$comet_map,
-                               percentile_value=input$Centile_map)$propsite_alerte_percentile
+                               percentile_value=input$Centile_map,
+                               disease=input$diseases)$propsite_alerte_percentile
         
       }
       if ( input$Algorithmes_eval1 == 'Csum'  ) { 
@@ -795,7 +801,8 @@ server<-function(input, output,session) {
         source("algorithms/percentile.R")
         X=calculate_percentile(data=mydata,
                                week_length=input$comet_map,
-                               percentile_value=input$Centile_map)$propsite_alerte_percentile
+                               percentile_value=input$Centile_map,
+                               disease=input$diseases)$propsite_alerte_percentile
         
       }
       if ( input$Algorithmes_eval2 == 'Csum'  ) { 
@@ -865,7 +872,8 @@ server<-function(input, output,session) {
       source("algorithms/percentile.R")
       X=calculate_percentile(data=mydata,
                              week_length=input$comet_map,
-                             percentile_value=input$Centile_map)$mydata
+                             percentile_value=input$Centile_map,
+                             disease=input$diseases)$mydata
       cat("DONE\n")
     
     

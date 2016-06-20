@@ -1,9 +1,12 @@
 calculate_percentile=function(data=mydata,
                               week_length=input$comet_map,
-                              percentile_value=input$Centile_map
+                              percentile_value=input$Centile_map,
+                              disease=input$diseases
                               )
 {
-
+ 
+  
+  
    max_deb_sem= max(as.Date(data$deb_sem,origin="1970-01-01"))
    max_code=paste0(year(max_deb_sem),"_",isoweek(max_deb_sem))
    
@@ -54,7 +57,7 @@ calculate_percentile=function(data=mydata,
     cat("DONE\n")
    
     
-    cat("merge",percentile_value,"-percentile with all the data(selected disease)...")
+    cat("merge",percentile_value,"-percentile with all the data (selected disease)...")
     setkey(data,sites);setkey(mypercentile,sites)
     data=merge(data,mypercentile,by.x="sites",by.y="sites")
     cat("DONE\n")
@@ -90,8 +93,9 @@ calculate_percentile=function(data=mydata,
     cat('DONE\n')
 
     cat('calculate radius per site for percentile algorithm alert...')
-    data[,nbsite_alerte:=1.0]; data[,nbsite_normal:=1.0];
-    data[,myradius:=1.0]
+    
+    
+   
     
     ##################### new algo to determine radius of circle 
     # TODO: en fonction de valeur du percentile
@@ -100,23 +104,60 @@ calculate_percentile=function(data=mydata,
     # if not normal then  15*(weighted sum of # cases)
     # l'idée c'est de différencier les sites selon nombre de cas selon les sites mais de se
     #fixer un max size de 15
-    data[alert_status=="alert", myradius:=15.0]
-    data[alert_status=="normal",sum_occurence_week:=sum(occurence,na.rm=T),by="code"]
-    data[alert_status=="normal", myradius:=15.0*occurence/sum_occurence_week,by="sites,code"]
-    #set a minimum value if less than 2.5 in radius (for visibility purpose):
-    data[alert_status=="normal" & is.na(myradius)==F, myradius:=ifelse(myradius<2.5,2.5,myradius),by="sites,code"]
-    
-    data[alert_status %in% NA | myradius %in% NA , myradius:=5.0]
-    
-    
+    # data[,nbsite_alerte:=1.0]; data[,nbsite_normal:=1.0];
+    # data[,myradius:=1.0]
+    # data[alert_status=="alert", myradius:=15.0]
+    # data[alert_status=="normal",sum_occurence_week:=sum(occurence,na.rm=T),by="code"]
+    # data[alert_status=="normal", myradius:=15.0*occurence/sum_occurence_week,by="sites,code"]
+    # #set a minimum value if less than 2.5 in radius (for visibility purpose):
+    # data[alert_status=="normal" & is.na(myradius)==F, myradius:=ifelse(myradius<2.5,2.5,myradius),by="sites,code"]
+    # 
+    # data[alert_status %in% NA | myradius %in% NA , myradius:=5.0]
+
+
     
     cat('DONE\n')
   
    
     
     cat("selected sites for:",code_range,"with alert status\n")
-    percentile_alerte=data[code %in% code_range,list(sites,code,alert_status,deb_sem,myradius)]
+    percentile_alerte=data[code %in% code_range,list(sites,code,alert_status,deb_sem)]
     cat('DONE\n')
+    
+   
+    
+    ##################### new algo(juin 2016) to determine radius of circle 
+    ##################### radius of circle depends on percentile rank #######
+    if (disease=="Malaria") {
+    Malaria_rank=fread("percentile_rank/Malaria_rank.csv")
+    percentile_alerte=merge(percentile_alerte,
+                            Malaria_rank[,list(code,sites,perc_rank)],
+                            by.x=c("code","sites"),
+                            by.y=c("code","sites"))
+    percentile_alerte[,myradius:=round(sqrt(perc_rank))+1]
+    percentile_alerte[,perc_rank:=NULL]
+    
+    }
+    if (disease=="Diarrhea") {
+      Diarrhea_rank=fread("percentile_rank/Diarrhea_rank.csv")
+      percentile_alerte=merge(percentile_alerte,
+                              Diarrhea_rank[,list(code,sites,perc_rank)],
+                              by.x=c("code","sites"),
+                              by.y=c("code","sites"))
+      percentile_alerte[,myradius:=round(sqrt(perc_rank))+1]
+      percentile_alerte[,perc_rank:=NULL]
+    }
+    if (disease=="ILI") {
+      ILI_rank=fread("percentile_rank/ILI_rank.csv")
+      percentile_alerte=merge(percentile_alerte,
+                              ILI_rank[,list(code,sites,perc_rank)],
+                              by.x=c("code","sites"),
+                              by.y=c("code","sites"))
+      percentile_alerte[,myradius:=round(sqrt(perc_rank))+1]
+      percentile_alerte[,perc_rank:=NULL]
+    }
+   
+    ##############################################
     
 
     
@@ -131,6 +172,9 @@ calculate_percentile=function(data=mydata,
       percentile_alerte_currentweek=percentile_alerte[code==max_code,]
     }
     cat("DONE\n")
+    
+    
+    
     
   cat("calculate weekly prop of sites in alert (all)...")
    Nbsite_beyond=data[is.na(occurence)==F & alert_status=="alert",length(unique(sites)),by="code"]

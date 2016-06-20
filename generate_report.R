@@ -81,10 +81,12 @@ diarrh=mydata[["Diarrhea"]]
 
 percentile_palu_alerte=calculate_percentile(data=Malaria,
                                             week_length=3,
-                                            percentile_value=90)$mydata
+                                            percentile_value=90,
+                                            disease="Malaria")$mydata
 percentile_diar_alerte=calculate_percentile(data=diarrh,
                                             week_length=3,
-                                            percentile_value=90)$mydata
+                                            percentile_value=90,
+                                            disease="Diarrhea")$mydata
                                             
 
 percentile_palu_alerte=merge(percentile_palu_alerte,sentinel_latlong,
