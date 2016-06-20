@@ -97,7 +97,7 @@ calculate_percentile=function(data=mydata,
     
    
     
-    ##################### new algo to determine radius of circle 
+    ##################### new algo to determine radius of circle (outdated!)
     # TODO: en fonction de valeur du percentile
     # if no data then set radius to 5
     # if alert then set radius to 15
