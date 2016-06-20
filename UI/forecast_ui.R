@@ -21,5 +21,8 @@ model_type=box(title="Choose a forecasting type",
 ######################### performance monitoring ###########################
 #performance_monitor=valueBox(value=12,icon="",color="red")
 ###########################Forecast UI (menu)################################
-myforecast_ui=list(fluidRow(model_choices,model_type, valueBoxOutput("mymae"))
-                   ,box(plotlyOutput("forecast_plot"),width=12) )
+myforecast_ui=list(fluidRow(model_choices,model_type, 
+                            valueBoxOutput("mymae")
+                            )
+                   ,box(plotlyOutput("forecast_plot"),width=12),
+                   fluidRow(infoBoxOutput("mymodel_description")))

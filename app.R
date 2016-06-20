@@ -915,14 +915,14 @@ server<-function(input, output,session) {
   #in the future should take anykind of diseases:
   output$forecast_plot = renderPlotly({
     mymodel=input$mymodel
-    source("prepare_data_forecast.R",local = T)
+    source("forecast/prepare_data_forecast.R",local = T)
     X=prepare_load(mymodel=mymodel)
-    source("forecasting_functions.R",local = T)
+    source("forecast/forecasting_functions.R",local = T)
     #########################################################################################################
     if ( input$mymodel=="HLT" & input$forecast_type=="retrospective")
     {
       direction="retrospective"
-      load(file = "holt_retrospective.rda")
+      load(file = "forecast/holt_retrospective.rda")
       L_preds= length(preds)
       L=length(X$occurence)
       X[,mymonth:=paste0(mymonth,"/",substr(myyear,3,4))]
@@ -947,7 +947,7 @@ server<-function(input, output,session) {
     if (input$mymodel=="HLT" & input$forecast_type=="prospective" ) 
     {
       direction="prospective"
-      load(file = "holt_prospective.rda")
+      load(file = "forecast/holt_prospective.rda")
       L_preds= length(preds)
       L=length(X$occurence)
       #add next month : VERY IMPORTANT NEED TO FIND DURABLE SOLUTION
@@ -1241,15 +1241,13 @@ server<-function(input, output,session) {
   output$mymae <- renderValueBox({
     
     mymodel=input$mymodel
-    source("prepare_data_forecast.R",local = T)
-    source("forecasting_functions.R",local = T)
+    source("forecast/prepare_data_forecast.R",local = T)
+    source("forecast/forecasting_functions.R",local = T)
     X=prepare_load(mymodel=mymodel)
-    
-    
     
     if ( input$mymodel=="HLT" & input$forecast_type=="retrospective")
     {
-      load(file = "holt_retrospective.rda")
+      load(file = "forecast/holt_retrospective.rda")
       L_preds= length(preds)
       L=length(X$occurence)
       X[,mymonth:=paste0(mymonth,"/",substr(myyear,3,4))]
@@ -1261,7 +1259,7 @@ server<-function(input, output,session) {
     }
     if ( input$mymodel=="HLT" & input$forecast_type=="prospective")
     {
-      load(file = "holt_prospective.rda")
+      load(file = "forecast/holt_prospective.rda")
       L_preds= length(preds)
       L=length(X$occurence)
       #add next month : VERY IMPORTANT NEED TO FIND DURABLE SOLUTION
@@ -1274,15 +1272,23 @@ server<-function(input, output,session) {
         icon = icon("fa-line-chart"),
         color = "red")
     }
+   
     myvaluebox
    
+  })
+  
+  ########################## Put short model description #####
+  output$mymodel_description <- renderInfoBox({
+    mymodel_desc =infoBox("Description",width=12,
+                                 value="Extension of simple exponential smoothing to allow forecasting of data with a trend. This method involves a forecast equation and two smoothing equations (one for the level and one for the trend)")
+    mymodel_desc
   })
 }
 
 ##############################################User interface ##############
-mydashheader=dashboardHeader(title="Sentinel surveillance",titleWidth="233"
-                             #,dropdownMenuOutput("alerts") 
-                             )
+mydashheader=dashboardHeader(title="Sentinel surveillance",titleWidth="233")
+                             
+                             
 
 #skeleton of the user interface:
 source('initialize_ui.R')
@@ -1296,7 +1302,7 @@ ui = list(dashboardPage(skin = "blue",
       menuItem(text="Map",.list=map_choices,icon=icon("map-marker")),
       menuItem(text="Aggregation",.list=myfacies_algo,icon=icon("group")),
       menuItem(text=list("Forecasting", 
-                         tags$small(class="media-heading",tags$span(class="label label-danger", "beta release"))
+                         tags$small(class="media-heading",tags$span(class="label label-danger", "beta"))
                          ),
                          tabName="myforecast", 
                          icon = icon("line-chart")),

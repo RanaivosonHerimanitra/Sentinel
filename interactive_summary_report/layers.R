@@ -157,7 +157,7 @@ for ( ix in 1:nrow(historical_alert3) )
 {
   #apply style conditionnally:
   if (length(grep("diagnostic kit",historical_alert7[ix,alert]))>0) {
-    listOfAlerts3[[ix]]=tags$p(class="lead",style="color:#ffb90f;font-weight: bold;" ,
+    listOfAlerts3[[ix]]=tags$p(class="lead",style="color:#ffb90f;" ,
                                paste(historical_alert7[ix,sites],historical_alert7[ix,alert]))
   } 
   if (length(grep("Malaria identified",historical_alert7[ix,alert]))>0) {
@@ -185,7 +185,7 @@ for ( ix in 1:nrow(historical_alert8) )
 {
   #apply style conditionnally:
   if (length(grep("diagnostic kit",historical_alert8[ix,alert]))>0) {
-    listOfAlerts8[[ix]]=tags$p(class="lead",style="color:#ffb90f;font-weight: bold;" ,
+    listOfAlerts8[[ix]]=tags$p(class="lead",style="color:#ffb90f;" ,
                                paste(historical_alert8[ix,sites],historical_alert8[ix,alert]))
   } 
   if (length(grep("Malaria identified",historical_alert8[ix,alert]))>0) {
@@ -215,36 +215,36 @@ summary_report=list( tags$div(class="container",
                                    tags$li(tags$p("03 consecutive weeks are needed to trigger alert when Malaria or Diarrhea cases exceed the 90th percentile.")
                                    )))),
                      tags$div(class="row",tags$div(class="col-sm-8 blog-main",tags$div(class="blog-post",
-                                                                  tags$h2(class="blog-post-title","Alerts outline:"),
-                                                                  tags$p(class="blog-post-meta",mycode[1])))),
+                                                                  tags$h2(class="blog-post-title",paste("Alerts outline for ",mycode[1],":") 
+                                                                  )))),
                      listOfAlerts1,
                      tags$div(class="row",tags$div(class="col-sm-8 blog-main",tags$div(class="blog-post",
-                                                                                       tags$h2(class="blog-post-title","Alerts outline:"),
-                                                                                       tags$p(class="blog-post-meta",mycode[2])))),
+                                                                                       tags$h2(class="blog-post-title",paste("Alerts outline for ",mycode[2],":") 
+                                                                                       )))),
                      listOfAlerts2,
                      tags$div(class="row",tags$div(class="col-sm-8 blog-main",tags$div(class="blog-post",
-                                                                                       tags$h2(class="blog-post-title","Alerts outline:"),
-                                                                                       tags$p(class="blog-post-meta",mycode[3])))),
+                                                                                       tags$h2(class="blog-post-title",paste("Alerts outline for ",mycode[3],":") 
+                                                                                       )))),
                      listOfAlerts3,
                      tags$div(class="row",tags$div(class="col-sm-8 blog-main",tags$div(class="blog-post",
-                                                                                       tags$h2(class="blog-post-title","Alerts outline:"),
-                                                                                       tags$p(class="blog-post-meta",mycode[4])))),
+                                                                                       tags$h2(class="blog-post-title",paste("Alerts outline for ",mycode[4],":") 
+                                                                                       )))),
                      listOfAlerts4,
                      tags$div(class="row",tags$div(class="col-sm-8 blog-main",tags$div(class="blog-post",
-                                                                                       tags$h2(class="blog-post-title","Alerts outline:"),
-                                                                                       tags$p(class="blog-post-meta",mycode[5])))),
+                                                                                       tags$h2(class="blog-post-title",paste("Alerts outline for ",mycode[5],":") 
+                                                                                       )))),
                      listOfAlerts5,
                      tags$div(class="row",tags$div(class="col-sm-8 blog-main",tags$div(class="blog-post",
-                                                                                       tags$h2(class="blog-post-title","Alerts outline:"),
-                                                                                       tags$p(class="blog-post-meta",mycode[6])))),
+                                                                                       tags$h2(class="blog-post-title",paste("Alerts outline for ",mycode[6],":") 
+                                                                                       )))),
                      listOfAlerts6,
                      tags$div(class="row",tags$div(class="col-sm-8 blog-main",tags$div(class="blog-post",
-                                                                                       tags$h2(class="blog-post-title","Alerts outline:"),
-                                                                                       tags$p(class="blog-post-meta",mycode[7])))),
+                                                                                       tags$h2(class="blog-post-title",paste("Alerts outline for ",mycode[7],":") 
+                                                                                       )))),
                      listOfAlerts7,
                      tags$div(class="row",tags$div(class="col-sm-8 blog-main",tags$div(class="blog-post",
-                                                                                       tags$h2(class="blog-post-title","Alerts outline:"),
-                                                                                       tags$p(class="blog-post-meta",mycode[8])))),
+                                                                                       tags$h2(class="blog-post-title",paste("Alerts outline for ",mycode[8],":") 
+                                                                                       )))),
                      listOfAlerts8
 ))
                       
