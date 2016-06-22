@@ -45,7 +45,7 @@ d= d + scale_x_date(labels = date_format("%m-%Y"))
 mymax=range(as.numeric(mydata$occurence)[is.na(as.numeric(mydata$occurence))==F])
 mymax[2]=ifelse(mymax[2]<10,10,mymax[2])
 #
-d = d + scale_y_continuous(breaks= seq.int(from=1,to=mymax[2],by=2) ) 
+d = d + scale_y_continuous(breaks= seq.int(from=1,to=mymax[2],by=1) ) 
 #
 #vertical axis label 
 d=d+theme(axis.text.x=element_text(angle=90,hjust=1,vjust=0.5))
