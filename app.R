@@ -323,29 +323,34 @@ server<-function(input, output,session) {
         setkey(percentile_algorithm()$percentile_alerte_currentweek,sites)
         sentinel_latlong=merge(sentinel_latlong,percentile_algorithm()$percentile_alerte_currentweek
                                ,by.x="sites",by.y = "sites",all.x=T)
+        # write.csv(sentinel_latlong,
+        #           paste0("./data/percentile/","percentile-" ,Sys.Date(),".csv"),
+        #           sep=";",row.names = F)
       }
       if (input$Algorithmes_eval1=="MinSan"  ) 
       {
-       
         cat("display alert status into the map using MinSan algorithm...\n")
         setkey(sentinel_latlong,sites);
         setkey(minsan_algorithm()$minsan_alerte_currentweek,sites)
         sentinel_latlong=merge(sentinel_latlong,minsan_algorithm()$minsan_alerte_currentweek
                                ,by.x="sites",by.y = "sites",all.x=T)
+        
       }
       if (input$Algorithmes_eval1=="Csum"  ) 
       {
         cat("display alert status into the map using Csum algorithm...\n")
         setkey(sentinel_latlong,sites);
         setkey(csum_algorithm()$csum_alerte,sites)
-        sentinel_latlong=merge(sentinel_latlong,csum_algorithm()$csum_alerte_currentweek
+        sentinel_latlong=merge(sentinel_latlong,
+                               csum_algorithm()$csum_alerte_currentweek
                                ,by.x="sites",by.y = "sites",all.x=T)
       }
       if (input$Algorithmes_eval1=="Ind" ) 
       {
         setkey(sentinel_latlong,sites);
         setkey(tdrplus_fever_ind()$tdrplus_ind_currentweek,sites)
-        sentinel_latlong=merge(sentinel_latlong,tdrplus_fever_ind()$tdrplus_ind_currentweek
+        sentinel_latlong=merge(sentinel_latlong,
+                               tdrplus_fever_ind()$tdrplus_ind_currentweek
                                ,by.x="sites",by.y = "sites",all.x=T)
         cat("display alert status into the map using a simple indicator...\n")
       }
@@ -358,6 +363,7 @@ server<-function(input, output,session) {
         setkey(percentile_algorithm()$percentile_alerte_currentweek,sites)
         sentinel_latlong=merge(sentinel_latlong,percentile_algorithm()$percentile_alerte_currentweek
                                ,by.x="sites",by.y = "sites",all.x=T)
+        
         
       }
       if (input$Algorithmes_eval2=="MinSan"  ) 
