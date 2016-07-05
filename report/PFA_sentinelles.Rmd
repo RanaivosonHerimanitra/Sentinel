@@ -24,7 +24,8 @@ if ( getwd()!="/srv/shiny-server/sentinel_hrmntr/Sentinel/report" )
 
 source(paste0(mypath,"/import_data.R"));
 source(paste0(mypath,"/preprocessing.R"));
-require(ggplot2); require(gridExtra);require(Hmisc)
+require(ggplot2); require(gridExtra);
+#require(Hmisc)
 #Retrieve PFA for HTC sites
 mydata= preprocessing_disease(include_all_sites=T)[["PFA"]]
 
@@ -103,8 +104,9 @@ X= merge(unique(X[,list(sites,vals)],by=NULL),lastweek,by.x="sites", by.y="sites
   sentinel[,sites:=tolower(sites)]
   sentinel_latlong=rbind(sentinel_latlong,sentinel[!(sites %in%     sentinel_latlong$sites)],fill=T)
   # format sites's name:
-  require(Hmisc);
-  sentinel_latlong[,name:=capitalize(tolower(name))]
+  #require(Hmisc);
+  #sentinel_latlong[,name:=capitalize(tolower(name))]
+  sentinel_latlong[,name:=(tolower(name))]
      
 X= merge(X,sentinel_latlong[,list(name,sites)],by.x="sites",by.y="sites")
 X[,sites:=NULL]; 

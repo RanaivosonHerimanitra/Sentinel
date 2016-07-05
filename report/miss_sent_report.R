@@ -1,6 +1,7 @@
 #setwd("/media/herimanitra/Document/IPM_sentinelle/sentinel_hrmntr 291115/Sentinel")
 ###############################Missing sent report ############################
-library(ReporteRs);require(Hmisc)
+library(ReporteRs);
+#require(Hmisc)
 
 doc <- docx() 
 path1="/media/herimanitra/Document/IPM_sentinelle/sentinel_hrmntr 291115/Sentinel/report/logo.png"
@@ -20,7 +21,7 @@ baseCellProp = cellProperties( padding = 2 )
 vertical_text= cellProperties(text.direction = "btlr",
                               padding = 2)
 horizontal_text= cellProperties(text.direction = "lrtb",
-                              padding = 2)
+                                padding = 2)
 
 cat("load data and preprocess missing sent...")
 require(data.table)
@@ -32,7 +33,8 @@ missing_sent[,code:=paste0(substr(Annee,3,4),"/",ifelse(nchar(Semaine)<2,paste0(
 cat("DONE\n")
 
 cat("crosstabulation of weeks and Sites...")
-missing_sent[,Centre:=capitalize(tolower(Centre))]
+#missing_sent[,Centre:=capitalize(tolower(Centre))]
+missing_sent[,Centre:=(tolower(Centre))]
 X=table(missing_sent$code,missing_sent$Centre)
 cat("DONE\n")
 
@@ -46,12 +48,12 @@ path2="/srv/shiny-server/sentinel_hrmntr/Sentinel/data/sentinel.csv"
 myfile=ifelse(file.exists(path1),path1,path2)
 sentinel_latlong = fread(myfile)
 sites34 = which( tolower(colnames(X)) %in% tolower(c("CSBU MANANJARY MNJ",
-                                    "TSIMADILO",
-                                    sentinel_latlong$centre) ))
+                                                     "TSIMADILO",
+                                                     sentinel_latlong$centre) ))
 
 other_site =which( !( tolower(colnames(X)) %in% tolower(c("CSBU MANANJARY MNJ",
-                                        "TSIMADILO",
-                                        sentinel_latlong$centre)) ))
+                                                          "TSIMADILO",
+                                                          sentinel_latlong$centre)) ))
 cat("DONE\n")
 
 cat("divide data into 03 parts...")
@@ -99,9 +101,9 @@ for ( k in 2:ncol(X4) )
 }
 cat("Writing document to a word document...")
 mytable1 = addFooterRow( mytable1, 
-                        value = c("En rouge , les cas <4"),
-                        cell.properties = horizontal_text
-                        ,colspan = ncol(X1))
+                         value = c("En rouge , les cas <4"),
+                         cell.properties = horizontal_text
+                         ,colspan = ncol(X1))
 mytable2 = addFooterRow( mytable2, 
                          value = c("En rouge , les cas <4"),
                          cell.properties = horizontal_text

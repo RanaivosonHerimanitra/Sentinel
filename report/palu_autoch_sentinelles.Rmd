@@ -161,8 +161,9 @@ last6_palu_autoch=merge(last6_palu_autoch,
  setnames(last6_palu_autoch,c("sites","vals","autoch"),
                  c("Sites","6 semaines précédentes","Semaine dernière"))
 #tolower name of sites:
-require(Hmisc)
-last6_palu_autoch[,Centre:=capitalize(tolower(Centre))]
+#require(Hmisc)
+#last6_palu_autoch[,Centre:=capitalize(tolower(Centre))]
+last6_palu_autoch[,Centre:=(tolower(Centre))]
 #save table to be re-used later:
 save(last6_palu_autoch,
      file="interactive_summary_report/last6_palu_autoch.rda")
