@@ -980,11 +980,11 @@ server<-function(input, output,session) {
   })
   
   #sumary plot of the HTC Malaria report:
-  output$htc_report_plot = renderPlotly({
+  output$htc_report_plot = renderPlot({
     load(file = "report/palu_autoch_chart.rda")
     
-    
-    ggplotly(d)
+    d
+    #ggplotly(d)
   })
   output$table_htc_report = DT::renderDataTable({
 
@@ -1008,21 +1008,21 @@ server<-function(input, output,session) {
     mytable
   })
   #individual plot for the HTC malaria report:
-  output$ind_htc_report_plot= renderPlotly({
+  output$ind_htc_report_plot= renderPlot({
     site20=fread("report/site20.csv")
     individual_model=list.files(path="report/palu_autoch")
     #looking for code corresponding to site's name:
     code_site= site20[Centre==input$CSB_sites,Centre2]
     sitemodel_found= grep(code_site,individual_model,value = T)
     load(file=paste0("report/palu_autoch/",sitemodel_found))
-    
-    ggplotly(d)
+    d
+    #ggplotly(d)
   })
   #summary plot of the Malaria (global) report:
-  output$malaria_report_plot = renderPlotly({
+  output$malaria_report_plot = renderPlot({
     load(file = "report/palu_chart.rda")
-   
-    ggplotly(p)
+   p
+    #ggplotly(p)
   })
   #interactive Malaria table:
   output$table_malaria_report = DT::renderDataTable({
@@ -1066,18 +1066,18 @@ server<-function(input, output,session) {
     mytable
   })
   # individual summary plot of the Malaria (global) report:
-  output$ind_malaria_report_plot = renderPlotly({
+  output$ind_malaria_report_plot = renderPlot({
     individual_model=list.files(path="report/malaria")
     sitemodel_found= grep(input$CSB_sites_malaria,individual_model,value = T)
     load(file=paste0("report/malaria/",sitemodel_found))
-    
-    ggplotly(d)
+    d
+    #ggplotly(d)
   })
   #summary plot of the Diarrhea report:
-  output$diarrhea_report_plot = renderPlotly({
+  output$diarrhea_report_plot = renderPlot({
     load(file = "report/diar_chart.rda")
-    
-    ggplotly(p)
+    p
+    #ggplotly(p)
   })
   output$table_diarrhea_report = DT::renderDataTable({
     load(file="interactive_summary_report/last6_diarrhea.rda")
@@ -1120,18 +1120,18 @@ server<-function(input, output,session) {
     mytable
   })
   #individual summary plot of the Diarrhea report:
-  output$ind_diarrhea_report_plot =renderPlotly({
+  output$ind_diarrhea_report_plot =renderPlot({
     individual_model=list.files(path="report/diarrhea")
     sitemodel_found= grep(input$CSB_sites_diarrhea,individual_model,value = T)
     load(file=paste0("report/diarrhea/",sitemodel_found))
-   
-    ggplotly(d)
+    d
+    #ggplotly(d)
   })
   #summary plot of the ILI report:
-  output$ili_report_plot = renderPlotly({
+  output$ili_report_plot = renderPlot({
     load(file = "report/ili_chart.rda") 
-    
-    ggplotly(d)
+    d
+    #ggplotly(d)
   })
   output$table_ili_report = DT::renderDataTable({
     load(file="interactive_summary_report/last6_ili.rda")
@@ -1154,19 +1154,19 @@ server<-function(input, output,session) {
     mytable
   })
   #individual summary plot of the ILI report:
-  output$ind_ili_report_plot = renderPlotly({
+  output$ind_ili_report_plot = renderPlot({
     individual_model=list.files(path="report/ili")
     sitemodel_found= grep(input$CSB_sites_ili,individual_model,value = T)
     load(file=paste0("report/ili/",sitemodel_found))
-    
-    ggplotly(d)
+    d
+    #ggplotly(d)
     
   })
   #summary plot of the PFA report:
-  output$pfa_report_plot = renderPlotly({
+  output$pfa_report_plot = renderPlot({
     load(file = "report/pfa_chart.rda")
-    
-    ggplotly(d)
+    d
+    #ggplotly(d)
   })
   output$table_pfa_report = DT::renderDataTable({
     load(file="interactive_summary_report/last6_pfa.rda")
@@ -1188,12 +1188,13 @@ server<-function(input, output,session) {
       )
     mytable
   })
-  output$ind_pfa_report_plot = renderPlotly({
+  
+  output$ind_pfa_report_plot = renderPlot({
     individual_model=list.files(path="report/pfa")
     sitemodel_found= grep(input$CSB_sites_pfa,individual_model,value = T)
     load(file=paste0("report/pfa/",sitemodel_found))
-   
-    ggplotly(d)
+   d
+    #ggplotly(d)
     
   })
   #FlexTable to be displayed:

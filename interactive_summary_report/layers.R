@@ -250,7 +250,8 @@ summary_report=list( tags$div(class="container",
                       
 #####################################Palu autoch##################################
 site20=fread("report/site20.csv")
-htc_report=list(plotlyOutput("htc_report_plot"),
+htc_report=list(plotOutput("htc_report_plot"),
+                #plotlyOutput("htc_report_plot"),
                 tags$br(),tags$br(),tags$br(),
                 tags$div(class="container",
                          tags$div(class="starter-template",
@@ -262,10 +263,13 @@ htc_report=list(plotlyOutput("htc_report_plot"),
                                choice=site20$Centre, 
                                selected = c("Morarano"), 
                                multiple = F),
-                plotlyOutput("ind_htc_report_plot"))
+                plotOutput("ind_htc_report_plot")
+                #plotlyOutput("ind_htc_report_plot")
+                )
 #####################################Malaria (global)#############################
 site34=fread("data/sentinel.csv")
-malaria_report=list(plotlyOutput("malaria_report_plot"),
+malaria_report=list(plotOutput("malaria_report_plot"),
+  #plotlyOutput("malaria_report_plot"),
                     tags$br(),tags$br(),tags$br(),
                     tags$div(class="container",
                              tags$div(class="starter-template",
@@ -282,10 +286,12 @@ malaria_report=list(plotlyOutput("malaria_report_plot"),
                                    choice=site34$name, 
                                    selected = c("Toamasina"), 
                                    multiple = F),
-                    plotlyOutput("ind_malaria_report_plot")
+  plotOutput("ind_malaria_report_plot")
+                   # plotlyOutput("ind_malaria_report_plot")
                    )
 #####################################Diarrhea#############################
-diarrhea_report=list(plotlyOutput("diarrhea_report_plot"),
+diarrhea_report=list(plotOutput("diarrhea_report_plot"),
+                     #plotlyOutput("diarrhea_report_plot"),
                      tags$br(),tags$br(),tags$br(),
                      tags$div(class="container",
                               tags$div(class="starter-template",
@@ -302,9 +308,12 @@ diarrhea_report=list(plotlyOutput("diarrhea_report_plot"),
                                     choice=site34$name, 
                                     selected = c("Toamasina"), 
                                     multiple = F),
-                     plotlyOutput("ind_diarrhea_report_plot"))
+                     plotOutput("ind_diarrhea_report_plot")
+                     #plotlyOutput("ind_diarrhea_report_plot")
+                     )
 #####################################Diarrhea#############################
-ili_report=list(plotlyOutput("ili_report_plot"),
+ili_report=list(plotOutput("ili_report_plot"),
+  #plotlyOutput("ili_report_plot"),
                 tags$br(),tags$br(),tags$br(),
                 tags$div(class="container",
                          tags$div(class="starter-template",
@@ -316,10 +325,13 @@ ili_report=list(plotlyOutput("ili_report_plot"),
                                choice=site34$name, 
                                selected = c("Toamasina"), 
                                multiple = F),
-                plotlyOutput("ind_ili_report_plot"))
+  plotOutput("ind_ili_report_plot")
+                #plotlyOutput("ind_ili_report_plot")
+  )
                 
 #####################################Diarrhea#############################
-pfa_report=list(plotlyOutput("pfa_report_plot"),
+pfa_report=list(plotOutput("pfa_report_plot"),
+  #plotlyOutput("pfa_report_plot"),
                 tags$br(),tags$br(),tags$br(),
                 tags$div(class="container",
                          tags$div(class="starter-template",
@@ -330,7 +342,9 @@ pfa_report=list(plotlyOutput("pfa_report_plot"),
                                choice=c(site20$Centre,site34$name), 
                                selected = c("Toamasina"), 
                                multiple = F),
-                plotlyOutput("ind_pfa_report_plot"))
+  plotOutput("ind_pfa_report_plot")
+                #plotlyOutput("ind_pfa_report_plot")
+                )
 #########################################################################
 CSB=fread("report/CSB.csv")
 missing_sent_report=list(tags$br(),tags$br(),

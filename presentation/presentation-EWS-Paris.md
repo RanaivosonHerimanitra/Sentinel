@@ -45,8 +45,6 @@ Historiques
 ==> Risque d'erreur de saisie minimisé!
 
 
-Avantages de l'application web
-========================================================
 
 
 Petit tour de l'application web
@@ -62,3 +60,23 @@ L'application web inclut:
 - Nous venons également d'inclure un tableau de bord résumant les rapports hebdomadaires sur l'ensemble des sites
 
 - Un tableau de bord sur la prédiction et la modélisation.
+
+Perspectives pour 2016-2017
+========================================================
+Dans le but de répondre rapidement et effectivement aux maladies à potentiel épidémique, nous devons améliorer la capacité du système notemmment sur :
+
+    * L'insertion des modèles de prédiction
+
+    * L'amélioration de la performance de l'application shiny.
+
+    * L'expérimentation d'un autre système open source qui permet d'avoir la fonctionnalité multiuser (jupyter/jupyter-dashboard)
+
+    * Ajout d'un système de classification des risques d'épidémies en sus des alertes hebdomadaires affichées sur la carte.
+
+
+
+Merci pour votre attention!
+========================================================
+
+* [@air_manitra](https://twitter.com/@air_manitra)
+* [me on github](github.com/RanaivosonHerimanitra)
