@@ -5,7 +5,7 @@ if ( getwd()!="/srv/shiny-server/sentinel_hrmntr/Sentinel")
 {
   setwd('/media/herimanitra/Document/IPM_sentinelle/sentinel_hrmntr 291115/Sentinel')
 } else {
- 
+  
 }
 
 
@@ -16,7 +16,7 @@ server<-function(input, output,session) {
   #reactive computation of detection algorithms 
   #(centile,MinSan,C-sum,TDR+/fiever==>case of Malaria) 
   #depending on different parameters:
- 
+  
   preprocessing = observeEvent(input$diseases,{
     
     if ( !(paste0(input$diseases,".csv") %in% list.files(paste0(getwd(),"/temp"))) ) 
@@ -47,13 +47,13 @@ server<-function(input, output,session) {
     }
     #return(NULL)
     
-   
+    
   })
   percentile_algorithm = reactive({
     #some sort of cache of preprocessed data to speed up things:
-  
-      cat("reading ",input$diseases," from a temporary file\n")
-      mydata=fread(paste0("temp/",input$diseases,".csv"))
+    
+    cat("reading ",input$diseases," from a temporary file\n")
+    mydata=fread(paste0("temp/",input$diseases,".csv"))
     
     cat('Calculation of percentile and proportion of sites in alert begin...\n')
     source("algorithms/percentile.R")
@@ -61,15 +61,15 @@ server<-function(input, output,session) {
                                  week_length=input$comet_map,
                                  percentile_value=input$Centile_map,
                                  disease=input$diseases
-                                )
+    )
     return(mylist)
   })
   minsan_algorithm = reactive({
     #some sort of cache of preprocessed data to speed up things:
-   
-      cat("reading ",input$diseases," from a temporary file\n")
-      mydata=fread(paste0("temp/",input$diseases,".csv"))
-   
+    
+    cat("reading ",input$diseases," from a temporary file\n")
+    mydata=fread(paste0("temp/",input$diseases,".csv"))
+    
     #####################################Doublement du nb de cas (MinSan algo) ###################
     cat('Calculation of minsan and proportion of sites in alert begin...\n')
     source("algorithms/minsan.R")
@@ -80,10 +80,10 @@ server<-function(input, output,session) {
     return (mylist)
   })
   csum_algorithm = reactive({
-   
-      cat("reading ",input$diseases," from a temporary file\n")
-      mydata=fread(paste0("temp/",input$diseases,".csv"))
-   
+    
+    cat("reading ",input$diseases," from a temporary file\n")
+    mydata=fread(paste0("temp/",input$diseases,".csv"))
+    
     ######################################Cumulative sum (cumsum algo) ##########################
     cat('Calculation of csum and proportion of sites in alert begin...')
     source("algorithms/csum.R")
@@ -104,170 +104,170 @@ server<-function(input, output,session) {
     } else {
       load(file=paste0("temp/PaluConf_SyndF",".rda"))
     }
-   cat('looking for an alert when Malaria cases among fever cases exceed:',
-       input$exp_map,'% or malaria cases among consultation number...',
-       input$expC_map,'...')
+    cat('looking for an alert when Malaria cases among fever cases exceed:',
+        input$exp_map,'% or malaria cases among consultation number...',
+        input$expC_map,'...')
     PaluConf_SyndF[,alert_status:=ifelse(100*sum(malaria_cases,na.rm = T)/sum(nb_fievre,na.rm = T)>as.numeric(input$exp_map) &
-                                         100*sum(malaria_cases,na.rm = T)/sum(nb_consultation,na.rm = T)>as.numeric(input$expC_map),
-                                        "alert","normal"),by="sites"] 
+                                           100*sum(malaria_cases,na.rm = T)/sum(nb_consultation,na.rm = T)>as.numeric(input$expC_map),
+                                         "alert","normal"),by="sites"] 
     PaluConf_SyndF[,alert_status_hist:=ifelse(100*(malaria_cases)/(nb_fievre)>as.numeric(input$exp_map) &
-                                          100*(malaria_cases)/(nb_consultation)>as.numeric(input$expC_map),
-                                        "alert","normal")]
-   cat('DONE\n')
-   ###proportion of sites in alert (weekly for all, and weekly by facies)##########
-   cat('calculate weekly proportion of sites in alert using tdr+/fever algorithm...')
+                                                100*(malaria_cases)/(nb_consultation)>as.numeric(input$expC_map),
+                                              "alert","normal")]
+    cat('DONE\n')
+    ###proportion of sites in alert (weekly for all, and weekly by facies)##########
+    cat('calculate weekly proportion of sites in alert using tdr+/fever algorithm...')
     Nbsite_beyond=PaluConf_SyndF[ alert_status_hist=="alert",
-                      length(unique(sites)),by="code"]
+                                  length(unique(sites)),by="code"]
     setnames(Nbsite_beyond,"V1","eff_beyond")
     Nbsite_beyond=merge(Nbsite_beyond,unique(PaluConf_SyndF[,list(code,deb_sem)],by=NULL),
-                       by.x="code",by.y="code",all.x=T) 
+                        by.x="code",by.y="code",all.x=T) 
     Nbsite_withdata=PaluConf_SyndF[is.na(alert_status_hist)==F,length(unique(sites)),by="code"]
     setnames(Nbsite_withdata,"V1","eff_total")
     propsite_alerte_fever=merge(x=Nbsite_withdata,y=Nbsite_beyond,
                                 by.x="code",by.y="code",all.x=T)
     propsite_alerte_fever[,prop:=ifelse(is.na(eff_beyond/eff_total)==T,0.0,
                                         eff_beyond/eff_total)]
-   cat('DONE\n')
-   
-   source("utils/create_facies.R")
-   PaluConf_SyndF=create_facies(data=PaluConf_SyndF)
-   ####################new method to handle facies###################################
-   list_facies= c("East","South","High_land","Fringe","excepted_East","excepted_High_land")
-   datalist_facies=list()
-   for ( f in list_facies)
-   {
-     cat('calculate weekly proportion of sites in alert using RDT+/fever for ',f,'...')
+    cat('DONE\n')
+    
+    source("utils/create_facies.R")
+    PaluConf_SyndF=create_facies(data=PaluConf_SyndF)
+    ####################new method to handle facies###################################
+    list_facies= c("East","South","High_land","Fringe","excepted_East","excepted_High_land")
+    datalist_facies=list()
+    for ( f in list_facies)
+    {
+      cat('calculate weekly proportion of sites in alert using RDT+/fever for ',f,'...')
       Nbsite_beyond=PaluConf_SyndF[ alert_status_hist=="alert" & get(f)==1,
-                                   length(unique(sites)),by=c("code",f)]
+                                    length(unique(sites)),by=c("code",f)]
       setnames(Nbsite_beyond,"V1","eff_beyond")
       Nbsite_beyond=merge(Nbsite_beyond,unique(PaluConf_SyndF[,list(code,deb_sem)],by=NULL),
-                         by.x=c("code"),by.y=c("code"),all.x=T)
+                          by.x=c("code"),by.y=c("code"),all.x=T)
       Nbsite_withdata=PaluConf_SyndF[is.na(alert_status_hist)==F & get(f)==1,
-                                    length(unique(sites)),by=c("code",f)]
+                                     length(unique(sites)),by=c("code",f)]
       setnames(Nbsite_withdata,"V1","eff_total")
       myfacies=merge(x=Nbsite_withdata,
                      y=Nbsite_beyond,
                      by.x=c("code",f),
                      by.y=c("code",f),all.x=T )
       myfacies[,prop:=ifelse(is.na(eff_beyond/eff_total)==T,0.0,
-                                                  eff_beyond/eff_total)]
+                             eff_beyond/eff_total)]
       rm(Nbsite_beyond);rm(Nbsite_withdata);gc()
-    cat('DONE\n')
-    datalist_facies[[f]]=myfacies
-    
-    #append to a single and unique dataframe:
-    if ( f==list_facies[1])
-    {
-      propsite_alerte_fever_byfacies= datalist_facies[[f]]
-      propsite_alerte_fever_byfacies[,f:=NULL,with=F]
-      propsite_alerte_fever_byfacies[,eff_total:=NULL]
-      propsite_alerte_fever_byfacies[,eff_beyond:=NULL]
-      propsite_alerte_fever_byfacies[,facies:=f]
-    } else {
-      tmp= datalist_facies[[f]]
-      tmp[,f:=NULL,with=F]
-      tmp[,eff_total:=NULL]
-      tmp[,eff_beyond:=NULL]
-      tmp[,facies:=f]
-      propsite_alerte_fever_byfacies=rbind(propsite_alerte_fever_byfacies,tmp)
-      rm(tmp);gc()
+      cat('DONE\n')
+      datalist_facies[[f]]=myfacies
+      
+      #append to a single and unique dataframe:
+      if ( f==list_facies[1])
+      {
+        propsite_alerte_fever_byfacies= datalist_facies[[f]]
+        propsite_alerte_fever_byfacies[,f:=NULL,with=F]
+        propsite_alerte_fever_byfacies[,eff_total:=NULL]
+        propsite_alerte_fever_byfacies[,eff_beyond:=NULL]
+        propsite_alerte_fever_byfacies[,facies:=f]
+      } else {
+        tmp= datalist_facies[[f]]
+        tmp[,f:=NULL,with=F]
+        tmp[,eff_total:=NULL]
+        tmp[,eff_beyond:=NULL]
+        tmp[,facies:=f]
+        propsite_alerte_fever_byfacies=rbind(propsite_alerte_fever_byfacies,tmp)
+        rm(tmp);gc()
+      }
+      cat("DONE\n")
+      
     }
-    cat("DONE\n")
     
-   }
-   
-   cat('calculate radius for per site for percentile algorithm alert...')
-     setkey(PaluConf_SyndF,alert_status_hist)
-     PaluConf_SyndF[alert_status=="alert", myradius:=15.0]
-     PaluConf_SyndF[alert_status_hist=="normal", sum_occurence_week:=sum(malaria_cases,na.rm=T),by="code"]
-     PaluConf_SyndF[alert_status=="normal", myradius:=15.0*malaria_cases/sum_occurence_week,by="sites,code"]
-     PaluConf_SyndF[alert_status_hist %in% NA, myradius:=5.0]
-   cat('DONE\n')
-   
-   PaluConf_SyndF[,deb_sem:=as.Date(deb_sem,origin="1970-01-01")]
-  
-   max_deb_sem= max(PaluConf_SyndF$deb_sem)
-   max_code=paste0(year(max_deb_sem),"_",isoweek(max_deb_sem))
-   if (max_code==paste0(year(Sys.Date()),"_",isoweek(Sys.Date())) ) {
-     #if max_date == current week then exclude this current week
-     #from calculation of alert , otherwise include 
-     mycode=paste0(year(Sys.Date()-7),"_",isoweek(Sys.Date()-7))
-     tdrplus_ind_currentweek=PaluConf_SyndF[code==mycode,]
-   } else {
-     tdrplus_ind_currentweek=PaluConf_SyndF[code==max_code,]
-   }
-   
-   return(list(mydata=PaluConf_SyndF,
-               tdrplus_ind_currentweek =tdrplus_ind_currentweek,
-               propsite_alerte_fever=propsite_alerte_fever,
-               propsite_alerte_fever_byfacies=propsite_alerte_fever_byfacies))
+    cat('calculate radius for per site for percentile algorithm alert...')
+    setkey(PaluConf_SyndF,alert_status_hist)
+    PaluConf_SyndF[alert_status=="alert", myradius:=15.0]
+    PaluConf_SyndF[alert_status_hist=="normal", sum_occurence_week:=sum(malaria_cases,na.rm=T),by="code"]
+    PaluConf_SyndF[alert_status=="normal", myradius:=15.0*malaria_cases/sum_occurence_week,by="sites,code"]
+    PaluConf_SyndF[alert_status_hist %in% NA, myradius:=5.0]
+    cat('DONE\n')
+    
+    PaluConf_SyndF[,deb_sem:=as.Date(deb_sem,origin="1970-01-01")]
+    
+    max_deb_sem= max(PaluConf_SyndF$deb_sem)
+    max_code=paste0(year(max_deb_sem),"_",isoweek(max_deb_sem))
+    if (max_code==paste0(year(Sys.Date()),"_",isoweek(Sys.Date())) ) {
+      #if max_date == current week then exclude this current week
+      #from calculation of alert , otherwise include 
+      mycode=paste0(year(Sys.Date()-7),"_",isoweek(Sys.Date()-7))
+      tdrplus_ind_currentweek=PaluConf_SyndF[code==mycode,]
+    } else {
+      tdrplus_ind_currentweek=PaluConf_SyndF[code==max_code,]
+    }
+    
+    return(list(mydata=PaluConf_SyndF,
+                tdrplus_ind_currentweek =tdrplus_ind_currentweek,
+                propsite_alerte_fever=propsite_alerte_fever,
+                propsite_alerte_fever_byfacies=propsite_alerte_fever_byfacies))
   })
   
   #display proportion of sites in alert with these HFI
   output$propsite_alerte = renderPlotly({
     source("utils/create_facies.R")
     cat("loading and transforming HF Indicators...")
-     hfi=data.table(gather(hfi,key=sites,
+    hfi=data.table(gather(hfi,key=sites,
                           value=myvalue,-c(code,deb_sem,type_val)))
-     hfi= create_facies(hfi)
+    hfi= create_facies(hfi)
     cat("DONE\n")
     cat("dispatch data from HFI...")
-     setkey(hfi,type_val)
-     caid = hfi[type_val=="CAID"];setnames(caid,old="myvalue",new="caid_value")
-     pmm = hfi[type_val=="PRECIPITATION"];setnames(pmm,old="myvalue",new="pmm_value")
-     lst = hfi[type_val=="LST_DAY"];setnames(lst,old="myvalue",new="temperature")
-     ndvi = hfi[type_val=="NDVI"];setnames(ndvi,old="myvalue",new="ndvi_value")
+    setkey(hfi,type_val)
+    caid = hfi[type_val=="CAID"];setnames(caid,old="myvalue",new="caid_value")
+    pmm = hfi[type_val=="PRECIPITATION"];setnames(pmm,old="myvalue",new="pmm_value")
+    lst = hfi[type_val=="LST_DAY"];setnames(lst,old="myvalue",new="temperature")
+    ndvi = hfi[type_val=="NDVI"];setnames(ndvi,old="myvalue",new="ndvi_value")
     cat("DONE\n")
     source("utils/introducing_caid.R",local = T) #==>now in caid
     source("utils/introducing_mild.R",local = T)
     source("utils/introducing_pmm.R",local = T) #==>now in hfi
     source("utils/introducing_lst.R",local = T) #==>now in hfi
     source("utils/introducing_ndvi.R",local = T) #==>now in hfi
-   
+    
     source("utils/if_percentile_viz.R",local = T)
     source("utils/if_minsan_viz.R",local = T)
     source("utils/if_csum_viz.R",local = T)
     source("utils/if_tdrfever_viz.R",local = T)  
-   
-          setkey(myprop,"code");setkey(caid,"code")
-         
-          cat('merging caid data with proportion of sites in alert...')
-          myprop=merge(myprop,unique(caid[,list(code,caid_value)],by=NULL),
-                       by.x=c("code"),
-                       by.y=c("code"), all.x=T )
-          cat('DONE\n')
-          setkey(myprop,"code");setkey(mild,"code")
-          cat('merging mild data with proportion of sites in alert...')
-          myprop=merge(myprop,unique(mild[,list(code,mild_value)],by=NULL),
-                       by.x=c("code"),
-                       by.y=c("code"), all.x=T )
-          cat('DONE\n')
-          cat('merging ndvi data with proportion of sites in alert...')
-          setkey(myprop,"code");setkey(ndvi,"code")
-          myprop=merge(myprop,unique(ndvi[,list(code,ndvi_value)],by=NULL),
-                       by.x=c("code"),
-                       by.y=c("code"), all.x=T )
-          cat('DONE\n')
-          cat('nrow of myprop  after merge with ndvi are:',nrow(myprop),"\n")
-          cat('merging temperature data with proportion of sites in alert...')
-          setkey(myprop,"code");setkey(lst,"code")
-          myprop=merge(myprop,unique(lst[,list(code,temperature)],by=NULL),
-                       by.x=c("code"),
-                       by.y=c("code"), all.x=T )
-          cat('DONE\n')
-          
-          cat('nrow of myprop  after merge with lst are:',nrow(myprop),"\n")
-          setkey(myprop,"code");setkey(pmm,code)
-          cat('merging rainFall data with proportion of sites in alert...')
-          myprop=merge(myprop,unique(pmm[,list(code,pmm_value)],by=NULL),
-                       by.x=c("code"),
-                       by.y=c("code"), all.x=T )
-          cat('DONE\n')
-      
-       
+    
+    setkey(myprop,"code");setkey(caid,"code")
+    
+    cat('merging caid data with proportion of sites in alert...')
+    myprop=merge(myprop,unique(caid[,list(code,caid_value)],by=NULL),
+                 by.x=c("code"),
+                 by.y=c("code"), all.x=T )
+    cat('DONE\n')
+    setkey(myprop,"code");setkey(mild,"code")
+    cat('merging mild data with proportion of sites in alert...')
+    myprop=merge(myprop,unique(mild[,list(code,mild_value)],by=NULL),
+                 by.x=c("code"),
+                 by.y=c("code"), all.x=T )
+    cat('DONE\n')
+    cat('merging ndvi data with proportion of sites in alert...')
+    setkey(myprop,"code");setkey(ndvi,"code")
+    myprop=merge(myprop,unique(ndvi[,list(code,ndvi_value)],by=NULL),
+                 by.x=c("code"),
+                 by.y=c("code"), all.x=T )
+    cat('DONE\n')
+    cat('nrow of myprop  after merge with ndvi are:',nrow(myprop),"\n")
+    cat('merging temperature data with proportion of sites in alert...')
+    setkey(myprop,"code");setkey(lst,"code")
+    myprop=merge(myprop,unique(lst[,list(code,temperature)],by=NULL),
+                 by.x=c("code"),
+                 by.y=c("code"), all.x=T )
+    cat('DONE\n')
+    
+    cat('nrow of myprop  after merge with lst are:',nrow(myprop),"\n")
+    setkey(myprop,"code");setkey(pmm,code)
+    cat('merging rainFall data with proportion of sites in alert...')
+    myprop=merge(myprop,unique(pmm[,list(code,pmm_value)],by=NULL),
+                 by.x=c("code"),
+                 by.y=c("code"), all.x=T )
+    cat('DONE\n')
+    
+    
     #using plotly:
     #line width (epaisseur de la ligne):
-   
+    
     line_width=1.0
     p <- plot_ly(myprop, x = deb_sem,
                  y = 100*prop,name=input$diseases,
@@ -291,7 +291,7 @@ server<-function(input, output,session) {
                           type="bar",
                           visible='legendonly')
     }
-   
+    
     p = p %>% add_trace(x = deb_sem, y = 100*ndvi_value, name = "NDVI",
                         line = list(width=line_width,color="#11d938"),visible='legendonly')
     p = p %>% add_trace(x = deb_sem, y = pmm_value, name = "Rainfall(mm)",
@@ -302,14 +302,14 @@ server<-function(input, output,session) {
                         line = list(width=line_width,color = "#ff8d00"),
                         visible='legendonly')
     p = p %>% layout( 
-                      legend = list(x = 0, y = 100),
-                     xaxis =list(title="Weeks"),
-                     yaxis =list(title="Values")
-                     )
-
+      legend = list(x = 0, y = 100),
+      xaxis =list(title="Weeks"),
+      yaxis =list(title="Values")
+    )
+    
     p
     
-  
+    
   })
   #display sites in alert for the current week into the map (02 map choices currently)
   output$madagascar_map <- renderLeaflet({
@@ -383,33 +383,33 @@ server<-function(input, output,session) {
         sentinel_latlong=merge(sentinel_latlong,csum_algorithm()$csum_alerte_currentweek
                                ,by.x="sites",by.y = "sites",all.x=T)
       }
-     
+      
     }
-   
+    
     #feeding leaflet with our data:
-   
+    
     mada_map=leaflet()
     #exclude Haute Terre Centrale (High_land) from the map
     mada_map=leaflet(sentinel_latlong[!(sites%in% High_land)]) 
     mada_map=mada_map %>% setView(lng = 47.051532 , 
-                                              lat =-19.503781 , zoom = 5) 
+                                  lat =-19.503781 , zoom = 5) 
     mada_map=mada_map %>% addTiles(urlTemplate="http://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}")  
-   
-                                                                                                                                                             
+    
+    
     #change color to red when alert is triggered:
     #navy
     pal <- colorFactor(c("red", "darkgreen"), domain = c("normal", "alert"))
     mada_map=mada_map %>% addCircleMarkers(lng = ~Long, 
-                                                       lat = ~Lat, 
-                                                       weight = 1,
-                                                       radius = ~myradius, 
-                                                       color = ~pal(alert_status),
-                                                       fillOpacity = 0.7,
-                                                       popup = ~name)
-   
+                                           lat = ~Lat, 
+                                           weight = 1,
+                                           radius = ~myradius, 
+                                           color = ~pal(alert_status),
+                                           fillOpacity = 0.7,
+                                           popup = ~name)
+    
     
     mada_map
-    })
+  })
   output$madagascar_map2 <- renderPlot({
     if (input$diseases=="Malaria" )
     {
@@ -476,35 +476,35 @@ server<-function(input, output,session) {
       }
       
     }
-      #exclude Haute Terre Centrale (High_land) from the map
-      sentinel_latlong=sentinel_latlong[!(sites %in% High_land)]
-      #latest verification fo radius and alert status (handle NA's)
-      sentinel_latlong[is.na(alert_status)==T,alert_status:="No data"]
-      sentinel_latlong[is.na(myradius)==T,myradius:=5.0]
+    #exclude Haute Terre Centrale (High_land) from the map
+    sentinel_latlong=sentinel_latlong[!(sites %in% High_land)]
+    #latest verification fo radius and alert status (handle NA's)
+    sentinel_latlong[is.na(alert_status)==T,alert_status:="No data"]
+    sentinel_latlong[is.na(myradius)==T,myradius:=5.0]
+    
+    #load the map
+    madagascar_layer=readRDS("madagascar.rds")
+    madagascar_map2=ggmap(madagascar_layer,base_layer = ggplot(data = sentinel_latlong,aes(x=Long,y=Lat)))
+    if ( length(unique(sentinel_latlong$alert_status))!=1) {
       
-      #load the map
-      madagascar_layer=readRDS("madagascar.rds")
-      madagascar_map2=ggmap(madagascar_layer,base_layer = ggplot(data = sentinel_latlong,aes(x=Long,y=Lat)))
-      if ( length(unique(sentinel_latlong$alert_status))!=1) {
-        
-        madagascar_map2 = madagascar_map2 + geom_point(data = sentinel_latlong,
-                                                       alpha=0.8,
-                                                       aes(color=alert_status,
-                                                           size=myradius
-                                                           ),show.legend  = T)
-        madagascar_map2 = madagascar_map2 + scale_colour_manual(values=c("#f05249", "#808284", "#69c39a"))
-      } else {
-        madagascar_map2 = madagascar_map2 + geom_point(data = sentinel_latlong,
-                                                       alpha=0.8,
-                                                       aes(color=alert_status,
-                                                           size=myradius),
-                                                       color="blue")
-      }
-      
-      madagascar_map2 = madagascar_map2 + scale_size_continuous(range=range(sentinel_latlong$myradius))
-      return(madagascar_map2)  
-      
-    },height = 640)
+      madagascar_map2 = madagascar_map2 + geom_point(data = sentinel_latlong,
+                                                     alpha=0.8,
+                                                     aes(color=alert_status,
+                                                         size=myradius
+                                                     ),show.legend  = T)
+      madagascar_map2 = madagascar_map2 + scale_colour_manual(values=c("#f05249", "#808284", "#69c39a"))
+    } else {
+      madagascar_map2 = madagascar_map2 + geom_point(data = sentinel_latlong,
+                                                     alpha=0.8,
+                                                     aes(color=alert_status,
+                                                         size=myradius),
+                                                     color="blue")
+    }
+    
+    madagascar_map2 = madagascar_map2 + scale_size_continuous(range=range(sentinel_latlong$myradius))
+    return(madagascar_map2)  
+    
+  },height = 640)
   #Leaflet or ggmap:
   mymapchoice = reactive({
     return(input$mapchoice)
@@ -515,21 +515,21 @@ server<-function(input, output,session) {
     
     return(sentinel_latlong[Long==event$lng & Lat==event$lat,get("sites")])
   },ignoreNULL=F)
- 
+  
   #click event handler (news since shiny 0.13)
- selected_site=eventReactive(input$madagascar_map2_brush, {
+  selected_site=eventReactive(input$madagascar_map2_brush, {
     Z <- brushedPoints(sentinel_latlong, 
                        input$madagascar_map2_brush, 
                        xvar="Long",yvar="Lat",allRows = TRUE)
     
     return(sentinel_latlong[Z$selected_,get("sites")])
   })
- clicked_site=eventReactive(input$madagascar_map2_click, {
-   Z <- nearPoints(sentinel_latlong, 
-                   input$madagascar_map2_click,
-                   xvar="Long",yvar="Lat",allRows = TRUE)
-   return(sentinel_latlong[Z$selected_,get("sites")])
- })
+  clicked_site=eventReactive(input$madagascar_map2_click, {
+    Z <- nearPoints(sentinel_latlong, 
+                    input$madagascar_map2_click,
+                    xvar="Long",yvar="Lat",allRows = TRUE)
+    return(sentinel_latlong[Z$selected_,get("sites")])
+  })
   
   #render mean ILI
   output$propili = renderPlotly({
@@ -539,7 +539,7 @@ server<-function(input, output,session) {
     tdr_eff=as.data.table(gather(ili,key=sites,value=Synd_g,-c(code,deb_sem)))
     
     ################################
-   
+    
     propili_2015 = tdr_eff[sites %in% sites34 & year(as.Date(deb_sem,origin="1970-01-01"))>2014]
     stat_ili= tdr_eff[sites %in% sites34 & year(as.Date(deb_sem,origin="1970-01-01")) <2015]
     
@@ -552,18 +552,18 @@ server<-function(input, output,session) {
                        by.y=c("code","sites","deb_sem"),all.x=T)
     
     propili_2015[,prop := 100*sum(Synd_g,na.rm = T)/sum(NxConsltTotal,na.rm=T) ,by="deb_sem"]
-
+    
     propili_2015= unique(propili_2015[,list(deb_sem,prop)],by=NULL)
     #create a key to merge later:
     propili_2015[,weekOfday:=week(as.Date(deb_sem,origin="1970-01-01"))]  
     gc()
-  
+    
     cat("calculating mean and max for historical ILI data...")
-     stat_ili[,weekOfday:=week(as.Date(deb_sem,origin="1970-01-01"))]
-     stat_ili[,mymax:=max(Synd_g,na.rm = T),by="weekOfday"]
-     stat_ili[,mymean:=mean(Synd_g,na.rm = T),by="weekOfday"]
-     stat_ili= unique(stat_ili[,list(weekOfday,mymax,mymean)],by=NULL)
-     #create a key to merge later 
+    stat_ili[,weekOfday:=week(as.Date(deb_sem,origin="1970-01-01"))]
+    stat_ili[,mymax:=max(Synd_g,na.rm = T),by="weekOfday"]
+    stat_ili[,mymean:=mean(Synd_g,na.rm = T),by="weekOfday"]
+    stat_ili= unique(stat_ili[,list(weekOfday,mymax,mymean)],by=NULL)
+    #create a key to merge later 
     cat("DONE\n")
     gc()
     
@@ -585,8 +585,8 @@ server<-function(input, output,session) {
                      font=list(size=11),
                      xaxis = list(title = "Date(Weeks)"),
                      legend = list(x = 0, 
-                                  y = 10)
-                    )
+                                   y = 10)
+    )
     p = p %>% add_trace(x=deb_sem,line = list(width=line_width),
                         y = mymean, name = "Mean<2015",visible='legendonly')
     
@@ -601,18 +601,18 @@ server<-function(input, output,session) {
     ili=as.data.table(gather(ili,key=sites,value=Synd_g,-c(code,deb_sem)))
     arbosusp=as.data.table(gather(arbosusp,key=sites,value=ArboSusp,-c(code,deb_sem)))
     ili=merge(ili,arbosusp,
-                  by.x=c("code","sites","deb_sem"),
-                  by.y=c("code","sites","deb_sem"),all.x=T)
+              by.x=c("code","sites","deb_sem"),
+              by.y=c("code","sites","deb_sem"),all.x=T)
     #aggregate cases per week:
     ili[,Synd_g:=sum(Synd_g,na.rm = T),by="code"]
     ili[,ArboSusp:=sum(ArboSusp,na.rm = T),by="code"]
     #data processing:
     ili=unique(ili,by=NULL)
-
+    
     #34 sites we need:
     sites34= include[-c(1:2)]
-    #filter rows:  sites %in% sites34 &
-    myili=ili[ year(as.Date(deb_sem ,origin="1970-01-01"))>=2009]
+    #filter rows:  sites %in% sites34 & 2009
+    myili=ili[ year(as.Date(deb_sem ,origin="1970-01-01"))>=2016]
     #handle date format:
     myili[,deb_sem:=as.character((as.Date(deb_sem,origin="1970-01-01")))]
     p <- plot_ly(myili, x = deb_sem, type="bar",y = Synd_g,name="ILI",
@@ -623,16 +623,16 @@ server<-function(input, output,session) {
     #position legend at top of the graph
     p= p %>% layout( paper_bgcolor="rgb(213, 226, 233)",plot_bgcolor = "rgb(213, 226, 233)",
                      title="ILI & Dengue-LIKE (34 sites)",
-                    xaxis = list(title = "Date(weeks)"),
-                    yaxis = list(title = "#Cases"),
-                    legend = list(x = 0, y = 40) 
-                    )
+                     xaxis = list(title = "Date(weeks)"),
+                     yaxis = list(title = "#Cases"),
+                     legend = list(x = 0, y = 40) 
+    )
     p
-  
+    
   })
   #render weekly diseases cases for a clicked site
   output$weekly_disease_cases_persite = renderPlotly({
-  
+    
     mydata=percentile_algorithm()$mydata
     #recupere date d'alerte percentile (seuleument pour cet algo) pour chaque site
     #cree une nouvelle variable = valeur de cette alerte
@@ -646,18 +646,18 @@ server<-function(input, output,session) {
     }
     if ( length(input$Algorithmes_eval2)>0 )
     {
-     if ( input$Algorithmes_eval2=="Percentile")
-     {
-      mydata[,myalerte:=0]
-      mydata[,myalerte:=ifelse(alert_status=="alert",occurence,NA)]
-     }
+      if ( input$Algorithmes_eval2=="Percentile")
+      {
+        mydata[,myalerte:=0]
+        mydata[,myalerte:=ifelse(alert_status=="alert",occurence,NA)]
+      }
     }
     
     setkey(mydata,sites)
     cat("reshape HFI to extract rainFall...")
-     hfi=data.table(gather(hfi,key=sites,
+    hfi=data.table(gather(hfi,key=sites,
                           value=myvalue,-c(code,deb_sem,type_val)))
-     setkeyv(hfi,c("type_val","sites"))
+    setkeyv(hfi,c("type_val","sites"))
     cat("DONE\n")
     
     
@@ -669,22 +669,22 @@ server<-function(input, output,session) {
                     list(occurence=sum(occurence,na.rm=T)),by="code"]
       # RainFall ou Precipitation:
       cat("merge rainfall or precipitation with mydata for chosen site(s)...")
-       pmm = hfi[type_val=="PRECIPITATION" & sites %in% sites_list];
-       setnames(pmm,old="myvalue",new="rainFall")
-       # merge with mydata
-       mydata=merge(mydata,pmm,by.x=c("code"),by.y=c("code"),all.x=T)
-       #
+      pmm = hfi[type_val=="PRECIPITATION" & sites %in% sites_list];
+      setnames(pmm,old="myvalue",new="rainFall")
+      # merge with mydata
+      mydata=merge(mydata,pmm,by.x=c("code"),by.y=c("code"),all.x=T)
+      #
       cat("DONE\n")
       
     } else {
       mydata=mydata[sites %in% selected_site_leaflet(),]
       # RainFall ou Precipitation:
       cat("merge rainfall or precipitation with mydata for chosen site(s)...")
-       pmm = hfi[type_val=="PRECIPITATION" & sites %in% selected_site_leaflet()];
-       setnames(pmm,old="myvalue",new="rainFall")
-       # merge with mydata
-       pmm[,deb_sem:=NULL]
-       mydata=merge(mydata,pmm,by.x=c("code"),by.y=c("code"),all.x=T)
+      pmm = hfi[type_val=="PRECIPITATION" & sites %in% selected_site_leaflet()];
+      setnames(pmm,old="myvalue",new="rainFall")
+      # merge with mydata
+      pmm[,deb_sem:=NULL]
+      mydata=merge(mydata,pmm,by.x=c("code"),by.y=c("code"),all.x=T)
       #
       cat("DONE\n")
     }
@@ -696,12 +696,12 @@ server<-function(input, output,session) {
       mild_tmp=mild
     } else {
       cat('selection of LLIN corresponding to: ',selected_site_leaflet() )
-       mild_tmp=mild[,c("deb_sem",selected_site_leaflet()),with=F]
-       mild_tmp[,code:=paste0(year(as.Date(deb_sem)),"_",isoweek(as.Date(deb_sem)))]
-       setnames(mild_tmp,old=selected_site_leaflet(),new="mild_value")
-       #for graphical display purpose only(to get a bar chart that cover all vertical):
-       max_val= max(mydata$occurence,na.rm = T)
-       mild_tmp[,mild_value:=ifelse(is.na(mild_value)==T,NA,max_val)]
+      mild_tmp=mild[,c("deb_sem",selected_site_leaflet()),with=F]
+      mild_tmp[,code:=paste0(year(as.Date(deb_sem)),"_",isoweek(as.Date(deb_sem)))]
+      setnames(mild_tmp,old=selected_site_leaflet(),new="mild_value")
+      #for graphical display purpose only(to get a bar chart that cover all vertical):
+      max_val= max(mydata$occurence,na.rm = T)
+      mild_tmp[,mild_value:=ifelse(is.na(mild_value)==T,NA,max_val)]
       cat(' DONE\n')
     }
     #
@@ -712,7 +712,7 @@ server<-function(input, output,session) {
     mydata=mydata[order(deb_sem),]
     setnames(mydata,"deb_sem","Semaine")
     #handle title programmatically (depends on user choice of disease, site)
-     mytitle=paste0("Weekly ",input$diseases," cases number in ",sentinel_latlong[sites==selected_site_leaflet(),get("name")])
+    mytitle=paste0("Weekly ",input$diseases," cases number in ",sentinel_latlong[sites==selected_site_leaflet(),get("name")])
     
     #
     line_width=1
@@ -720,7 +720,7 @@ server<-function(input, output,session) {
               y=occurence,
               x=Semaine,name=paste0(input$diseases),
               line = list(width=line_width,color = "rgb(255, 0, 0)") #red for disease
-              )
+    )
     #position legend at top of the graph
     #90th percentile as horizontal line:
     p = p %>% layout(title=mytitle,
@@ -729,40 +729,40 @@ server<-function(input, output,session) {
                      legend = list(x = 0, y =10 ),
                      xaxis =list(title="Weeks"),
                      yaxis =list(title="#Cases")
-                     )
+    )
     
-      if ( length(input$Algorithmes_eval1)>0 | length(input$Algorithmes_eval2)>0)
+    if ( length(input$Algorithmes_eval1)>0 | length(input$Algorithmes_eval2)>0)
+    {
+      if (input$Algorithmes_eval1=="Percentile"  )
       {
-        if (input$Algorithmes_eval1=="Percentile"  )
-        {
         p = p %>% add_trace(x=Semaine,y=myalerte,line=list(color="rgb(165,41,157)"),
                             name="percentile alerte")
-        }
       }
-   
+    }
     
-        p = p %>% add_trace(x = Semaine, 
+    
+    p = p %>% add_trace(x = Semaine, 
                         y = rainFall/10, 
                         line = list(width=line_width,color = "#84a6df"),
                         name = "Rainfall/10",visible='legendonly')
-   
-        p = p %>% add_trace(x = Semaine, y = mild_value, name = "LLIN",
+    
+    p = p %>% add_trace(x = Semaine, y = mild_value, name = "LLIN",
                         color="LLIN",
                         opacity=0.5,
                         colors="#132B43",
                         type="bar",
                         visible='legendonly')
     p
-   
+    
     
   })
   #Health heatmap plot with plotly and using percentile algorithm:
   output$heatmap_percentile = renderD3heatmap({
     #some sort of cache of preprocessed data to speed up things:
-   
-      cat("reading ",input$diseases," from a temporary file\n")
-      mydata=fread(paste0("temp/",input$diseases,".csv"))
-   
+    
+    cat("reading ",input$diseases," from a temporary file\n")
+    mydata=fread(paste0("temp/",input$diseases,".csv"))
+    
     
     if ( input$diseases=="Malaria" )
     {
@@ -798,12 +798,12 @@ server<-function(input, output,session) {
         
       }
       if ( input$Algorithmes_eval1 == 'Ind') 
-        { 
+      { 
         X= tdrplus_fever_ind()$mydata 
       }
     } else {
       if ( input$Algorithmes_eval2 == 'Percentile' ) { 
-       
+        
         source("algorithms/percentile.R")
         X=calculate_percentile(data=mydata,
                                week_length=input$comet_map,
@@ -823,7 +823,7 @@ server<-function(input, output,session) {
       }
       if ( input$Algorithmes_eval2 == 'MinSan'  ) { 
         source("algorithms/minsan.R") 
-       
+        
         X=calculate_minsan(data=mydata,slope_minsan=input$slope_minsan,
                            year_choice=year(Sys.Date()),
                            week_choice=ifelse(Sys.Date()-as.Date(paste0(year(Sys.Date()),"-01-01"))<8
@@ -842,25 +842,25 @@ server<-function(input, output,session) {
     }
     
     cat('recode alert status...')
-     setkey(X,alert_status)
-     X[is.na(alert_status)==T,alert_status2:=0]
-     X[alert_status=="normal",alert_status2:=1]
-     X[alert_status=="alert",alert_status2:=2]
+    setkey(X,alert_status)
+    X[is.na(alert_status)==T,alert_status2:=0]
+    X[alert_status=="normal",alert_status2:=1]
+    X[alert_status=="alert",alert_status2:=2]
     cat('DONE\n')
     
     cat('spreading data...')
- 
-     X[,years:=year(as.Date(deb_sem,origin="1970-01-01"))]
-     X=merge(X,sentinel_latlong[,list(sites,name)],by.x="sites",by.y="sites",all.x=T)
-     X=X[years %in% (2016-as.numeric(input$nbyear)):2016,]
-     
-     #as.data.frame otherwise It won't work
-     myz= as.data.frame(spread(unique(X[,list(name,deb_sem,alert_status2)],by=NULL),
+    
+    X[,years:=year(as.Date(deb_sem,origin="1970-01-01"))]
+    X=merge(X,sentinel_latlong[,list(sites,name)],by.x="sites",by.y="sites",all.x=T)
+    X=X[years %in% (2016-as.numeric(input$nbyear)):2016,]
+    
+    #as.data.frame otherwise It won't work
+    myz= as.data.frame(spread(unique(X[,list(name,deb_sem,alert_status2)],by=NULL),
                               deb_sem,alert_status2))
     cat("DONE\n")
-   #  require(heatmaply)
-   # heatmaply(myz[,names(myz)[-1]],colors=c("grey","darkgreen","red"),
-   #           column_text_angle = 90,dendrogram = "none") %>% layout(margin = list(l = 130, b = 40))
+    #  require(heatmaply)
+    # heatmaply(myz[,names(myz)[-1]],colors=c("grey","darkgreen","red"),
+    #           column_text_angle = 90,dendrogram = "none") %>% layout(margin = list(l = 130, b = 40))
     row.names(myz) <- myz$name
     d3heatmap(myz[,-1], dendrogram = "none",scale = "none",
               xaxis_font_size="9px",
@@ -871,39 +871,39 @@ server<-function(input, output,session) {
   output$mybubble = renderPlotly({
     #some sort of cache of preprocessed data to speed up things:
     
-      cat("reading ",input$diseases," from a temporary file\n")
-      mydata=fread(paste0("temp/",input$diseases,".csv"))
-
-      cat('Calculation of percentile and proportion of sites in alert begin...')
-      source("algorithms/percentile.R")
-      X=calculate_percentile(data=mydata,
-                             week_length=input$comet_map,
-                             percentile_value=input$Centile_map,
-                             disease=input$diseases)$mydata
-      cat("DONE\n")
+    cat("reading ",input$diseases," from a temporary file\n")
+    mydata=fread(paste0("temp/",input$diseases,".csv"))
+    
+    cat('Calculation of percentile and proportion of sites in alert begin...')
+    source("algorithms/percentile.R")
+    X=calculate_percentile(data=mydata,
+                           week_length=input$comet_map,
+                           percentile_value=input$Centile_map,
+                           disease=input$diseases)$mydata
+    cat("DONE\n")
     
     
     
     
     #order time series ascending (2007==>now)
-   
+    
     setorder(X,sites,deb_sem)
     
     if (input$Cluster_algo=="Total")
     {
-       X=X[as.Date(deb_sem,origin = "1970-01-01")>=as.Date("2016-01-01",origin = "1970-01-01") & alert_status=="alert" ,]
+      X=X[as.Date(deb_sem,origin = "1970-01-01")>=as.Date("2016-01-01",origin = "1970-01-01") & alert_status=="alert" ,]
     } else {
       X=X[as.Date(deb_sem,origin = "1970-01-01")>=as.Date("2016-01-01",origin = "1970-01-01") & alert_status=="alert" & get(input$Cluster_algo)==1,]
     }
-      
+    
     X=merge(X,sentinel_latlong,by.x="sites",by.y="sites",all.x=T)
-   
+    
     p=plot_ly(X, y = occurence, x=deb_sem,color=name )
     p = p %>% layout( paper_bgcolor="rgb(213, 226, 233)",
                       plot_bgcolor = "rgb(213, 226, 233)",
                       #legend=list(orientation="h"),
                       xaxis =list(title="Weeks"),
-                     yaxis =list(title="#Cases"))
+                      yaxis =list(title="#Cases"))
     p
   })
   #download report handler (for Malaria and Diarrhea):
@@ -987,15 +987,15 @@ server<-function(input, output,session) {
     #ggplotly(d)
   })
   output$table_htc_report = DT::renderDataTable({
-
+    
     load(file="interactive_summary_report/last6_palu_autoch.rda")
     last6_palu_autoch=last6_palu_autoch[,c("Centre","6 semaines précédentes","Semaine dernière"),with=F]
     colnames(last6_palu_autoch)=c("Sites","Last 06 weeks","Last week")
     mytable=datatable(last6_palu_autoch, options = list(searchHighlight = TRUE,
-                                                initComplete = JS(
-                                                  "function(settings, json) {",
-                                                  "$(this.api().table().header()).css({'background-color': '#000', 'color': '#fff'});",
-                                                  "}")))
+                                                        initComplete = JS(
+                                                          "function(settings, json) {",
+                                                          "$(this.api().table().header()).css({'background-color': '#000', 'color': '#fff'});",
+                                                          "}")))
     #formating style of Site column
     mytable = mytable %>% 
       formatStyle(
@@ -1021,7 +1021,7 @@ server<-function(input, output,session) {
   #summary plot of the Malaria (global) report:
   output$malaria_report_plot = renderPlot({
     load(file = "report/palu_chart.rda")
-   p
+    p
     #ggplotly(p)
   })
   #interactive Malaria table:
@@ -1030,10 +1030,10 @@ server<-function(input, output,session) {
     malaria=malaria[,c("Sites","6 semaines précédentes","Semaine dernière"),with=F]
     colnames(malaria)=c("Sites","Last 06 weeks","Last week")
     mytable=datatable(malaria, options = list(searchHighlight = TRUE,
-                                      initComplete = JS(
-                                        "function(settings, json) {",
-                                        "$(this.api().table().header()).css({'background-color': '#000', 'color': '#fff'});",
-                                        "}")))
+                                              initComplete = JS(
+                                                "function(settings, json) {",
+                                                "$(this.api().table().header()).css({'background-color': '#000', 'color': '#fff'});",
+                                                "}")))
     #formating style of Site column
     mytable = mytable %>% 
       formatStyle(
@@ -1050,10 +1050,10 @@ server<-function(input, output,session) {
     fievre=fievre[,c("Sites","6 semaines précédentes","Semaine dernière"),with=F]
     colnames(fievre)=c("Sites","Last 06 weeks","Last week")
     mytable=datatable(fievre, options = list(searchHighlight = TRUE,
-                                     initComplete = JS(
-                                       "function(settings, json) {",
-                                       "$(this.api().table().header()).css({'background-color': '#000', 'color': '#fff'});",
-                                       "}")))
+                                             initComplete = JS(
+                                               "function(settings, json) {",
+                                               "$(this.api().table().header()).css({'background-color': '#000', 'color': '#fff'});",
+                                               "}")))
     #formating style of Site column
     mytable = mytable %>% 
       formatStyle(
@@ -1084,10 +1084,10 @@ server<-function(input, output,session) {
     Diarrh=Diarrh[,c("Sites","6 semaines précédentes","Semaine dernière"),with=F]
     colnames(Diarrh)=c("Sites","Last 06 weeks","Last week")
     mytable=datatable(Diarrh, options = list(searchHighlight = TRUE,
-                                     initComplete = JS(
-                                       "function(settings, json) {",
-                                       "$(this.api().table().header()).css({'background-color': '#000', 'color': '#fff'});",
-                                       "}")))
+                                             initComplete = JS(
+                                               "function(settings, json) {",
+                                               "$(this.api().table().header()).css({'background-color': '#000', 'color': '#fff'});",
+                                               "}")))
     #formating style of Site column
     mytable = mytable %>% 
       formatStyle(
@@ -1104,10 +1104,10 @@ server<-function(input, output,session) {
     Diarrh_feb=Diarrh_feb[,c("Sites","6 semaines précédentes","Semaine dernière"),with=F]
     colnames(Diarrh_feb)=c("Sites","Last 06 weeks","Last week")
     mytable=datatable(Diarrh_feb, options = list(searchHighlight = TRUE,
-                                         initComplete = JS(
-                                           "function(settings, json) {",
-                                           "$(this.api().table().header()).css({'background-color': '#000', 'color': '#fff'});",
-                                           "}")))
+                                                 initComplete = JS(
+                                                   "function(settings, json) {",
+                                                   "$(this.api().table().header()).css({'background-color': '#000', 'color': '#fff'});",
+                                                   "}")))
     #formating style of Site column
     mytable = mytable %>% 
       formatStyle(
@@ -1138,10 +1138,10 @@ server<-function(input, output,session) {
     X=X[,c("Sites","6 semaines précédentes","Semaine dernière"),with=F]
     colnames(X)=c("Sites","Last 06 weeks","Last week")
     mytable=datatable(X, options = list(searchHighlight = TRUE,
-                                initComplete = JS(
-                                  "function(settings, json) {",
-                                  "$(this.api().table().header()).css({'background-color': '#000', 'color': '#fff'});",
-                                  "}")))
+                                        initComplete = JS(
+                                          "function(settings, json) {",
+                                          "$(this.api().table().header()).css({'background-color': '#000', 'color': '#fff'});",
+                                          "}")))
     #formating style of Site column
     mytable = mytable %>% 
       formatStyle(
@@ -1173,10 +1173,10 @@ server<-function(input, output,session) {
     X=X[,c("Sites","6 semaines précédentes","Semaine dernière"),with=F]
     colnames(X)=c("Sites","Last 06 weeks","Last week")
     mytable=datatable(X, options = list(searchHighlight = TRUE,
-                                initComplete = JS(
-                                  "function(settings, json) {",
-                                  "$(this.api().table().header()).css({'background-color': '#000', 'color': '#fff'});",
-                                  "}")))
+                                        initComplete = JS(
+                                          "function(settings, json) {",
+                                          "$(this.api().table().header()).css({'background-color': '#000', 'color': '#fff'});",
+                                          "}")))
     #formating style of Site column
     mytable = mytable %>% 
       formatStyle(
@@ -1193,7 +1193,7 @@ server<-function(input, output,session) {
     individual_model=list.files(path="report/pfa")
     sitemodel_found= grep(input$CSB_sites_pfa,individual_model,value = T)
     load(file=paste0("report/pfa/",sitemodel_found))
-   d
+    d
     #ggplotly(d)
     
   })
@@ -1206,10 +1206,10 @@ server<-function(input, output,session) {
   output$missing_sent_report = DT::renderDataTable({
     X=mytables()$X
     mytable=datatable(X[,input$CSB_missing_sent], options = list(searchHighlight = TRUE,
-      initComplete = JS(
-        "function(settings, json) {",
-        "$(this.api().table().header()).css({'background-color': '#000', 'color': '#fff'});",
-        "}")))
+                                                                 initComplete = JS(
+                                                                   "function(settings, json) {",
+                                                                   "$(this.api().table().header()).css({'background-color': '#000', 'color': '#fff'});",
+                                                                   "}")))
     for ( k in input$CSB_missing_sent )
     {
       mytable= mytable %>% formatStyle(k,
@@ -1272,58 +1272,58 @@ server<-function(input, output,session) {
       #add next month : VERY IMPORTANT NEED TO FIND DURABLE SOLUTION
       X=rbind(X,data.table(mymonth=6,myyear=2016,occurence=NA))
       X[,mymonth:=paste0(mymonth,"/",substr(myyear,3,4))]
-     
+      
       myvaluebox=valueBox(
-       round(mae(X$occurence[(L-L_preds+1):L],preds)), 
+        round(mae(X$occurence[(L-L_preds+1):L],preds)), 
         "Mean Average Error", 
         icon = icon("fa-line-chart"),
         color = "red")
     }
-   
+    
     myvaluebox
-   
+    
   })
   
   ########################## Put short model description #####
   output$mymodel_description <- renderInfoBox({
     mymodel_desc =infoBox("Description",width=12,
-                                 value="Extension of simple exponential smoothing to allow forecasting of data with a trend. This method involves a forecast equation and two smoothing equations (one for the level and one for the trend)")
+                          value="Extension of simple exponential smoothing to allow forecasting of data with a trend. This method involves a forecast equation and two smoothing equations (one for the level and one for the trend)")
     mymodel_desc
   })
 }
 
 ##############################################User interface ##############
 mydashheader=dashboardHeader(title="Sentinel surveillance",titleWidth="233")
-                             
-                             
+
+
 
 #skeleton of the user interface:
 source('initialize_ui.R')
 ui = list(dashboardPage(skin = "blue",
-          mydashheader,
-  dashboardSidebar(
-    sidebarMenu(
-      menuItem(text="Main",tabName="mytabbox", icon = icon("database")),
-      menuItem(text="Reporting Summary",tabName="diparam",   icon = icon("file-zip-o")),
-      menuItem(text="Diseases",.list=diseases_choices,icon=icon("cog")),
-      menuItem(text="Map",.list=map_choices,icon=icon("map-marker")),
-      menuItem(text="Aggregation",.list=myfacies_algo,icon=icon("group")),
-      menuItem(text=list("Forecasting", 
-                         tags$small(class="media-heading",tags$span(class="label label-danger", "beta"))
-                         ),
-                         tabName="myforecast", 
-                         icon = icon("line-chart")),
-      tags$div(class="media",
-          tags$div(class="media-left media-middle",
-               tags$a(href="http://pasteur.mg",
-                      tags$img(class="media-object img-rounded" ,height='100',width='230',src="logo2.png" ,alt="logo")
-                      )))
-  )), 
-  dashboardBody(shinyjs::useShinyjs(),tabItems(
-                         tabbox_item,
-                         disease_item,
-                         forecast_item
-                         ))
+                        mydashheader,
+                        dashboardSidebar(
+                          sidebarMenu(
+                            menuItem(text="Main",tabName="mytabbox", icon = icon("database")),
+                            menuItem(text="Reporting Summary",tabName="diparam",   icon = icon("file-zip-o")),
+                            menuItem(text="Diseases",.list=diseases_choices,icon=icon("cog")),
+                            menuItem(text="Map",.list=map_choices,icon=icon("map-marker")),
+                            menuItem(text="Aggregation",.list=myfacies_algo,icon=icon("group")),
+                            menuItem(text=list("Forecasting", 
+                                               tags$small(class="media-heading",tags$span(class="label label-danger", "beta"))
+                            ),
+                            tabName="myforecast", 
+                            icon = icon("line-chart")),
+                            tags$div(class="media",
+                                     tags$div(class="media-left media-middle",
+                                              tags$a(href="http://pasteur.mg",
+                                                     tags$img(class="media-object img-rounded" ,height='100',width='230',src="logo2.png" ,alt="logo")
+                                              )))
+                          )), 
+                        dashboardBody(shinyjs::useShinyjs(),tabItems(
+                          tabbox_item,
+                          disease_item,
+                          forecast_item
+                        ))
 ),
 
 tags$body(includeHTML("www/gears.html")),
