@@ -207,144 +207,145 @@ for ( ix in 1:nrow(historical_alert8) )
 }
 ####################################################################################
 summary_report=list( tags$div(class="container",
-                     tags$div( class="jumbotron",
-                     tags$h2("Alerts summary during the last 02 months"),
-                     tags$p(class="lead","Parameters encompass:",
-                                 tags$ul(
-                                   tags$li(tags$p("90th percentile is calculated for all weeks except for the ongoing week.")),
-                                   tags$li(tags$p("03 consecutive weeks are needed to trigger alert when Malaria or Diarrhea cases exceed the 90th percentile.")
-                                   )))),
-                     tags$div(class="row",tags$div(class="col-sm-8 blog-main",tags$div(class="blog-post",
-                                                                  tags$h2(class="blog-post-title",paste("Alerts outline for ",mycode[1],":") 
-                                                                  )))),
-                     listOfAlerts1,
-                     tags$div(class="row",tags$div(class="col-sm-8 blog-main",tags$div(class="blog-post",
-                                                                                       tags$h2(class="blog-post-title",paste("Alerts outline for ",mycode[2],":") 
-                                                                                       )))),
-                     listOfAlerts2,
-                     tags$div(class="row",tags$div(class="col-sm-8 blog-main",tags$div(class="blog-post",
-                                                                                       tags$h2(class="blog-post-title",paste("Alerts outline for ",mycode[3],":") 
-                                                                                       )))),
-                     listOfAlerts3,
-                     tags$div(class="row",tags$div(class="col-sm-8 blog-main",tags$div(class="blog-post",
-                                                                                       tags$h2(class="blog-post-title",paste("Alerts outline for ",mycode[4],":") 
-                                                                                       )))),
-                     listOfAlerts4,
-                     tags$div(class="row",tags$div(class="col-sm-8 blog-main",tags$div(class="blog-post",
-                                                                                       tags$h2(class="blog-post-title",paste("Alerts outline for ",mycode[5],":") 
-                                                                                       )))),
-                     listOfAlerts5,
-                     tags$div(class="row",tags$div(class="col-sm-8 blog-main",tags$div(class="blog-post",
-                                                                                       tags$h2(class="blog-post-title",paste("Alerts outline for ",mycode[6],":") 
-                                                                                       )))),
-                     listOfAlerts6,
-                     tags$div(class="row",tags$div(class="col-sm-8 blog-main",tags$div(class="blog-post",
-                                                                                       tags$h2(class="blog-post-title",paste("Alerts outline for ",mycode[7],":") 
-                                                                                       )))),
-                     listOfAlerts7,
-                     tags$div(class="row",tags$div(class="col-sm-8 blog-main",tags$div(class="blog-post",
-                                                                                       tags$h2(class="blog-post-title",paste("Alerts outline for ",mycode[8],":") 
-                                                                                       )))),
-                     listOfAlerts8
+                              tags$div( class="jumbotron",
+                                        tags$h2("Alerts summary during the last 02 months"),
+                                        tags$p(class="lead","Parameters encompass:",
+                                               tags$ul(
+                                                 tags$li(tags$p("90th percentile is calculated for all weeks except for the ongoing week.")),
+                                                 tags$li(tags$p("03 consecutive weeks are needed to trigger alert when Malaria or Diarrhea cases exceed the 90th percentile.")
+                                                 )))),
+                              tags$div(class="row",tags$div(class="col-sm-8 blog-main",tags$div(class="blog-post",
+                                                                                                tags$h2(class="blog-post-title",paste("Alerts outline for ",mycode[1],":") 
+                                                                                                )))),
+                              listOfAlerts1,
+                              tags$div(class="row",tags$div(class="col-sm-8 blog-main",tags$div(class="blog-post",
+                                                                                                tags$h2(class="blog-post-title",paste("Alerts outline for ",mycode[2],":") 
+                                                                                                )))),
+                              listOfAlerts2,
+                              tags$div(class="row",tags$div(class="col-sm-8 blog-main",tags$div(class="blog-post",
+                                                                                                tags$h2(class="blog-post-title",paste("Alerts outline for ",mycode[3],":") 
+                                                                                                )))),
+                              listOfAlerts3,
+                              tags$div(class="row",tags$div(class="col-sm-8 blog-main",tags$div(class="blog-post",
+                                                                                                tags$h2(class="blog-post-title",paste("Alerts outline for ",mycode[4],":") 
+                                                                                                )))),
+                              listOfAlerts4,
+                              tags$div(class="row",tags$div(class="col-sm-8 blog-main",tags$div(class="blog-post",
+                                                                                                tags$h2(class="blog-post-title",paste("Alerts outline for ",mycode[5],":") 
+                                                                                                )))),
+                              listOfAlerts5,
+                              tags$div(class="row",tags$div(class="col-sm-8 blog-main",tags$div(class="blog-post",
+                                                                                                tags$h2(class="blog-post-title",paste("Alerts outline for ",mycode[6],":") 
+                                                                                                )))),
+                              listOfAlerts6,
+                              tags$div(class="row",tags$div(class="col-sm-8 blog-main",tags$div(class="blog-post",
+                                                                                                tags$h2(class="blog-post-title",paste("Alerts outline for ",mycode[7],":") 
+                                                                                                )))),
+                              listOfAlerts7,
+                              tags$div(class="row",tags$div(class="col-sm-8 blog-main",tags$div(class="blog-post",
+                                                                                                tags$h2(class="blog-post-title",paste("Alerts outline for ",mycode[8],":") 
+                                                                                                )))),
+                              listOfAlerts8
 ))
-                      
+
 #####################################Palu autoch##################################
 site20=fread("report/site20.csv")
-htc_report=list(plotOutput("htc_report_plot"),
-                #plotlyOutput("htc_report_plot"),
-                tags$br(),tags$br(),tags$br(),
-                tags$div(class="container",
-                         tags$div(class="starter-template",
-                                  tags$h2("Malaria Autochtone in HTC sites"))),
-                dataTableOutput("table_htc_report"),
-                tags$br(),tags$br(),tags$br(),
-                selectizeInput(inputId="CSB_sites", 
-                               label="Select a site", 
-                               choice=site20$Centre, 
-                               selected = c("Morarano"), 
-                               multiple = F),
-                plotOutput("ind_htc_report_plot")
-                #plotlyOutput("ind_htc_report_plot")
-                )
+htc_report=list(#plotOutput("htc_report_plot"),
+  plotlyOutput("htc_report_plot"),
+  tags$br(),tags$br(),tags$br(),
+  tags$div(class="container",
+           tags$div(class="starter-template",
+                    tags$h2("Malaria Autochtone in HTC sites"))),
+  dataTableOutput("table_htc_report"),
+  tags$br(),tags$br(),tags$br(),
+  selectizeInput(inputId="CSB_sites", 
+                 label="Select a site", 
+                 choice=site20$Centre, 
+                 selected = c("Morarano"), 
+                 multiple = F),
+  #plotOutput("ind_htc_report_plot")
+  plotlyOutput("ind_htc_report_plot")
+)
 #####################################Malaria (global)#############################
 site34=fread("data/sentinel.csv")
-malaria_report=list(plotOutput("malaria_report_plot"),
-  #plotlyOutput("malaria_report_plot"),
-                    tags$br(),tags$br(),tags$br(),
-                    tags$div(class="container",
-                             tags$div(class="starter-template",
-                                      tags$h2("Malaria in the network (no HTC sites)"))),
-                    dataTableOutput("table_malaria_report"),
-                    tags$br(),tags$br(),
-                    tags$div(class="container",
-                             tags$div(class="starter-template",
-                                      tags$h2("Fever in the network (no HTC sites)"))),
-                    dataTableOutput("table_fever_report"),
-                    tags$br(),tags$br(),
-                    selectizeInput(inputId="CSB_sites_malaria", 
-                                   label="Select a site", 
-                                   choice=site34$name, 
-                                   selected = c("Toamasina"), 
-                                   multiple = F),
-  plotOutput("ind_malaria_report_plot")
-                   # plotlyOutput("ind_malaria_report_plot")
-                   )
+malaria_report=list(#plotOutput("malaria_report_plot"),
+  plotlyOutput("malaria_report_plot"),
+  tags$br(),tags$br(),tags$br(),
+  tags$div(class="container",
+           tags$div(class="starter-template",
+                    tags$h2("Malaria in the network (no HTC sites)"))),
+  dataTableOutput("table_malaria_report"),
+  tags$br(),tags$br(),
+  tags$div(class="container",
+           tags$div(class="starter-template",
+                    tags$h2("Fever in the network (no HTC sites)"))),
+  dataTableOutput("table_fever_report"),
+  tags$br(),tags$br(),
+  selectizeInput(inputId="CSB_sites_malaria", 
+                 label="Select a site", 
+                 choice=site34$name, 
+                 selected = c("Toamasina"), 
+                 multiple = F),
+  #plotOutput("ind_malaria_report_plot")
+  plotlyOutput("ind_malaria_report_plot")
+)
 #####################################Diarrhea#############################
-diarrhea_report=list(plotOutput("diarrhea_report_plot"),
-                     #plotlyOutput("diarrhea_report_plot"),
-                     tags$br(),tags$br(),tags$br(),
-                     tags$div(class="container",
-                              tags$div(class="starter-template",
-                                       tags$h2("Diarrhea in the network (no HTC sites)"))),
-                     dataTableOutput("table_diarrhea_report"),
-                     tags$br(),tags$br(),
-                     tags$div(class="container",
-                              tags$div(class="starter-template",
-                                       tags$h2("Diarrhea febrile in the network (no HTC sites)"))),
-                     dataTableOutput("table_diarrhea_febrile_report"),
-                     tags$br(),tags$br(),
-                     selectizeInput(inputId="CSB_sites_diarrhea", 
-                                    label="Select a site", 
-                                    choice=site34$name, 
-                                    selected = c("Toamasina"), 
-                                    multiple = F),
-                     plotOutput("ind_diarrhea_report_plot")
-                     #plotlyOutput("ind_diarrhea_report_plot")
-                     )
+diarrhea_report=list(#plotOutput("diarrhea_report_plot"),
+  plotlyOutput("diarrhea_report_plot"),
+  tags$br(),tags$br(),tags$br(),
+  tags$div(class="container",
+           tags$div(class="starter-template",
+                    tags$h2("Diarrhea in the network (no HTC sites)"))),
+  dataTableOutput("table_diarrhea_report"),
+  tags$br(),tags$br(),
+  tags$div(class="container",
+           tags$div(class="starter-template",
+                    tags$h2("Diarrhea febrile in the network (no HTC sites)"))),
+  dataTableOutput("table_diarrhea_febrile_report"),
+  tags$br(),tags$br(),
+  selectizeInput(inputId="CSB_sites_diarrhea", 
+                 label="Select a site", 
+                 choice=site34$name, 
+                 selected = c("Toamasina"), 
+                 multiple = F),
+  #plotOutput("ind_diarrhea_report_plot")
+  plotlyOutput("ind_diarrhea_report_plot")
+)
 #####################################Diarrhea#############################
-ili_report=list(plotOutput("ili_report_plot"),
-  #plotlyOutput("ili_report_plot"),
-                tags$br(),tags$br(),tags$br(),
-                tags$div(class="container",
-                         tags$div(class="starter-template",
-                                  tags$h2("ILI in the network (no HTC sites)"))),
-                dataTableOutput("table_ili_report"),
-                tags$br(),tags$br(),
-                selectizeInput(inputId="CSB_sites_ili", 
-                               label="Select a site", 
-                               choice=site34$name, 
-                               selected = c("Toamasina"), 
-                               multiple = F),
-  plotOutput("ind_ili_report_plot")
-                #plotlyOutput("ind_ili_report_plot")
-  )
-                
+ili_report=list(#plotOutput("ili_report_plot"),
+  plotlyOutput("ili_report_plot"),
+  tags$br(),tags$br(),tags$br(),
+  tags$div(class="container",
+           tags$div(class="starter-template",
+                    tags$h2("ILI in the network (no HTC sites)"))),
+  dataTableOutput("table_ili_report"),
+  tags$br(),tags$br(),
+  selectizeInput(inputId="CSB_sites_ili", 
+                 label="Select a site", 
+                 choice=site34$name, 
+                 selected = c("Toamasina"), 
+                 multiple = F),
+  # plotOutput("ind_ili_report_plot")
+  plotlyOutput("ind_ili_report_plot")
+)
+
 #####################################Diarrhea#############################
-pfa_report=list(plotOutput("pfa_report_plot"),
-  #plotlyOutput("pfa_report_plot"),
-                tags$br(),tags$br(),tags$br(),
-                tags$div(class="container",
-                         tags$div(class="starter-template",
-                                  tags$h2("AFP in the network"))),
-                dataTableOutput("table_pfa_report"),
-                selectizeInput(inputId="CSB_sites_pfa",
-                               label="Select a site", 
-                               choice=c(site20$Centre,site34$name), 
-                               selected = c("Toamasina"), 
-                               multiple = F),
-  plotOutput("ind_pfa_report_plot")
-                #plotlyOutput("ind_pfa_report_plot")
-                )
+pfa_report=list(
+  #plotOutput("pfa_report_plot"),
+  plotlyOutput("pfa_report_plot"),
+  tags$br(),tags$br(),tags$br(),
+  tags$div(class="container",
+           tags$div(class="starter-template",
+                    tags$h2("AFP in the network"))),
+  dataTableOutput("table_pfa_report"),
+  selectizeInput(inputId="CSB_sites_pfa",
+                 label="Select a site", 
+                 choice=c(site20$Centre,site34$name), 
+                 selected = c("Toamasina"), 
+                 multiple = F),
+  #plotOutput("ind_pfa_report_plot")
+  plotlyOutput("ind_pfa_report_plot")
+)
 #########################################################################
 CSB=fread("report/CSB.csv")
 missing_sent_report=list(tags$br(),tags$br(),
