@@ -10,8 +10,8 @@ Contexte
 - 
     A été pour la première déployée à Madagascar en collaboration avec le Ministère de la Santé Malagasy et l'IPM
 
-- L'implémentation du EWS est une étape clée dans l'amélioration des interventions pour la santé publique.
-- Cette implémentation s'inscrit dans la valorisation des données sentinelles collectés par l'IPM depuis 2007.
+- L'implémentation du EWS est une étape clée dans l'amélioration des interventions au service de la santé publique.
+- S'inscrit aussi dans la valorisation des données de surveillance sentinelles collectés par l'IPM depuis 2007.
 
 
 
@@ -23,7 +23,9 @@ Utilité
 
 - Anticipation du risque d'épidémie de Malaria
 
-- S.I fiable, dynamique et en temps réel pour les décideurs et acteurs de la  santé
+- Des algorithmes de détection d'épidémies sont utilisés (recommandés par WHO, CDC)
+
+- S.I fiable, dynamique et en temps réel pour les décideurs et acteurs oeuvrant dans la santé
 
 - En gros, renforcer le système de surveillance sanitaire du pays.
 
@@ -52,20 +54,20 @@ Petit tour de l'application web
 
 L'application web inclut:
 
-- Un tableau de bord pour le choix des maladies à analyser.
+- Un tableau de bord pour les paramètres(ex:le choix des maladies à analyser)
+
 - Une carte *interactive* pour visualiser les états des alertes sur les sites (Normale-Pas de données - Alerte )
 - Un heatmap *interactive* pour la visualisation des alertes passées.
 
 - Le reste est composé de courbes de tendance et d'occurrence que ca soit individuel ou agrégées.
 - Nous venons également d'inclure un tableau de bord résumant les rapports hebdomadaires sur l'ensemble des sites
 
-- Un tableau de bord sur la prédiction et la modélisation.
 
 Perspectives pour 2016-2017
 ========================================================
 Dans le but de répondre rapidement et effectivement aux maladies à potentiel épidémique, nous devons améliorer la capacité du système notemmment sur :
 
-    * L'insertion des modèles de prédiction
+    * L'insertion,validation des modèles de prédiction pour toutes les maladies et l'ensemble des sites.
 
     * L'amélioration de la performance de l'application shiny.
 
@@ -78,5 +80,6 @@ Dans le but de répondre rapidement et effectivement aux maladies à potentiel �
 Merci pour votre attention!
 ========================================================
 
-* [@air_manitra](https://twitter.com/@air_manitra)
-* [me on github](github.com/RanaivosonHerimanitra)
+* [rherimanitra@pasteur.mg; air_manitra@yahoo.fr; airmanitra@gmail.com](https://google.com)
+* [@air_manitra sur twitter](https://twitter.com/@air_manitra)
+* [RanaivosonHerimanitra sur github](github.com/RanaivosonHerimanitra)

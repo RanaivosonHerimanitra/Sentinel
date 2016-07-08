@@ -323,9 +323,7 @@ server<-function(input, output,session) {
         setkey(percentile_algorithm()$percentile_alerte_currentweek,sites)
         sentinel_latlong=merge(sentinel_latlong,percentile_algorithm()$percentile_alerte_currentweek
                                ,by.x="sites",by.y = "sites",all.x=T)
-        # write.csv(sentinel_latlong,
-        #           paste0("./data/percentile/","percentile-" ,Sys.Date(),".csv"),
-        #           sep=";",row.names = F)
+      
       }
       if (input$Algorithmes_eval1=="MinSan"  ) 
       {
@@ -463,7 +461,8 @@ server<-function(input, output,session) {
         cat("display alert status into the map using MinSan algorithm...\n")
         setkey(sentinel_latlong,sites);
         setkey(minsan_algorithm()$minsan_alerte_currentweek,sites)
-        sentinel_latlong=merge(sentinel_latlong,minsan_algorithm()$minsan_alerte_currentweek
+        sentinel_latlong=merge(sentinel_latlong,
+                               minsan_algorithm()$minsan_alerte_currentweek
                                ,by.x="sites",by.y = "sites",all.x=T)
       }
       if (input$Algorithmes_eval2=="Csum" ) 
@@ -471,7 +470,8 @@ server<-function(input, output,session) {
         cat("display alert status into the map using Csum algorithm...\n")
         setkey(sentinel_latlong,sites);
         setkey(csum_algorithm()$csum_alerte,sites)
-        sentinel_latlong=merge(sentinel_latlong,csum_algorithm()$csum_alerte_currentweek
+        sentinel_latlong=merge(sentinel_latlong,
+                               csum_algorithm()$csum_alerte_currentweek
                                ,by.x="sites",by.y = "sites",all.x=T)
       }
       
@@ -756,8 +756,47 @@ server<-function(input, output,session) {
     
     
   })
-  #Health heatmap plot with plotly and using percentile algorithm:
-  output$heatmap_percentile = renderD3heatmap({
+  #Health heatmap plot of percentile rank (value) that reacts to chosen disease:
+  output$heatmap_perc_rank = renderD3heatmap({
+    cat("load and read data...")
+     disease_chosen = paste0("percentile_rank/",input$diseases,"_rank.csv")
+     X= fread(disease_chosen)
+    cat("\n")
+    
+    cat("merge with sentinel latlong...")
+     X=merge(X,sentinel_latlong[,list(sites,name)],
+             by.x="sites",by.y="sites")
+    cat("\n")
+    
+    cat("spreading data...")
+     X= as.data.frame(spread(unique(X[,list(name,deb_sem,perc_rank)],by=NULL),
+                              deb_sem,perc_rank))
+     row.names(X)=X$name
+    cat("\n")
+    
+    cat("define custom color palette...")
+    palette <- c("#d3f1ff", "#afd9ff", "#0077dd","#ac0000")
+    breaks <- c(0, 50, 70,80, 90)
+    require(scales)
+    colorFunc <- col_bin(palette, bins = rescale(breaks))
+    cat("\n")
+    
+    
+    cat("define custom label for weeks...")
+    mylabCol =  ifelse ( months(as.Date(colnames(X[,-1]),origin="1970-01-01") ) %in% c("janoary","janvier","january"),
+                         colnames(X[,-1]),"")
+     
+    cat("\n")
+    
+    d3heatmap(X[,-1], 
+              dendrogram = "none",scale = "none",
+              colors = colorFunc,
+              labCol=mylabCol,
+              xaxis_font_size="9px")
+  })
+  #Health heatmap plot of alert status that reacts to algorithms , 
+  #chosen sites and diseases
+  output$heatmap_alert_status = renderD3heatmap({
     #some sort of cache of preprocessed data to speed up things:
     
     cat("reading ",input$diseases," from a temporary file\n")
@@ -779,7 +818,6 @@ server<-function(input, output,session) {
         source("algorithms/csum.R") 
         X=calculate_csum(data=mydata,
                          Csum_year_map=input$Csum_year_map,
-                         #Csum_week_map=input$Csum_week_map,
                          Sd_csum_map=input$Sd_csum_map,
                          week_choice=ifelse(Sys.Date()-as.Date(paste0(year(Sys.Date()),"-01-01"))<8
                                             ,1,week(Sys.Date())),
@@ -858,12 +896,22 @@ server<-function(input, output,session) {
     myz= as.data.frame(spread(unique(X[,list(name,deb_sem,alert_status2)],by=NULL),
                               deb_sem,alert_status2))
     cat("DONE\n")
+   
+    cat("define custom label for weeks...")
+    colval= colnames(myz[,-1])
+    mylabCol_tobedisplayed = colval[seq(1,length(colval),4)]
+    mylabCol = ifelse (colval %in% mylabCol_tobedisplayed, mylabCol_tobedisplayed,"")
+    cat("\n")
+    #print(head(myz)); print(tail(myz))
     #  require(heatmaply)
     # heatmaply(myz[,names(myz)[-1]],colors=c("grey","darkgreen","red"),
     #           column_text_angle = 90,dendrogram = "none") %>% layout(margin = list(l = 130, b = 40))
     row.names(myz) <- myz$name
-    d3heatmap(myz[,-1], dendrogram = "none",scale = "none",
+    d3heatmap(myz[,-1], 
+              dendrogram = "none",
+              scale = "none",
               xaxis_font_size="9px",
+              labCol=mylabCol,
               color=c("grey","darkgreen","red"))
     
   })
