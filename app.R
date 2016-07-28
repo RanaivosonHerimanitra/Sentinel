@@ -19,7 +19,7 @@ server<-function(input, output,session) {
   
   preprocessing = observeEvent(input$diseases,{
     
-    if ( !(paste0(input$diseases,".csv") %in% list.files(paste0(getwd(),"/temp"))) ) 
+    if ( !(paste0(input$diseases,Sys.Date(),".csv") %in% list.files(paste0(getwd(),"/temp"))) ) 
     {
       ##############selection of disease data depending on user input choice##
       source("utils/diseases_control.R")
@@ -43,7 +43,7 @@ server<-function(input, output,session) {
       cat("DONE\n")
       #some sort of cache of preprocessed data to speed up things:
       cat("writing ",input$diseases," to a temporary file\n")
-      write.table(mydata,paste0("temp/",input$diseases,".csv"),sep=";",row.names = F)
+      write.table(mydata,paste0("temp/",input$diseases,Sys.Date(),".csv"),sep=";",row.names = F)
     }
     #return(NULL)
     
@@ -53,7 +53,8 @@ server<-function(input, output,session) {
     #some sort of cache of preprocessed data to speed up things:
     
     cat("reading ",input$diseases," from a temporary file\n")
-    mydata=fread(paste0("temp/",input$diseases,".csv"))
+    mydata=fread(paste0("temp/",input$diseases,Sys.Date(),".csv"))
+    
     
     cat('Calculation of percentile and proportion of sites in alert begin...\n')
     source("algorithms/percentile.R")
@@ -206,6 +207,9 @@ server<-function(input, output,session) {
   #display proportion of sites in alert with these HFI
   output$propsite_alerte = renderPlotly({
     source("utils/create_facies.R")
+    
+    
+    #TODO: move this computation to initialize_data.R 
     cat("loading and transforming HF Indicators...")
     hfi=data.table(gather(hfi,key=sites,
                           value=myvalue,-c(code,deb_sem,type_val)))
@@ -218,6 +222,7 @@ server<-function(input, output,session) {
     lst = hfi[type_val=="LST_DAY"];setnames(lst,old="myvalue",new="temperature")
     ndvi = hfi[type_val=="NDVI"];setnames(ndvi,old="myvalue",new="ndvi_value")
     cat("DONE\n")
+    
     source("utils/introducing_caid.R",local = T) #==>now in caid
     source("utils/introducing_mild.R",local = T)
     source("utils/introducing_pmm.R",local = T) #==>now in hfi
@@ -580,7 +585,7 @@ server<-function(input, output,session) {
                  x =deb_sem, 
                  y = prop,name="prop.",
                  line = list(width=line_width))
-    p = p %>% layout(title="prop of ILI among medical diagnosis",
+    p = p %>% layout(title="prop of ILI among consultants",
                      paper_bgcolor="rgb(213, 226, 233)",plot_bgcolor = "rgb(213, 226, 233)",
                      font=list(size=11),
                      xaxis = list(title = "Date(Weeks)"),
@@ -597,7 +602,12 @@ server<-function(input, output,session) {
   })
   #render Syndrome Grippal, Syndrom Dengue-Like
   output$ili_graph = renderPlotly({
-    
+    #select dataset based on user's selection:
+    if (input$sites!="All") {
+      ili=ili[,c("code","deb_sem",input$sites),with=F]
+      arbosusp=arbosusp[,c("code","deb_sem",input$sites),with=F]
+    }
+    #
     ili=as.data.table(gather(ili,key=sites,value=Synd_g,-c(code,deb_sem)))
     arbosusp=as.data.table(gather(arbosusp,key=sites,value=ArboSusp,-c(code,deb_sem)))
     ili=merge(ili,arbosusp,
@@ -608,7 +618,6 @@ server<-function(input, output,session) {
     ili[,ArboSusp:=sum(ArboSusp,na.rm = T),by="code"]
     #data processing:
     ili=unique(ili,by=NULL)
-    
     #34 sites we need:
     sites34= include[-c(1:2)]
     #filter rows:  sites %in% sites34 & 2009
@@ -619,7 +628,6 @@ server<-function(input, output,session) {
                  marker=list(color = "rgb(0,0,102)"))
     p = p %>% add_trace(x = deb_sem, type="bar",y = ArboSusp, name = "Dengue-Like",
                         marker=list(color = "rgb(204,0,0)"))
-    
     #position legend at top of the graph
     p= p %>% layout( paper_bgcolor="rgb(213, 226, 233)",plot_bgcolor = "rgb(213, 226, 233)",
                      title="ILI & Dengue-LIKE (34 sites)",
@@ -800,7 +808,7 @@ server<-function(input, output,session) {
     #some sort of cache of preprocessed data to speed up things:
     
     cat("reading ",input$diseases," from a temporary file\n")
-    mydata=fread(paste0("temp/",input$diseases,".csv"))
+    mydata=fread(paste0("temp/",input$diseases,Sys.Date(),".csv"))
     
     
     if ( input$diseases=="Malaria" )
@@ -920,7 +928,7 @@ server<-function(input, output,session) {
     #some sort of cache of preprocessed data to speed up things:
     
     cat("reading ",input$diseases," from a temporary file\n")
-    mydata=fread(paste0("temp/",input$diseases,".csv"))
+    mydata=fread(paste0("temp/",input$diseases,Sys.Date(),".csv"))
     
     cat('Calculation of percentile and proportion of sites in alert begin...')
     source("algorithms/percentile.R")
@@ -1309,7 +1317,7 @@ server<-function(input, output,session) {
     source("forecast/prepare_data_forecast.R",local = T)
     source("forecast/forecasting_functions.R",local = T)
     X=prepare_load(mymodel=mymodel)
-    
+   
     if ( input$mymodel=="HLT" & input$forecast_type=="retrospective")
     {
       load(file = "forecast/holt_retrospective.rda")
@@ -1364,6 +1372,7 @@ ui = list(dashboardPage(skin = "blue",
                             menuItem(text="Main",tabName="mytabbox", icon = icon("database")),
                             menuItem(text="Reporting Summary",tabName="diparam",   icon = icon("file-zip-o")),
                             menuItem(text="Diseases",.list=diseases_choices,icon=icon("cog")),
+                            menuItem(text="Sites",.list=sites_choices,icon=icon("cog")),
                             menuItem(text="Map",.list=map_choices,icon=icon("map-marker")),
                             menuItem(text="Aggregation",.list=myfacies_algo,icon=icon("group")),
                             menuItem(text=list("Forecasting", 

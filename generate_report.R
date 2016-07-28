@@ -2,6 +2,7 @@
 library(ReporteRs)
 
 doc <- docx() 
+#move image to wwww
 path1="/media/herimanitra/Document/IPM_sentinelle/sentinel_hrmntr 291115/Sentinel/report/logo.png"
 path2= "/srv/shiny-server/sentinel_hrmntr/Sentinel/report/logo.png"
 mylogo= ifelse(file.exists(path1),path1,path2)
@@ -131,7 +132,7 @@ setorder(PaluConf_tdr,sites,-Annee,-Semaine)
 #
 mycode=unique(c(percentile_palu_alerte$code,
                 percentile_diar_alerte$code))
-                #PaluConf_tdr$code))
+                
 #remove ongoing week:
 ongoing_week= paste0(year(Sys.Date()),"_",isoweek(Sys.Date()))
 mycode=mycode[mycode!=ongoing_week]
@@ -182,7 +183,12 @@ for ( j in mycode[as.numeric(substr(mycode,1,4))>=2012] )
 }
 
 cat("Writing log into a csv...")
-write.table(historical_alert,"interactive_summary_report/historical_alert.csv",row.names = F,sep=";")
+path1="/media/herimanitra/Document/IPM_sentinelle/sentinel_hrmntr 291115/Sentinel/"
+path2= "/srv/shiny-server/sentinel_hrmntr/Sentinel/"
+mypath=ifelse(file.exists(path1),path1,path2)
+write.table(historical_alert,
+            paste0(mypath,"interactive_summary_report/historical_alert.csv"),
+            row.names = F,sep=";")
 cat("DONE\n")
 cat("Writing document to a word document...")
 writeDoc(doc, file = "report/report.docx")

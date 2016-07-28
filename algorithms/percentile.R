@@ -10,6 +10,8 @@ calculate_percentile=function(data=mydata,
    max_deb_sem= max(as.Date(data$deb_sem,origin="1970-01-01"))
    max_code=paste0(year(max_deb_sem),"_",isoweek(max_deb_sem))
    
+  
+   
     if (as.numeric(week_length)==4 )
     {
       week1 = Sys.Date()-1*7
@@ -61,7 +63,7 @@ calculate_percentile=function(data=mydata,
     setkey(data,sites);setkey(mypercentile,sites)
     data=merge(data,mypercentile,by.x="sites",by.y="sites")
     cat("DONE\n")
-    
+   
     cat("initialize alert by cleaning NA's values...","\n")
     data[,occurence_cleaned:=ifelse(is.na(occurence)==T,0,occurence)]
     cat("detection of alerts for all weeks during which selected disease cases exceed",percentile_value,"%...")
@@ -124,7 +126,7 @@ calculate_percentile=function(data=mydata,
     percentile_alerte=data[code %in% code_range,list(sites,code,alert_status,deb_sem)]
     cat('DONE\n')
     
-   
+ 
     
     ##################### new algo(juin 2016) to determine radius of circle 
     ##################### radius of circle depends on percentile rank #######
@@ -138,6 +140,7 @@ calculate_percentile=function(data=mydata,
     percentile_alerte[,perc_rank:=NULL]
     
     }
+ 
     if (disease=="Diarrhea") {
       Diarrhea_rank=fread("percentile_rank/Diarrhea_rank.csv")
       percentile_alerte=merge(percentile_alerte,
@@ -172,8 +175,10 @@ calculate_percentile=function(data=mydata,
       percentile_alerte_currentweek=percentile_alerte[code==max_code,]
     }
     cat("DONE\n")
-    
-    
+    # print(head(percentile_alerte));print(tail(percentile_alerte))
+    # print(max_code); print(paste0(year(Sys.Date()),"_",isoweek(Sys.Date())))
+    # print(percentile_alerte_currentweek);Sys.sleep(25)
+ 
     
     
   cat("calculate weekly prop of sites in alert (all)...")
@@ -243,7 +248,6 @@ calculate_percentile=function(data=mydata,
   }
  
  
-  
   
   
   return (list(percentile_alerte=percentile_alerte,

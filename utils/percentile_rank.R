@@ -3,11 +3,15 @@
 perc_rank = function(x,x0) {f=ecdf(x);return(round(100*f(x0)) )}
 
 # data to be analyzed and copies to store rank:
-Malaria=fread("./data/PaluConf.csv")
+require(data.table);require(tidyr)
+path1= "/media/herimanitra/Document/IPM_sentinelle/sentinel_hrmntr 291115/Sentinel/"
+path2="/srv/shiny-server/sentinel_hrmntr/Sentinel/"
+mypath=ifelse(file.exists(path1),path1,path2)
+Malaria=fread(paste0(mypath,"/data/PaluConf.csv"))
 Malaria_rank=Malaria[as.numeric(substr(code,1,4))>=2012]
-Diarrhea=fread("./data/Diarrh.csv")
+Diarrhea=fread(paste0(mypath,"/data/Diarrh.csv"))
 Diarrhea_rank=Diarrhea[as.numeric(substr(code,1,4))>=2012]
-ILI=fread("./data/ili.csv")
+ILI=fread(paste0(mypath,"/data/ili.csv"))
 ILI_rank=Diarrhea[as.numeric(substr(code,1,4))>=2012]
 
 # Semaine epidemiologic we need to loop thru
@@ -40,26 +44,29 @@ get_percentile_rank= function(data=Malaria,
   return(output)
 }
 Malaria_rank=get_percentile_rank(data=Malaria,output=Malaria_rank,
-                                     disease.name="Malaria")
+                                 disease.name="Malaria")
 #reshape data:
 Malaria_rank=as.data.table(gather(Malaria_rank,key=sites,value=perc_rank,-c(code,deb_sem)))
 
 write.table(Malaria_rank,
-            "percentile_rank/Malaria_rank.csv",row.names = F,sep = ";")
+            paste0(mypath,"percentile_rank/Malaria_rank.csv"),
+            row.names = F,sep = ";")
 ################################################################################
 Diarrhea_rank=get_percentile_rank(data=Diarrhea,output=Diarrhea_rank,
-                                 disease.name="Diarrhea")
+                                  disease.name="Diarrhea")
 #reshape data:
 Diarrhea_rank=as.data.table(gather(Diarrhea_rank,key=sites,value=perc_rank,-c(code,deb_sem)))
 
 write.table(Diarrhea_rank,
-            "percentile_rank/Diarrhea_rank.csv",row.names = F,sep = ";")
+            paste0(mypath,"percentile_rank/Diarrhea_rank.csv"),
+            row.names = F,sep = ";")
 
 ################################################################################
 ILI_rank=get_percentile_rank(data=ILI,output=ILI_rank,
-                                  disease.name="ILI")
+                             disease.name="ILI")
 #reshape data:
 ILI_rank=as.data.table(gather(ILI_rank,key=sites,value=perc_rank,-c(code,deb_sem)))
 
 write.table(ILI_rank,
-            "percentile_rank/ILI_rank.csv",row.names = F,sep = ";")
+            paste0(mypath,"percentile_rank/ILI_rank.csv"),
+            row.names = F,sep = ";")

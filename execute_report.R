@@ -10,16 +10,65 @@ if ( !file.exists("/srv/shiny-server/sentinel_hrmntr/Sentinel" ) )
   mypath= "/srv/shiny-server/sentinel_hrmntr/Sentinel/report"
   setwd(mypath)
 }
-render("ILI_sentinelles.Rmd")
-rm(list = ls())
-render("Diar_sentinelles.Rmd")
-rm(list = ls())
-render("Palu_sentinelles.Rmd")
-rm(list = ls())
-render("palu_autoch_sentinelles.Rmd")
-rm(list = ls())
-render("PFA_sentinelles.Rmd")
-rm(list = ls())
+render(paste0(mypath,"/ILI_sentinelles.Rmd"))
+if ( !file.exists("/srv/shiny-server/sentinel_hrmntr/Sentinel" ) )
+{
+  mypath = "/media/herimanitra/Document/IPM_sentinelle/sentinel_hrmntr 291115/Sentinel/report"
+  setwd(mypath)
+  
+  
+} else {
+  mypath= "/srv/shiny-server/sentinel_hrmntr/Sentinel/report"
+  setwd(mypath)
+}
+render(paste0(mypath,"/Diar_sentinelles.Rmd"))
+if ( !file.exists("/srv/shiny-server/sentinel_hrmntr/Sentinel" ) )
+{
+  mypath = "/media/herimanitra/Document/IPM_sentinelle/sentinel_hrmntr 291115/Sentinel/report"
+  setwd(mypath)
+  
+  
+} else {
+  mypath= "/srv/shiny-server/sentinel_hrmntr/Sentinel/report"
+  setwd(mypath)
+}
+
+render(paste0(mypath,"/Palu_sentinelles.Rmd"))
+if ( !file.exists("/srv/shiny-server/sentinel_hrmntr/Sentinel" ) )
+{
+  mypath = "/media/herimanitra/Document/IPM_sentinelle/sentinel_hrmntr 291115/Sentinel/report"
+  setwd(mypath)
+  
+  
+} else {
+  mypath= "/srv/shiny-server/sentinel_hrmntr/Sentinel/report"
+  setwd(mypath)
+}
+
+render(paste0(mypath,"/palu_autoch_sentinelles.Rmd"))
+if ( !file.exists("/srv/shiny-server/sentinel_hrmntr/Sentinel" ) )
+{
+  mypath = "/media/herimanitra/Document/IPM_sentinelle/sentinel_hrmntr 291115/Sentinel/report"
+  setwd(mypath)
+  
+  
+} else {
+  mypath= "/srv/shiny-server/sentinel_hrmntr/Sentinel/report"
+  setwd(mypath)
+}
+
+render(paste0(mypath,"/PFA_sentinelles.Rmd"))
+if ( !file.exists("/srv/shiny-server/sentinel_hrmntr/Sentinel" ) )
+{
+  mypath = "/media/herimanitra/Document/IPM_sentinelle/sentinel_hrmntr 291115/Sentinel/report"
+  setwd(mypath)
+  
+  
+} else {
+  mypath= "/srv/shiny-server/sentinel_hrmntr/Sentinel/report"
+  setwd(mypath)
+}
+
 source("miss_sent_report.R")
 ############################come back to main directory######################
 if ( !file.exists("/srv/shiny-server/sentinel_hrmntr/Sentinel" ) )

@@ -10,7 +10,8 @@ Contexte
 - 
     A été pour la première déployée à Madagascar en collaboration avec le Ministère de la Santé Malagasy et l'IPM
 
-- L'implémentation du EWS est une étape clée dans l'amélioration des interventions au service de la santé publique.
+- Persistence des maladies à potentiel épidémiques notamment la Malaria
+
 - S'inscrit aussi dans la valorisation des données de surveillance sentinelles collectés par l'IPM depuis 2007.
 
 
@@ -19,13 +20,13 @@ Contexte
 Utilité
 ========================================================
 
-- Persistence des maladies à potentiel épidémiques notamment la Malaria
-
 - Anticipation du risque d'épidémie de Malaria
 
 - Des algorithmes de détection d'épidémies sont utilisés (recommandés par WHO, CDC)
 
 - S.I fiable, dynamique et en temps réel pour les décideurs et acteurs oeuvrant dans la santé
+
+- L'implémentation du EWS est une étape clée dans l'amélioration des interventions au service de la santé publique.
 
 - En gros, renforcer le système de surveillance sanitaire du pays.
 
@@ -60,20 +61,24 @@ L'application web inclut:
 - Un heatmap *interactive* pour la visualisation des alertes passées.
 
 - Le reste est composé de courbes de tendance et d'occurrence que ca soit individuel ou agrégées.
-- Nous venons également d'inclure un tableau de bord résumant les rapports hebdomadaires sur l'ensemble des sites
+- Nous venons également d'inclure un tableau de bord résumant les rapports hebdomadaires sur l'ensemble des sites (envoyés automatiquement)
 
 
 Perspectives pour 2016-2017
 ========================================================
-Dans le but de répondre rapidement et effectivement aux maladies à potentiel épidémique, nous devons améliorer la capacité du système notemmment sur :
+Dans le but de répondre rapidement et effectivement aux maladies à potentiel épidémique, nous devons améliorer la capacité du système notammment sur :
 
-    * L'insertion,validation des modèles de prédiction pour toutes les maladies et l'ensemble des sites.
+    * L'insertion,validation des modèles de prédiction pour toutes les maladies et l'ensemble des sites. (comment agréger les sites pour la prédiction?)
+    
+    * expansion du réseau de surveillance sentinelle
 
     * L'amélioration de la performance de l'application shiny.
+    
+     * En faire un package R
 
     * L'expérimentation d'un autre système open source qui permet d'avoir la fonctionnalité multiuser (jupyter/jupyter-dashboard)
 
-    * Ajout d'un système de classification des risques d'épidémies en sus des alertes hebdomadaires affichées sur la carte.
+    
 
 
 
