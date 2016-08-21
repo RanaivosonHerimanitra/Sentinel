@@ -1,0 +1,66 @@
+---
+title: "Surveillance Fièvres et Paludisme dans le réseau sentinelle"
+header-includes: 
+   \usepackage{graphicx}
+   \usepackage{fancyhdr}
+   \pagestyle{fancy}
+   \setlength\headheight{15pt}
+   \fancyhead[L]{\includegraphics[width=4cm]{logo.png}}
+   \fancyfoot[LE,RO]{}
+author: "Institut Pasteur de Madagascar"
+date: "`r Sys.Date()`"
+output: pdf_document
+---
+
+```{r,echo=F, fig.width=10, out.extra='',comment='', message=FALSE , warning=FALSE}
+if ( getwd()!="/srv/shiny-server/sentinel_hrmntr/Sentinel/report" )
+{
+   setwd("/media/herimanitra/Document/IPM_sentinelle/sentinel_hrmntr 291115/Sentinel")
+} else {
+ setwd("/srv/shiny-server/sentinel_hrmntr/Sentinel")
+}
+source("./report/oop.R")
+#generate main chart:
+X=Site$new(report.name="Palu_sentinelles")
+```
+
+```{r,echo=F, fig.width=10, out.extra='',comment='', message=FALSE , warning=FALSE}
+if ( getwd()!="/srv/shiny-server/sentinel_hrmntr/Sentinel/report" )
+{
+   setwd("/media/herimanitra/Document/IPM_sentinelle/sentinel_hrmntr 291115/Sentinel")
+} else {
+ setwd("/srv/shiny-server/sentinel_hrmntr/Sentinel")
+}
+#generate tables in oop way:
+mytable= X$add_table()
+knitr::kable(mytable$value$Malaria,
+             caption="Paludisme dans le réseau sentinelle")
+knitr::kable(mytable$value$fievre,
+             caption="Fièvres dans le réseau sentinelle")
+```
+
+
+```{r,echo=F, fig.show = "hold" ,out.width = '50%', out.extra='',comment='', message=FALSE , warning=FALSE}
+if ( getwd()!="/srv/shiny-server/sentinel_hrmntr/Sentinel/report" )
+{
+   setwd("/media/herimanitra/Document/IPM_sentinelle/sentinel_hrmntr 291115/Sentinel")
+} else {
+  setwd("/srv/shiny-server/sentinel_hrmntr/Sentinel")
+}
+#merge with sentinel_latlong:
+mydata= tdr_malaria(htc=F)
+mydata=merge(mydata,sentinel_latlong, by.x="sites",by.y="sites")
+source("reporting_plot.R")                    
+generate_plot(htc="dsd",
+              mydata=mydata,
+              disease.name="malaria",
+              disease1=malaria,
+              disease2=fievre,
+              disease1.targetvar="malaria_cases",
+              disease2.targetvar="SyndF",
+              legend.disease1="Palu(TDR+)",
+              legend.disease2="Fièvres",
+              title.label.list="Fièvres et Palu à",
+              title.label="Fièvres et Paludisme dans le réseau sentinelle",
+              title.ylab="Cas de Fièvres et Paludisme")
+```

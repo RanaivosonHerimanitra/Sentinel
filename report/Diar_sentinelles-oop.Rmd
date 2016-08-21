@@ -1,0 +1,152 @@
+---
+title: "Surveillance Diarrhées dans le réseau sentinelle"
+header-includes: 
+   \usepackage{graphicx}
+   \usepackage{fancyhdr}
+   \pagestyle{fancy}
+   \setlength\headheight{15pt}
+   \fancyhead[L]{\includegraphics[width=4cm]{logo.png}}
+   \fancyfoot[LE,RO]{}
+author: "Institut Pasteur de Madagascar"
+date: "`r Sys.Date()`"
+output: pdf_document
+---
+
+
+
+```{r,echo=F,fig.width=10, out.extra='',comment='', message=FALSE , warning=FALSE}
+if ( getwd()!="/srv/shiny-server/sentinel_hrmntr/Sentinel/report" )
+{
+   mypath= "/media/herimanitra/Document/IPM_sentinelle/sentinel_hrmntr 291115/Sentinel"
+  setwd(mypath)
+} else {
+  mypath="/srv/shiny-server/sentinel_hrmntr/Sentinel"
+  setwd(mypath)
+}
+#load source code:
+source("./import_data.R");source("./preprocessing.R");require(ggplot2); require(gridExtra)
+
+mydata= preprocessing_disease()[["Diarrhea"]] #Diarrhée
+setnames(mydata,"occurence","diarh")
+#put Diarrhée fébrile in a temp file before merging
+tmp= preprocessing_disease()[["Diarrhée fébrile"]] 
+setnames(tmp,"occurence","diarh_feb")
+mydata=merge(mydata,tmp[,list(sites,code,diarh_feb)],
+             by.x=c("sites","code"),by.y=c("sites","code"))
+source("reporting_plot.R",local = T) #for plotting nice graphics
+p=generate_plot(htc="all",
+              mydata=mydata,
+              disease1.targetvar="diarh_feb",
+              disease2.targetvar="diarh",
+              legend.disease1="Diarrhées fébriles",
+              legend.disease2="Diarrhées non fébriles",
+              title.label="Diarrhées dans le réseau sentinelle",
+              title.ylab="Cas de Diarrhées")
+print(p)
+
+p = p + xlab("") + ylab("") + ggtitle("")
+p = p + ggtitle("Diarrhea cases")
+#finally change legend:
+p$data$Légende=ifelse(p$data$Légende=="Diarrhées fébriles","Febrile","Non Febrile")
+save(p,file="report/diar_chart.rda")
+
+```
+
+
+```{r,echo=F,out.extra='',comment='', message=FALSE , warning=FALSE}
+if ( getwd()!="/srv/shiny-server/sentinel_hrmntr/Sentinel/report" )
+{
+  mypath= "/media/herimanitra/Document/IPM_sentinelle/sentinel_hrmntr 291115/Sentinel"
+} else {
+  mypath="/srv/shiny-server/sentinel_hrmntr/Sentinel"
+}
+
+semaine=array()
+max_deb_sem=max(as.Date(mydata$deb_sem,origin="1970-01-01"))
+semaine[6]= max_deb_sem-2*7 
+p=1
+for ( k in 2:6 )
+{
+  semaine[p]=semaine[6]-(k-1)*7
+  p=p+1
+}
+#select last 07 seven weeks for each disease:
+
+#Diarrhée fébrile selection for last 6 weeks before current week:
+Diarrh_feb=mydata[as.Date(deb_sem,origin="1970-01-01") %in% semaine,list(deb_sem,sites,diarh_feb)]
+#transform NA into XX
+Diarrh_feb$diarh_feb=as.character(Diarrh_feb$diarh_feb)
+Diarrh_feb[,diarh_feb:=ifelse(is.na(diarh_feb)==T,"na",diarh_feb)]
+Diarrh_feb[,diarh_feb:=ifelse(nchar(diarh_feb)<2,paste0("0",diarh_feb),diarh_feb)]
+# reverse time order (to be follow report spec)
+setorder(Diarrh_feb,sites,deb_sem)
+
+#inline historical occurence:
+Diarrh_feb[,vals:=paste(diarh_feb,collapse = "-"),by="sites"]
+#append latest week per site:
+Diarrh_feb[,diarh_feb:=NULL]
+lastweek=unique(mydata[as.Date(deb_sem,origin="1970-01-01")==max_deb_sem-7,list(sites,diarh_feb)],by=NULL)
+lastweek[,diarh_feb:=as.character(diarh_feb)]
+lastweek[is.na(diarh_feb)==T,diarh_feb:="na"]
+Diarrh_feb= merge(unique(Diarrh_feb[,list(sites,vals)],by=NULL), 
+                  lastweek, by.x="sites", by.y="sites")
+              
+Diarrh_feb= merge(Diarrh_feb,sentinel_latlong[,list(name,sites)],
+                  by.x="sites",by.y="sites")
+Diarrh_feb[,sites:=NULL]; 
+setnames(Diarrh_feb,c("name","vals","diarh_feb"),
+                    c("Sites","6 semaines précédentes","Semaine dernière"))
+
+
+
+#Diarrhée (globale) selection for last 6 weeks before current week:
+Diarrh=mydata[as.Date(deb_sem,origin="1970-01-01") %in% semaine,list(deb_sem,sites,diarh)]
+#transform NA into XX
+Diarrh$diarh=as.character(Diarrh$diarh)
+Diarrh[,diarh:=ifelse(is.na(diarh)==T,"na",diarh)]
+Diarrh[,diarh:=ifelse(nchar(diarh)<2,paste0("0",diarh),diarh)]
+#inline historical occurence:
+Diarrh[,vals:=paste(diarh,collapse = "-"),by="sites"]
+#append latest week per site:
+Diarrh[,diarh:=NULL]
+lastweek=unique(mydata[as.Date(deb_sem,origin="1970-01-01")==max_deb_sem-7,list(sites,diarh)],by=NULL)
+lastweek$diarh= as.character(lastweek$diarh)
+lastweek[is.na(diarh)==T,diarh:="na"]
+Diarrh= merge(unique(Diarrh[,list(sites,vals)],by=NULL), 
+               lastweek,
+               by.x="sites", by.y="sites")
+#merge with sentinel_latlong:
+Diarrh= merge(Diarrh,sentinel_latlong[,list(name,sites)],
+              by.x="sites",by.y="sites")
+Diarrh[,sites:=NULL]; 
+setnames(Diarrh,c("name","vals","diarh"),
+                c("Sites","6 semaines précédentes","Semaine dernière"))
+#save to be re-used later:
+save(Diarrh,Diarrh_feb,
+     file=paste0(mypath,"/interactive_summary_report/last6_diarrhea.rda"))
+#generate tables:
+knitr::kable(Diarrh[,c("Sites","6 semaines précédentes","Semaine dernière"),with=F],
+             caption="Diarrhées dans le réseau sentinelle HTC")
+
+knitr::kable(Diarrh_feb[,c("Sites","6 semaines précédentes","Semaine dernière"),with=F],caption="Diarrhées fébriles dans le réseau sentinelle HTC")
+             
+```
+
+```{r,echo=F, fig.show = "hold" ,out.width = '50%', out.extra='',comment='', message=FALSE , warning=FALSE}
+
+#merge with sentinel_latlong:
+mydata=merge(mydata,sentinel_latlong, by.x="sites",by.y="sites")
+                    
+generate_plot(htc="dsd",
+              mydata=mydata,
+              disease.name="diarrhea",
+              disease1=Diarrh_feb,
+              disease2=Diarrh,
+              disease1.targetvar="diarh_feb",
+              disease2.targetvar="diarh",
+              legend.disease1="Diarrhées fébriles",
+              legend.disease2="Diarrhées non fébriles",
+              title.label="Diarrhées dans le réseau sentinelle",
+              title.label.list="Diarrhées à",
+              title.ylab="Cas de Diarrhées")
+```

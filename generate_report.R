@@ -2,8 +2,11 @@
 library(ReporteRs)
 
 doc <- docx() 
-
-doc=addImage(doc, "/media/herimanitra/Document/IPM_sentinelle/sentinel_hrmntr 291115/Sentinel/report/logo.png",
+#move image to wwww
+path1="/media/herimanitra/Document/IPM_sentinelle/sentinel_hrmntr 291115/Sentinel/report/logo.png"
+path2= "/srv/shiny-server/sentinel_hrmntr/Sentinel/report/logo.png"
+mylogo= ifelse(file.exists(path1),path1,path2)
+doc=addImage(doc, mylogo,
          par.properties = parProperties(text.align = "left", padding = 5), 
          width=5,
          height=1.5)
@@ -56,7 +59,7 @@ doc=addParagraph( doc, value = alert_parameter, stylename="BulletList")
 
 ######################### R code to generate the report ##########################
 require(tidyr);source("import_data.R");
-source("percentile.R");
+source("algorithms/percentile.R");
 source("preprocessing.R");
 #source("tdrplus.R");
 
@@ -69,17 +72,22 @@ sentinel=fread("data/sentinel_codes.csv");sentinel
 setnames(sentinel,c("Centre","Code"),c("name","sites") )
 sentinel[,sites:=tolower(sites)]
 sentinel_latlong=rbind(sentinel_latlong,sentinel[!(sites %in% sentinel_latlong$sites)],fill=T)
-#
+
+#generate reports starting from 2012 only:
 PaluConf_tdr=tdr_eff
 Malaria=mydata[["Malaria"]]
+
 diarrh=mydata[["Diarrhea"]]
+
 
 percentile_palu_alerte=calculate_percentile(data=Malaria,
                                             week_length=3,
-                                            percentile_value=90)$mydata
+                                            percentile_value=90,
+                                            disease="Malaria")$mydata
 percentile_diar_alerte=calculate_percentile(data=diarrh,
                                             week_length=3,
-                                            percentile_value=90)$mydata
+                                            percentile_value=90,
+                                            disease="Diarrhea")$mydata
                                             
 
 percentile_palu_alerte=merge(percentile_palu_alerte,sentinel_latlong,
@@ -111,7 +119,8 @@ PaluConf_tdr=merge(PaluConf_tdr,sentinel_latlong[,list(sites,name)],
 
 ##########################################################################
 
-tana_centre = c("Manjakaray","Andohatapenaka","Tsaralalana","Behoririka")
+tana_centre = c("Manjakaray","Andohatapenaka","Tsaralalana",
+                "Behoririka")
 tana_haut_plateau= c("Fianarantsoa","Antsirabe","Anjozorobe")
 
 #reorder time (very important step!)
@@ -123,7 +132,7 @@ setorder(PaluConf_tdr,sites,-Annee,-Semaine)
 #
 mycode=unique(c(percentile_palu_alerte$code,
                 percentile_diar_alerte$code))
-                #PaluConf_tdr$code))
+                
 #remove ongoing week:
 ongoing_week= paste0(year(Sys.Date()),"_",isoweek(Sys.Date()))
 mycode=mycode[mycode!=ongoing_week]
@@ -134,7 +143,10 @@ setorder(percentile_diar_alerte,sites,-deb_sem)
 perc_rank = function(x,x0) {f=ecdf(x);return(round(100*f(x0)) )}
 # initialize document:
 mydocument = list()
-for ( j in mycode )
+#initialize a data.frame to be saved in a csv for historical alerts:
+historical_alert=data.table(code="",sites="",alert="")
+#report only years>=2012
+for ( j in mycode[as.numeric(substr(mycode,1,4))>=2012] )
 {
   cat("writing report for Semaine épidémiologique:",j,'\n')
   semaine = as.numeric(unlist(strsplit(j,"_"))[2])
@@ -144,8 +156,12 @@ for ( j in mycode )
   alerte_diar= percentile_diar_alerte[code == j & alert_status=="alert",c("code","name",grep("^alert",names(percentile_diar_alerte),value=T)),with=F] 
   #15h39 (5 avril,'16)==>manque_tdr==1
   alerte_manque_tdr=PaluConf_tdr[code==j & manque_tdr>0,list(code,name,manque_tdr,TestPalu,SyndF)]
-  palu_NA= percentile_palu_alerte[code == j & is.na(occurence)==T,get("name")]
-  diar_NA= percentile_diar_alerte[code == j & is.na(occurence)==T,get("name")]
+  
+  #currently (8juin2016) cannot handle NA in HTC sites because there is no HTC site in percentile_palu_alerte
+  #so switch to :
+  palu_NA =sentinel_latlong[sites %in% names(PaluConf)[which(is.na(PaluConf[code == j ])==T)],get("name") ]
+  diar_NA =sentinel_latlong[sites %in%  names(Diarrh)[which(is.na(Diarrh[code == j ])==T)],get("name") ]
+  #
   mydate = pot(paste0(annee,"-",semaine,":"),format=textBoldItalic(underline = TRUE ))
   #add space between semaine épidémiologique:
   doc <- addParagraph(doc, "          ")
@@ -157,16 +173,27 @@ for ( j in mycode )
   mysites=unique(c(alerte_palu$name,
                    alerte_diar$name,
                    alerte_manque_tdr$name,palu_NA,diar_NA))
-  #mysites[mysites %in% tana_centre]="Antananarivo"
-  #mysites=unique(mysites)
+ 
   # k in mysites ---
-  unlist(lapply(mysites, function(k) source("generate_narration.R",local = T)));
+  #unlist(lapply(mysites, function(k) source("generate_narration.R",local = T)));
+  for ( k in mysites )
+  {
+    source("generate_narration.R",local = T)
+  }
 }
 
-
+cat("Writing log into a csv...")
+path1="/media/herimanitra/Document/IPM_sentinelle/sentinel_hrmntr 291115/Sentinel/"
+path2= "/srv/shiny-server/sentinel_hrmntr/Sentinel/"
+mypath=ifelse(file.exists(path1),path1,path2)
+write.table(historical_alert,
+            paste0(mypath,"interactive_summary_report/historical_alert.csv"),
+            row.names = F,sep=";")
+cat("DONE\n")
 cat("Writing document to a word document...")
 writeDoc(doc, file = "report/report.docx")
 #sudo apt-get install unoconv
+Sys.sleep(5)
 system("doc2pdf report/report.docx") #write in pdf using cli command
 cat('DONE\n')
 

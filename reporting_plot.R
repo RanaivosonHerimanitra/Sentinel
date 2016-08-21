@@ -2,6 +2,7 @@
 generate_plot=function(htc="all",
                        add_trend=FALSE,
                        mydata=PaluConf_tdr,
+                       disease.name=NULL,
                        disease1=NULL,
                        disease2=NULL,
                        disease1.targetvar="malaria_cases",
@@ -17,7 +18,6 @@ generate_plot=function(htc="all",
     #extract years and select obs starting from 2009:
     mydata[,years:=as.numeric(substr(code,1,4))]
     mydata=mydata[years>=2009]
-    
     #
     disease1= mydata[,c("code","deb_sem",disease1.targetvar),with=F]
     setnames(disease1,disease1.targetvar,"value")
@@ -25,20 +25,15 @@ generate_plot=function(htc="all",
     disease2= mydata[,c("code","deb_sem",disease2.targetvar),with=F]
     setnames(disease2,disease2.targetvar,"value")
     disease2[,Légende:=legend.disease2]
-    
     #sum per week (aggregation)
     disease1[,value:=sum(value,na.rm = T),by="code"]
     disease2[,value:=sum(value,na.rm = T),by="code"]
-    
-    
     X=rbind(unique(disease1), unique(disease2) )
     X$deb_sem=as.Date(X$deb_sem,origin="1970-01-01")
     X[,weeks:=week(deb_sem)]
     setnames(X,"deb_sem","Date")
-   
       d= ggplot(data=X,
                 aes(x=Date,y=value,fill=Légende)) 
-      
       d=d + geom_bar(stat = "identity")  
       #if user specifies a trend:
       if (add_trend==T) {  d= d + geom_smooth(method='lm',formula=y~x) }
@@ -46,7 +41,6 @@ generate_plot=function(htc="all",
       d= d + scale_fill_manual(values=c("#0000ff", "#840000"))
       #increase space between legend keys:
       d= d + theme(legend.position="bottom", legend.direction="horizontal",  legend.key=element_rect(size=7),legend.key.size = unit(1.5, "lines"))
-      
       #remove legend sutitle:
       d=d+ guides(fill=guide_legend(title=NULL))
       debut_annee=c(as.numeric(as.Date("2008-01-01")),
@@ -64,8 +58,6 @@ generate_plot=function(htc="all",
       d=d + xlab("Date(ligne orange=1er janvier)") + ylab(title.ylab)
       return(d)
   } else {
-    
-    
     L=length(unique(mydata$name))
     myname = unique(mydata$name)
     myplot=list()
@@ -103,8 +95,32 @@ generate_plot=function(htc="all",
                         linetype=4,colour="orange")
       d=d + ggtitle(label=paste(title.label.list, myname[p]))
       d=d + xlab("Date (ligne orange=1er janvier)") + ylab(title.ylab)
+      # path handler:
+      path1="/media/herimanitra/Document/IPM_sentinelle/sentinel_hrmntr 291115/Sentinel/"
+      path2= "/srv/shiny-server/sentinel_hrmntr/Sentinel/"
+      mypath=ifelse(file.exists(path1),path1,path2)
+      
+      
       myplot[[p]]=d
-     print(myplot[[p]])
+      print(myplot[[p]])
+      #save plot to be re-used later:
+      if(disease.name=="malaria")
+      {
+        #finally change legend:
+        d$data$Légende=ifelse(d$data$Légende=="Palu(TDR+)","RDT+","Fever")
+        #remove titles that are in french
+        d= d + xlab("") + ylab("") + ggtitle("")
+        save(p,d,file=paste0(mypath,"report/malaria/malaria_",myname[p],".rda"))
+      }
+      if(disease.name=="diarrhea")
+      {
+        #finally change legend:
+        d$data$Légende=ifelse(d$data$Légende=="Diarrhées fébriles",
+                              "Febrile","Non Febrile")
+        #remove titles that are in french
+        d= d + xlab("") + ylab("") + ggtitle("")
+        save(p,d,file=paste0(mypath,"report/diarrhea/diarrhea_",myname[p],".rda"))
+      }
     }
   }
   

@@ -1,4 +1,4 @@
-source("libraries.R")
+source("utils/libraries.R")
 # load data
 PaluConf=fread("data/PaluConf.csv")
 Consultations=fread("data/Consultations.csv")

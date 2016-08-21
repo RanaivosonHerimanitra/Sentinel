@@ -15,7 +15,14 @@ output: pdf_document
 
 
 ```{r,echo=F, fig.width=10, out.extra='',comment='', message=FALSE , warning=FALSE}
-setwd("/media/herimanitra/Document/IPM_sentinelle/sentinel_hrmntr 291115/Sentinel")
+if ( getwd()!="/srv/shiny-server/sentinel_hrmntr/Sentinel/report" )
+{
+   setwd("/media/herimanitra/Document/IPM_sentinelle/sentinel_hrmntr 291115/Sentinel")
+ 
+} else {
+  setwd("/srv/shiny-server/sentinel_hrmntr/Sentinel")
+  
+}
 source("./import_data.R");source("./preprocessing.R");require(ggplot2); require(gridExtra)
 #Retrieve ILI
 mydata= preprocessing_disease()[["ILI"]] #ensure this is the same as in #diseases_control.R
@@ -29,7 +36,6 @@ mydata[,weeks:=week(deb_sem)]
 d=ggplot(unique(mydata[,list(deb_sem,occurence)],by=NULL), 
          aes(x=deb_sem, y=occurence), fill=occurence) 
 d= d + geom_bar(stat = "identity",fill="blue") 
-
 d= d + ggtitle(label="ILI dans le réseau sentinelle")
 d= d + xlab("Date(ligne orange=1er janvier)") + ylab("Nb. Cas")
  
@@ -37,13 +43,26 @@ debut_annee=as.numeric(unique(mydata[weeks==1,deb_sem]))
 debut_annee=c(min(debut_annee)-365, as.Date("2013-01-01"), debut_annee)
       
 d= d + geom_vline(xintercept = debut_annee,linetype=4,colour="orange")
-                        
+
 print(d)
+
+
+d= d + xlab("") + ylab("")+ ggtitle("")
+d=d + ggtitle("ILI cases")
+save(d,file="report/ili_chart.rda")                        
 
 ```
 
 ```{r,echo=F,out.extra='',comment='', message=FALSE , warning=FALSE}
-setwd("/media/herimanitra/Document/IPM_sentinelle/sentinel_hrmntr 291115/Sentinel")
+if ( getwd()!="/srv/shiny-server/sentinel_hrmntr/Sentinel/report" )
+{
+  setwd("/media/herimanitra/Document/IPM_sentinelle/sentinel_hrmntr 291115/Sentinel")
+  
+} else {
+    setwd("/srv/shiny-server/sentinel_hrmntr/Sentinel")
+
+  
+}
 mydata= preprocessing_disease()[["ILI"]]
 semaine=array()
 max_deb_sem=max(as.Date(mydata$deb_sem,origin="1970-01-01"))
@@ -79,6 +98,8 @@ X= merge(X,sentinel_latlong[,list(name,sites)],by.x="sites",by.y="sites")
 X[,sites:=NULL]; 
 setnames(X,c("name","vals","occurence"),
                  c("Sites","6 semaines précédentes","Semaine dernière"))
+#save table to be re-used later:
+save(X,file="interactive_summary_report/last6_ili.rda")
 #generate tables:
 knitr::kable(X[,c("Sites","6 semaines précédentes","Semaine dernière"),with=F],
              caption="ILI dans le réseau sentinelle")
@@ -86,7 +107,12 @@ knitr::kable(X[,c("Sites","6 semaines précédentes","Semaine dernière"),with=F
 ```
 
 ```{r,echo=F, fig.show = "hold" ,out.width = '50%', out.extra='',comment='', message=FALSE , warning=FALSE}
-setwd("/media/herimanitra/Document/IPM_sentinelle/sentinel_hrmntr 291115/Sentinel")
+if ( getwd()!="/srv/shiny-server/sentinel_hrmntr/Sentinel/report" )
+{
+   setwd("/media/herimanitra/Document/IPM_sentinelle/sentinel_hrmntr 291115/Sentinel")
+} else {
+ setwd("/srv/shiny-server/sentinel_hrmntr/Sentinel")
+}
     #merge with sentinel_latlong:
     mydata=merge(mydata,sentinel_latlong, by.x="sites",by.y="sites")
     L=length(unique(mydata$name))
@@ -109,12 +135,17 @@ setwd("/media/herimanitra/Document/IPM_sentinelle/sentinel_hrmntr 291115/Sentine
                       as.numeric(as.Date("2014-01-01")),
                       as.numeric(as.Date("2015-01-01")),
                       as.numeric(as.Date("2016-01-01")))
-                     
-       
       d= d + geom_vline(xintercept = debut_annee,
                         linetype=4,colour="orange")
       d=d + ggtitle(label=paste(myname[p]))
+      
       d=d + xlab("Date (ligne orange=1er janvier)") + ylab("Nb. Cas")
       print(d)
+      
+      #remove titles that are in french
+      d= d + xlab("") + ylab("") + ggtitle("")
+      #save graph to be re-used later:
+      save(p,d,file=paste0("report/ili/ili_",myname[p],".rda"))
+     
     }
 ```

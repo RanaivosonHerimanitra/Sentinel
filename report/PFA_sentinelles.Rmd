@@ -13,10 +13,19 @@ output: pdf_document
 ---
 
 ```{r,echo=F, fig.width=10, out.extra='',comment='', message=FALSE , warning=FALSE}
-setwd("/media/herimanitra/Document/IPM_sentinelle/sentinel_hrmntr 291115/Sentinel")
-source("/media/herimanitra/Document/IPM_sentinelle/sentinel_hrmntr 291115/Sentinel/import_data.R");
-source("/media/herimanitra/Document/IPM_sentinelle/sentinel_hrmntr 291115/Sentinel/preprocessing.R");
-require(ggplot2); require(gridExtra);require(Hmisc)
+if ( getwd()!="/srv/shiny-server/sentinel_hrmntr/Sentinel/report" )
+{ 
+  mypath= "/media/herimanitra/Document/IPM_sentinelle/sentinel_hrmntr 291115/Sentinel"
+  setwd(mypath)
+} else {
+  mypath= "/srv/shiny-server/sentinel_hrmntr/Sentinel"
+  setwd(mypath)
+}
+
+source(paste0(mypath,"/import_data.R"));
+source(paste0(mypath,"/preprocessing.R"));
+require(ggplot2); require(gridExtra);
+#require(Hmisc)
 #Retrieve PFA for HTC sites
 mydata= preprocessing_disease(include_all_sites=T)[["PFA"]]
 
@@ -25,29 +34,40 @@ mydata[,occurence:=sum(occurence,na.rm = T),by="code"]
 mydata$deb_sem=as.Date(mydata$deb_sem,origin="1970-01-01")
 mydata[,weeks:=week(deb_sem)]
 mydata=mydata[as.Date(deb_sem,origin="1970-01-01")>=as.Date("2015-06-01",origin="1970-01-01"),]
-d=ggplot(unique(mydata[,list(deb_sem,occurence)],by=NULL), aes(x=deb_sem, y=occurence),
-         fill=occurence) 
-d= d + geom_bar(stat = "identity",fill="blue") 
+d=ggplot(unique(mydata[,list(deb_sem,occurence)],by=NULL), 
+         aes(x=deb_sem, y=occurence),fill=occurence) 
+d= d + geom_bar(colour="black",stat = "identity",fill="blue") 
 d= d + ggtitle(label="PFA dans le réseau sentinelle")
 d= d + xlab("Date") + ylab("Nb. Cas")
 debut_annee=as.numeric(unique(mydata[weeks==1,deb_sem]))
 d= d + geom_vline(xintercept = debut_annee,size=1.5,linetype=4,colour="orange")
- d= d + scale_x_date(labels = date_format("%m-%Y"))
+d= d + scale_x_date(labels = date_format("%m-%Y"))
 #set ylim to 10 if <10
 mymax=range(as.numeric(mydata$occurence)[is.na(as.numeric(mydata$occurence))==F])
 mymax[2]=ifelse(mymax[2]<10,10,mymax[2])
 #
-       d = d + scale_y_continuous(breaks= seq.int(from=1,to=mymax[2],by=2) ) 
+d = d + scale_y_continuous(breaks= seq.int(from=1,to=mymax[2],by=1) ) 
 #
-       #vertical axis label 
- d=d+theme(axis.text.x=element_text(angle=90,hjust=1,vjust=0.5))
- d= d + scale_x_date(date_breaks = "1 week")
-print(d)
+#vertical axis label 
+d=d+theme(axis.text.x=element_text(angle=90,hjust=1,vjust=0.5))
+d= d + scale_x_date(date_breaks = "1 week")
 
+print(d)
+d= d + xlab("") + ylab("")+ ggtitle("")
+d= d + ggtitle("AFP cases")
+save(d,file="report/pfa_chart.rda")
 ```
 
 ```{r,echo=F,out.extra='',comment='', message=FALSE , warning=FALSE}
-setwd("/media/herimanitra/Document/IPM_sentinelle/sentinel_hrmntr 291115/Sentinel")
+if ( getwd()!="/srv/shiny-server/sentinel_hrmntr/Sentinel/report" )
+{
+  mypath= "/media/herimanitra/Document/IPM_sentinelle/sentinel_hrmntr 291115/Sentinel"
+  setwd(mypath)
+} else {
+   mypath= "/srv/shiny-server/sentinel_hrmntr/Sentinel"
+  setwd(mypath)
+}
+
 mydata= preprocessing_disease(include_all_sites=T)[["PFA"]]
 semaine=array()
 max_deb_sem=max(as.Date(mydata$deb_sem,origin="1970-01-01"))
@@ -84,13 +104,16 @@ X= merge(unique(X[,list(sites,vals)],by=NULL),lastweek,by.x="sites", by.y="sites
   sentinel[,sites:=tolower(sites)]
   sentinel_latlong=rbind(sentinel_latlong,sentinel[!(sites %in%     sentinel_latlong$sites)],fill=T)
   # format sites's name:
-  require(Hmisc);
-  sentinel_latlong[,name:=capitalize(tolower(name))]
+  #require(Hmisc);
+  #sentinel_latlong[,name:=capitalize(tolower(name))]
+  sentinel_latlong[,name:=(tolower(name))]
      
 X= merge(X,sentinel_latlong[,list(name,sites)],by.x="sites",by.y="sites")
 X[,sites:=NULL]; 
 setnames(X,c("name","vals","occurence"),
                  c("Sites","6 semaines précédentes","Semaine dernière"))
+#save table to be re-used later:
+save(X,file="interactive_summary_report/last6_pfa.rda")
 #generate tables:
 knitr::kable(X[,c("Sites","6 semaines précédentes","Semaine dernière"),with=F],
              caption="PFA dans le réseau sentinelle")
@@ -99,8 +122,17 @@ knitr::kable(X[,c("Sites","6 semaines précédentes","Semaine dernière"),with=F
 
 
 ```{r,echo=F, fig.show = "hold" ,out.width = '50%', out.extra='',comment='', message=FALSE , warning=FALSE}
-setwd("/media/herimanitra/Document/IPM_sentinelle/sentinel_hrmntr 291115/Sentinel")
-   
+if ( getwd()!="/srv/shiny-server/sentinel_hrmntr/Sentinel/report" )
+{
+   mypath= "/media/herimanitra/Document/IPM_sentinelle/sentinel_hrmntr 291115/Sentinel"
+  setwd(mypath)
+  
+} else {
+  mypath= "/srv/shiny-server/sentinel_hrmntr/Sentinel"
+  setwd(mypath)
+ 
+}
+  
     #merge with sentinel_latlong:
     mydata=merge(mydata,sentinel_latlong, by.x="sites",by.y="sites")
     L=length(unique(mydata$name))
@@ -122,10 +154,13 @@ setwd("/media/herimanitra/Document/IPM_sentinelle/sentinel_hrmntr 291115/Sentine
       mymax=range(as.integer(X$occurence)[is.na(as.integer(X$occurence))==F])
       mymax[2]=ifelse(mymax[2]<10,10,mymax[2])
       d = d + scale_y_continuous(breaks= seq.int(from=0,to=mymax[2],by=1) ) 
-      # d= d + scale_x_date(labels = date_format("%m-%Y"))
       #vertical axis label 
       d=d+theme(axis.text.x=element_text(angle=90,hjust=1,vjust=0.5))
       d= d + scale_x_date(date_breaks = "2 weeks")
+      #save graph to be re-used later:
       print(d)
+      #remove titles that are in french:
+      d= d + xlab("") + ylab("") + ggtitle("")
+      save(p,d,file=paste0("report/pfa/pfa_",myname[p],".rda"))
     }
 ```

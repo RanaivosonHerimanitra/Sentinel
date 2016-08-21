@@ -15,10 +15,21 @@ output: pdf_document
 
 
 ```{r,echo=F,fig.width=10, out.extra='',comment='', message=FALSE , warning=FALSE}
-setwd("/media/herimanitra/Document/IPM_sentinelle/sentinel_hrmntr 291115/Sentinel")
+if ( getwd()!="/srv/shiny-server/sentinel_hrmntr/Sentinel/report" )
+{
+   mypath= "/media/herimanitra/Document/IPM_sentinelle/sentinel_hrmntr 291115/Sentinel"
+  setwd(mypath)
+} else {
+  mypath="/srv/shiny-server/sentinel_hrmntr/Sentinel"
+  setwd(mypath)
+  
+ 
+}
 #load source code:
-source("./import_data.R");source("./preprocessing.R");require(ggplot2); require(gridExtra)
-#source("var_conversion.R")
+source("./import_data.R");
+source("./preprocessing.R");
+require(ggplot2); 
+require(gridExtra)
 
 mydata= preprocessing_disease()[["Diarrhea"]] #Diarrhée
 setnames(mydata,"occurence","diarh")
@@ -28,7 +39,7 @@ setnames(tmp,"occurence","diarh_feb")
 mydata=merge(mydata,tmp[,list(sites,code,diarh_feb)],
              by.x=c("sites","code"),by.y=c("sites","code"))
 source("reporting_plot.R",local = T) #for plotting nice graphics
-generate_plot(htc="all",
+p=generate_plot(htc="all",
               mydata=mydata,
               disease1.targetvar="diarh_feb",
               disease2.targetvar="diarh",
@@ -36,10 +47,24 @@ generate_plot(htc="all",
               legend.disease2="Diarrhées non fébriles",
               title.label="Diarrhées dans le réseau sentinelle",
               title.ylab="Cas de Diarrhées")
+print(p)
+#change into english to display
+p = p + xlab("") + ylab("") + ggtitle("")
+p = p + ggtitle("Diarrhea cases")
+#finally change legend:
+p$data$Légende=ifelse(p$data$Légende=="Diarrhées fébriles","Febrile","Non Febrile")
+save(p,file="report/diar_chart.rda")
+
 ```
 
 
 ```{r,echo=F,out.extra='',comment='', message=FALSE , warning=FALSE}
+if ( getwd()!="/srv/shiny-server/sentinel_hrmntr/Sentinel/report" )
+{
+  mypath= "/media/herimanitra/Document/IPM_sentinelle/sentinel_hrmntr 291115/Sentinel"
+} else {
+  mypath="/srv/shiny-server/sentinel_hrmntr/Sentinel"
+}
 
 semaine=array()
 max_deb_sem=max(as.Date(mydata$deb_sem,origin="1970-01-01"))
@@ -101,6 +126,9 @@ Diarrh= merge(Diarrh,sentinel_latlong[,list(name,sites)],
 Diarrh[,sites:=NULL]; 
 setnames(Diarrh,c("name","vals","diarh"),
                 c("Sites","6 semaines précédentes","Semaine dernière"))
+#save to be re-used later:
+save(Diarrh,Diarrh_feb,
+     file=paste0(mypath,"/interactive_summary_report/last6_diarrhea.rda"))
 #generate tables:
 knitr::kable(Diarrh[,c("Sites","6 semaines précédentes","Semaine dernière"),with=F],
              caption="Diarrhées dans le réseau sentinelle HTC")
@@ -116,6 +144,7 @@ mydata=merge(mydata,sentinel_latlong, by.x="sites",by.y="sites")
                     
 generate_plot(htc="dsd",
               mydata=mydata,
+              disease.name="diarrhea",
               disease1=Diarrh_feb,
               disease2=Diarrh,
               disease1.targetvar="diarh_feb",
