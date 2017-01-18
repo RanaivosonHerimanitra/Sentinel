@@ -1,6 +1,10 @@
 # Sentinel
 A toolkit for visualization, early warning detection and prediction of disease outbreaks (Malaria, Diarrhea, etc.)
 
+## Getting started:
+* Open `sentinel.Rproj`
+* Run `app.R`
+
 ## Goals:
 * Build a package that could receive any kind of algorithms for epidemiologists to play with.
 * Automate data processing and conversion for any kind of format and backend.
@@ -65,7 +69,7 @@ A toolkit for visualization, early warning detection and prediction of disease o
 ### Default values for percentile algorithm are:
 
 * `n` number of consecutive weeks we observe = 3
-* value of the percentile = 90th 
+* value of the percentile = 90th
 
 ## MinSan algorithm:
 
@@ -78,5 +82,3 @@ A toolkit for visualization, early warning detection and prediction of disease o
 `CSum` algorithm consists of comparing `52 lastest weeks` with smoothed mean of past years. Comparison is made week by week. For example,`week 02` of this month is compared with the smoothed mean of `week 02` for past years excluding the 52 latest. Parameters can be tuned such as number of past years from which mean will be calculated, `sd`, degree of smoothing (number of weeks for mean calculation) .It is only efficient when disease presents weekly strong seasonal pattern.
 
 <img src="static/csum.png" >
-
-
