@@ -1,12 +1,12 @@
 #required libraries
 source("utils/libraries.R")
-#versatile app:
+#Change directory depending on where I am:
 if ( getwd()!="/srv/shiny-server/sentinel_hrmntr/Sentinel") 
 {
-  setwd('/media/herimanitra/Document/IPM_sentinelle/sentinel_hrmntr 291115/Sentinel')
+  setwd('/media/herimanitra/DONNEES/IPM_sentinelle/sentinel_hrmntr 291115/Sentinel')
 } else {
-  
 }
+# on my laptop or at office
 
 
 ############################################## server ######################

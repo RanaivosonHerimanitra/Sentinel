@@ -1,6 +1,6 @@
 PackratFormat: 1.4
 PackratVersion: 0.4.7.1
-RVersion: 3.3.0
+RVersion: 3.3.1
 Repos: CRAN=https://cran.rstudio.com/
 
 Package: BH
@@ -84,8 +84,8 @@ Package: ReporteRs
 Source: github
 Version: 0.8.6
 Hash: 0a4290ff7d7bc03b9e940d6ba1187de3
-Requires: png, rJava, gdtools, xml2, ReporteRsjars, R.utils, shiny,
-    rvg, knitr
+Requires: R.utils, ReporteRsjars, gdtools, knitr, png, rJava, rvg,
+    shiny, xml2
 GithubRepo: ReporteRs
 GithubUsername: davidgohel
 GithubRef: master
@@ -256,7 +256,7 @@ Hash: cd78381a9d3fea966ac39bd0daaf5554
 Package: hexbin
 Source: CRAN
 Version: 1.27.1
-Hash: 9f94c576cc4b9e83fd714ae8387272e6
+Hash: 378383b2c37556649fd6b2ee0be7e2a5
 
 Package: highr
 Source: CRAN
@@ -301,7 +301,7 @@ Package: knitr
 Source: CRAN
 Version: 1.12.3
 Hash: d537760d13021cf23fa2446381d9e0b2
-Requires: digest, formatR, highr, yaml, markdown, stringr, evaluate
+Requires: digest, evaluate, formatR, highr, markdown, stringr, yaml
 
 Package: labeling
 Source: CRAN
@@ -341,7 +341,7 @@ Package: mailR
 Source: github
 Version: 0.6
 Hash: e28c2c4cb49f097801f8239ca6b28282
-Requires: rJava, stringr, R.utils
+Requires: R.utils, rJava, stringr
 GithubRepo: mailR
 GithubUsername: rpremraj
 GithubRef: master
@@ -462,7 +462,7 @@ Package: rvg
 Source: CRAN
 Version: 0.0.9
 Hash: 419059e3943e26607a8d66f446e1dbbe
-Requires: Rcpp, gdtools, xml2, R.utils
+Requires: R.utils, Rcpp, gdtools, xml2
 
 Package: scales
 Source: CRAN
@@ -474,7 +474,7 @@ Package: shiny
 Source: CRAN
 Version: 0.13.2
 Hash: 28d6903a44dc53bd4823fa43ccdc08e5
-Requires: R6, digest, jsonlite, mime, xtable, httpuv, htmltools
+Requires: R6, digest, htmltools, httpuv, jsonlite, mime, xtable
 
 Package: shinydashboard
 Source: CRAN
@@ -493,6 +493,11 @@ Source: CRAN
 Version: 1.0.1
 Hash: 9a394ba0f9825789949d2253fbe853fa
 Requires: shiny
+
+Package: sourcetools
+Source: CRAN
+Version: 0.1.5
+Hash: 04ddeb1c288302222562326a471e2945
 
 Package: sp
 Source: CRAN
