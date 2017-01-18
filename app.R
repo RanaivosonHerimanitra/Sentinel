@@ -51,7 +51,6 @@ server<-function(input, output,session) {
   })
   percentile_algorithm = reactive({
     #some sort of cache of preprocessed data to speed up things:
-    
     cat("reading ",input$diseases," from a temporary file\n")
     mydata=fread(paste0("temp/",input$diseases,Sys.Date(),".csv"))
     
