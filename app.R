@@ -69,7 +69,7 @@ server<-function(input, output,session) {
     #some sort of cache of preprocessed data to speed up things:
     
     cat("reading ",input$diseases," from a temporary file\n")
-    mydata=fread(paste0("temp/",input$diseases,".csv"))
+    mydata=fread(paste0("temp/",input$diseases,Sys.Date(),".csv"))
     
     #####################################Doublement du nb de cas (MinSan algo) ###################
     cat('Calculation of minsan and proportion of sites in alert begin...\n')
@@ -83,7 +83,7 @@ server<-function(input, output,session) {
   csum_algorithm = reactive({
     
     cat("reading ",input$diseases," from a temporary file\n")
-    mydata=fread(paste0("temp/",input$diseases,".csv"))
+    mydata=fread(paste0("temp/",input$diseases,Sys.Date(),".csv"))
     
     ######################################Cumulative sum (cumsum algo) ##########################
     cat('Calculation of csum and proportion of sites in alert begin...')
@@ -413,103 +413,103 @@ server<-function(input, output,session) {
     
     mada_map
   })
-  output$madagascar_map2 <- renderPlot({
-    if (input$diseases=="Malaria" )
-    {
-      if (input$Algorithmes_eval1=="Percentile" ) 
-      {
-        cat("display alert status into the map using percentile algorithm...\n")
-        #setkey for fast merging
-        setkey(sentinel_latlong,sites)
-        setkey(percentile_algorithm()$percentile_alerte_currentweek,sites)
-        sentinel_latlong=merge(sentinel_latlong,percentile_algorithm()$percentile_alerte_currentweek
-                               ,by.x="sites",by.y = "sites",all.x=T)
-        
-      }
-      if (input$Algorithmes_eval1=="MinSan" ) 
-      {
-        cat("display alert status into the map using MinSan algorithm...\n")
-        setkey(sentinel_latlong,sites);
-        setkey(minsan_algorithm()$minsan_alerte_currentweek,sites)
-        sentinel_latlong=merge(sentinel_latlong,minsan_algorithm()$minsan_alerte_currentweek
-                               ,by.x="sites",by.y = "sites",all.x=T)
-      }
-      if (input$Algorithmes_eval1=="Csum" ) 
-      {
-        cat("display alert status into the map using Csum algorithm...\n")
-        setkey(sentinel_latlong,sites);
-        setkey(csum_algorithm()$csum_alerte,sites)
-        sentinel_latlong=merge(sentinel_latlong,csum_algorithm()$csum_alerte_currentweek
-                               ,by.x="sites",by.y = "sites",all.x=T)
-      }
-      if (input$Algorithmes_eval1=="Ind" ) 
-      {
-        setkey(sentinel_latlong,sites);
-        setkey(tdrplus_fever_ind()$tdrplus_ind_currentweek,sites)
-        sentinel_latlong=merge(sentinel_latlong,tdrplus_fever_ind()$tdrplus_ind_currentweek
-                               ,by.x="sites",by.y = "sites",all.x=T)
-        cat("display alert status into the map using a simple indicator...\n")
-      }
-    } else {
-      if (input$Algorithmes_eval2=="Percentile" ) 
-      {
-        cat("display alert status into the map using percentile algorithm...\n")
-        #setkey for fast merging
-        setkey(sentinel_latlong,sites)
-        setkey(percentile_algorithm()$percentile_alerte_currentweek,sites)
-        sentinel_latlong=merge(sentinel_latlong,percentile_algorithm()$percentile_alerte_currentweek
-                               ,by.x="sites",by.y = "sites",all.x=T)
-        
-      }
-      if (input$Algorithmes_eval2=="MinSan" ) 
-      {
-        cat("display alert status into the map using MinSan algorithm...\n")
-        setkey(sentinel_latlong,sites);
-        setkey(minsan_algorithm()$minsan_alerte_currentweek,sites)
-        sentinel_latlong=merge(sentinel_latlong,
-                               minsan_algorithm()$minsan_alerte_currentweek
-                               ,by.x="sites",by.y = "sites",all.x=T)
-      }
-      if (input$Algorithmes_eval2=="Csum" ) 
-      {
-        cat("display alert status into the map using Csum algorithm...\n")
-        setkey(sentinel_latlong,sites);
-        setkey(csum_algorithm()$csum_alerte,sites)
-        sentinel_latlong=merge(sentinel_latlong,
-                               csum_algorithm()$csum_alerte_currentweek
-                               ,by.x="sites",by.y = "sites",all.x=T)
-      }
-      
-    }
-    #exclude Haute Terre Centrale (High_land) from the map
-    sentinel_latlong=sentinel_latlong[!(sites %in% High_land)]
-    #latest verification fo radius and alert status (handle NA's)
-    sentinel_latlong[is.na(alert_status)==T,alert_status:="No data"]
-    sentinel_latlong[is.na(myradius)==T,myradius:=5.0]
-    
-    #load the map
-    madagascar_layer=readRDS("madagascar.rds")
-    madagascar_map2=ggmap(madagascar_layer,base_layer = ggplot(data = sentinel_latlong,aes(x=Long,y=Lat)))
-    if ( length(unique(sentinel_latlong$alert_status))!=1) {
-      
-      madagascar_map2 = madagascar_map2 + geom_point(data = sentinel_latlong,
-                                                     alpha=0.8,
-                                                     aes(color=alert_status,
-                                                         size=myradius
-                                                     ),show.legend  = T)
-      madagascar_map2 = madagascar_map2 + scale_colour_manual(values=c("#f05249", "#808284", "#69c39a"))
-    } else {
-      madagascar_map2 = madagascar_map2 + geom_point(data = sentinel_latlong,
-                                                     alpha=0.8,
-                                                     aes(color=alert_status,
-                                                         size=myradius),
-                                                     color="blue")
-    }
-    
-    madagascar_map2 = madagascar_map2 + scale_size_continuous(range=range(sentinel_latlong$myradius))
-    return(madagascar_map2)  
-    
-  },height = 640)
+  # output$madagascar_map2 <- renderPlot({
+  #   if (input$diseases=="Malaria" )
+  #   {
+  #     if (input$Algorithmes_eval1=="Percentile" ) 
+  #     {
+  #       cat("display alert status into the map using percentile algorithm...\n")
+  #       #setkey for fast merging
+  #       setkey(sentinel_latlong,sites)
+  #       setkey(percentile_algorithm()$percentile_alerte_currentweek,sites)
+  #       sentinel_latlong=merge(sentinel_latlong,percentile_algorithm()$percentile_alerte_currentweek
+  #                              ,by.x="sites",by.y = "sites",all.x=T)
+  #       
+  #     }
+  #     if (input$Algorithmes_eval1=="MinSan" ) 
+  #     {
+  #       cat("display alert status into the map using MinSan algorithm...\n")
+  #       setkey(sentinel_latlong,sites);
+  #       setkey(minsan_algorithm()$minsan_alerte_currentweek,sites)
+  #       sentinel_latlong=merge(sentinel_latlong,minsan_algorithm()$minsan_alerte_currentweek
+  #                              ,by.x="sites",by.y = "sites",all.x=T)
+  #     }
+  #     if (input$Algorithmes_eval1=="Csum" ) 
+  #     {
+  #       cat("display alert status into the map using Csum algorithm...\n")
+  #       setkey(sentinel_latlong,sites);
+  #       setkey(csum_algorithm()$csum_alerte,sites)
+  #       sentinel_latlong=merge(sentinel_latlong,csum_algorithm()$csum_alerte_currentweek
+  #                              ,by.x="sites",by.y = "sites",all.x=T)
+  #     }
+  #     if (input$Algorithmes_eval1=="Ind" ) 
+  #     {
+  #       setkey(sentinel_latlong,sites);
+  #       setkey(tdrplus_fever_ind()$tdrplus_ind_currentweek,sites)
+  #       sentinel_latlong=merge(sentinel_latlong,tdrplus_fever_ind()$tdrplus_ind_currentweek
+  #                              ,by.x="sites",by.y = "sites",all.x=T)
+  #       cat("display alert status into the map using a simple indicator...\n")
+  #     }
+  #   } else {
+  #     if (input$Algorithmes_eval2=="Percentile" ) 
+  #     {
+  #       cat("display alert status into the map using percentile algorithm...\n")
+  #       #setkey for fast merging
+  #       setkey(sentinel_latlong,sites)
+  #       setkey(percentile_algorithm()$percentile_alerte_currentweek,sites)
+  #       sentinel_latlong=merge(sentinel_latlong,percentile_algorithm()$percentile_alerte_currentweek
+  #                              ,by.x="sites",by.y = "sites",all.x=T)
+  #       
+  #     }
+  #     if (input$Algorithmes_eval2=="MinSan" ) 
+  #     {
+  #       cat("display alert status into the map using MinSan algorithm...\n")
+  #       setkey(sentinel_latlong,sites);
+  #       setkey(minsan_algorithm()$minsan_alerte_currentweek,sites)
+  #       sentinel_latlong=merge(sentinel_latlong,
+  #                              minsan_algorithm()$minsan_alerte_currentweek
+  #                              ,by.x="sites",by.y = "sites",all.x=T)
+  #     }
+  #     if (input$Algorithmes_eval2=="Csum" ) 
+  #     {
+  #       cat("display alert status into the map using Csum algorithm...\n")
+  #       setkey(sentinel_latlong,sites);
+  #       setkey(csum_algorithm()$csum_alerte,sites)
+  #       sentinel_latlong=merge(sentinel_latlong,
+  #                              csum_algorithm()$csum_alerte_currentweek
+  #                              ,by.x="sites",by.y = "sites",all.x=T)
+  #     }
+  #     
+  #   }
+  #   #exclude Haute Terre Centrale (High_land) from the map
+  #   sentinel_latlong=sentinel_latlong[!(sites %in% High_land)]
+  #   #latest verification fo radius and alert status (handle NA's)
+  #   sentinel_latlong[is.na(alert_status)==T,alert_status:="No data"]
+  #   sentinel_latlong[is.na(myradius)==T,myradius:=5.0]
+  #   
+  #   #load the map
+  #   madagascar_layer=readRDS("madagascar.rds")
+  #   madagascar_map2=ggmap(madagascar_layer,base_layer = ggplot(data = sentinel_latlong,aes(x=Long,y=Lat)))
+  #   if ( length(unique(sentinel_latlong$alert_status))!=1) {
+  #     
+  #     madagascar_map2 = madagascar_map2 + geom_point(data = sentinel_latlong,
+  #                                                    alpha=0.8,
+  #                                                    aes(color=alert_status,
+  #                                                        size=myradius
+  #                                                    ),show.legend  = T)
+  #     madagascar_map2 = madagascar_map2 + scale_colour_manual(values=c("#f05249", "#808284", "#69c39a"))
+  #   } else {
+  #     madagascar_map2 = madagascar_map2 + geom_point(data = sentinel_latlong,
+  #                                                    alpha=0.8,
+  #                                                    aes(color=alert_status,
+  #                                                        size=myradius),
+  #                                                    color="blue")
+  #   }
+  #   
+  #   madagascar_map2 = madagascar_map2 + scale_size_continuous(range=range(sentinel_latlong$myradius))
+  #   return(madagascar_map2)  
+  #   
+  # },height = 640)
   #Leaflet or ggmap:
   mymapchoice = reactive({
     return(input$mapchoice)
