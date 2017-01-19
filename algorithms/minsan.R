@@ -1,3 +1,11 @@
+#handle week <10 cases:
+#@' input must be of class Date
+HandleWeek = function(p) {
+  MyIsoweek= isoweek(p)
+  MyIsoweek= ifelse(MyIsoweek<10,paste0("0",MyIsoweek),MyIsoweek)
+  x=paste0(year(p),"_",MyIsoweek)
+  return(x)
+}
 calculate_minsan=function(data=mydata,
                           slope_minsan=input$slope_minsan,
                           year_choice=year(Sys.Date()),
@@ -7,20 +15,23 @@ calculate_minsan=function(data=mydata,
                           minsan_consecutive_week=input$minsan_consecutive_week,
                           byvar="code") 
   {
-  
-  
+  #order date by site and handle NA in number of case
+  setorder(data,sites,-deb_sem)
+  data[is.na(occurence)==T,occurence:=0]
+  ##
   if ( as.numeric(week_choice)== 1 )
   {
     year_choice= as.numeric(year_choice)-1
   }
- 
   max_deb_sem= max(as.Date(data$deb_sem))
+  #
+  max_code= HandleWeek(max_deb_sem)
+  CurrentIsoweek =HandleWeek(Sys.Date())
+  PrevIsoweek=HandleWeek(Sys.Date()-7)
   
-  
-  max_code=paste0(year(max_deb_sem),"_",isoweek(max_deb_sem))
-  if (max_code==paste0(year(Sys.Date()),"_",isoweek(Sys.Date())) ) {
+  if (max_code==paste0(year(Sys.Date()),"_",CurrentIsoweek) ) {
     #if we are on the current week, update max_deb_sem
-    max_code_prev = paste0(year(Sys.Date()-7),"_",isoweek(Sys.Date()-7))
+    max_code_prev = paste0(year(Sys.Date()-7),"_",PrevIsoweek)
     max_deb_sem =as.Date(data[code==max_code_prev,get("deb_sem")][1],origin="1970-01-01")
   } 
   
@@ -29,9 +40,6 @@ calculate_minsan=function(data=mydata,
     cat('weeks following this slope parameter:',minsan_weekrange,'\n')
     cat('Are these weeks consecutive? :',minsan_consecutive_week,'\n')
     
-    
-    
-  
     cat('merging data for MinSan algorithm...')
       S0=data[as.Date(deb_sem,origin="1970-01-01")==max_deb_sem,list(code,sites,occurence)]
       S1=data[as.Date(deb_sem,origin="1970-01-01")==max_deb_sem-1*7,list(sites,occurence)]
@@ -41,7 +49,8 @@ calculate_minsan=function(data=mydata,
       setnames(S2,"occurence","occurence_2")
       minsan=merge(minsan,S2,by.x="sites",by.y="sites")
     cat('DONE\n')
-   
+    
+    
     # 04 consecutive weeks or 03:
     if ( as.numeric(minsan_weekrange) ==4 )
     {

@@ -841,9 +841,9 @@ server<-function(input, output,session) {
                            minsan_weekrange=input$minsan_weekrange,
                            minsan_consecutive_week=input$minsan_consecutive_week,byvar="code")$propsite_alerte_minsan
         
+        
       }
-      if ( input$Algorithmes_eval1 == 'Ind') 
-      { 
+      if ( input$Algorithmes_eval1 == 'Ind') { 
         X= tdrplus_fever_ind()$mydata 
       }
     } else {
@@ -879,8 +879,7 @@ server<-function(input, output,session) {
       }
     }
     #selection by facies:
-    if (input$Cluster_algo !="Total")
-    {
+    if (input$Cluster_algo !="Total") {
       cat("you choose:",input$Cluster_algo,"\n")
       setkeyv(X,input$Cluster_algo)
       X=X[get(input$Cluster_algo)==1,]
