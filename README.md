@@ -1,6 +1,9 @@
 # Sentinel
 A toolkit for visualization, early warning detection and prediction of disease outbreaks (Malaria, Diarrhea, etc.)
 
+# 28-02-2017:
+Real values were replaced by fake random data
+
 ## Getting started:
 * Open `sentinel.Rproj`
 * Run `app.R`
