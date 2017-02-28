@@ -1,35 +1,35 @@
-sites,Long,Lat,name,centre,fokontany
-abv,45.59663,-24.66896986,Ambovombe,CSB2 ANDALATANOSY ABV,Andalatanosy Atsimo
-abz,48.425,-17.8358899,Ambatondrazaka,CSBU AMBATONDRAZAKA ABZ,Ambohimasina
-ahh,47.98458,-14.87278991,Antsohihy,CSB2 URBAIN AHH,Antafiantsivakina
-ajb,47.8795,-18.40266989,Anjozorobe,CSB2 ANJOZOROBE AJB,Anjozorobe
-atb,47.04309,-19.87578989,Antsirabe,CSB2 AMBALAVATO ATB,Tomboarivo
-bel,44.54722,-19.69917989,Belo sur Tsiribihina,CSBU BELO TSIRIBIHINA,Soatsioky
-bhk,47.52579426,-18.90269788,Behoririka,CSB2 AMIT BEHORIRIKA,Behoririka
-boe,46.71696,-16.4676599,Ambato Boeny,CSBU AMBATO BOENY BOE,Ambato Boeny
-bos,47.2514,-20.52029988,Ambositra,CSB2 VATOVORY BOS,Vatovory
-cda,47.49888222,-18.90466439,Andohatapenaka,CDA ANDOHATAPENAKA,Andohatapenaka I
-die,49.29383,-12.28322993,Antsiranana I,CSB2 TANAMBAO DIE,Bazarikely
-dri,48.82799,-15.84181991,Mandritsara,CSB2 MANDRITSARA,Mandritsara Vaovao
-ejd,44.516,-24.35099987,Ejeda,SALFA EJEDA,Ejeda Sud
-far,47.83131,-22.82282987,Farafangana,CSB2 FARAFANGANA FAR,Ambahibe
-fns,47.09358,-21.44545988,Fianarantsoa,SALFA IVORY FNS,Ivory
-iho,46.09932,-22.38624987,Ihosy,CSB2 ANKILY IHO,Ankily
-mae,46.82948,-16.9453099,Maevatanana,CSB2 URBAIN MAE,Anosikely Avaratra
-mdv,44.27608,-20.28950988,Morondava,CSB2 MDV,Morondava Centre
-mia,45.45818,-19.52801989,Miandrivazo,CSBU MIANDRIVAZO MIA,Miandrivazo II
-mjr,47.53434,-18.89063989,Manjakaray,MANJAKARAY MJR,Manjakaray IIb
-mnj,48.34762,-21.23438988,Mananjary,CSBU MANANJARY,Masindrano
-mrb,43.74811,-21.70041988,Morombe,SALFA TANANDAVA MRB,Tanandava Station
-mrg,48.22965,-18.94855989,Moramanga,CSMI MRG,Moramanga Ville
-mrt,49.74058,-15.43706991,Maroantsetra,CSBU MAROANTSETRA MRT,Androkaroka
-mtn,44.02403,-18.05918989,Maintirano,CSBU MAINTIRANO MTN,Andranovoribe
-nsb,48.27481,-13.40485992,Nosy Be,CSBU NOSYBE NSB,Camp Vert
-sbv,50.15967,-14.25692991,Sambava,CSB2 SAMBAVA SBV,Sambava Centre
-tdd,46.04964,-18.76918989,Tsiroanomandidy,CSB2 URBAIN TDD,Name Unknown
-tgr,46.9948,-25.03053986,Tolagnaro,SALFA TGR,Bazaribe
-tlr,43.67482,-23.35310987,Toliary,CSB2 TANAMBAO TLR,Tanambao I
-toa,49.40831,-18.15370989,Toamasina,DU TANAMBAO I TOA,Tanambao I 31/21
-tsl,47.52331756,-18.90708058,Tsaralalana,CSB2 CSMI TSARALALANA,Antanimalalaka Analakely
-mhj,46.33004,-15.70655991,Mahajanga,CSB2 TSARARANO MHJ,Tsararano Ambony
-stm,49.85307,-16.9989999,Ambodifototra,CSBU SAINTE MARIE STM,Ambodifotatra
+"sites";"Long";"Lat";"name";"centre";"fokontany"
+"abv";47.67482;-24.03053986;"Ambovombe";"CSB2 ANDALATANOSY ABV";"Andalatanosy Atsimo"
+"abz";48.67482;-25.03053986;"Ambatondrazaka";"CSBU AMBATONDRAZAKA ABZ";"Ambohimasina"
+"ahh";49.67482;-20.03053986;"Antsohihy";"CSB2 URBAIN AHH";"Antafiantsivakina"
+"ajb";49.67482;-24.03053986;"Anjozorobe";"CSB2 ANJOZOROBE AJB";"Anjozorobe"
+"atb";46.67482;-20.03053986;"Antsirabe";"CSB2 AMBALAVATO ATB";"Tomboarivo"
+"bel";48.67482;-23.03053986;"Belo sur Tsiribihina";"CSBU BELO TSIRIBIHINA";"Soatsioky"
+"bhk";45.67482;-22.03053986;"Behoririka";"CSB2 AMIT BEHORIRIKA";"Behoririka"
+"boe";49.67482;-14.03053986;"Ambato Boeny";"CSBU AMBATO BOENY BOE";"Ambato Boeny"
+"bos";45.67482;-24.03053986;"Ambositra";"CSB2 VATOVORY BOS";"Vatovory"
+"cda";46.67482;-21.03053986;"Andohatapenaka";"CDA ANDOHATAPENAKA";"Andohatapenaka I"
+"die";43.67482;-22.03053986;"Antsiranana I";"CSB2 TANAMBAO DIE";"Bazarikely"
+"dri";48.67482;-18.03053986;"Mandritsara";"CSB2 MANDRITSARA";"Mandritsara Vaovao"
+"ejd";43.67482;-19.03053986;"Ejeda";"SALFA EJEDA";"Ejeda Sud"
+"far";45.67482;-14.03053986;"Farafangana";"CSB2 FARAFANGANA FAR";"Ambahibe"
+"fns";49.67482;-24.03053986;"Fianarantsoa";"SALFA IVORY FNS";"Ivory"
+"iho";44.67482;-14.03053986;"Ihosy";"CSB2 ANKILY IHO";"Ankily"
+"mae";43.67482;-23.03053986;"Maevatanana";"CSB2 URBAIN MAE";"Anosikely Avaratra"
+"mdv";44.67482;-21.03053986;"Morondava";"CSB2 MDV";"Morondava Centre"
+"mia";47.67482;-21.03053986;"Miandrivazo";"CSBU MIANDRIVAZO MIA";"Miandrivazo II"
+"mjr";48.67482;-20.03053986;"Manjakaray";"MANJAKARAY MJR";"Manjakaray IIb"
+"mnj";47.67482;-21.03053986;"Mananjary";"CSBU MANANJARY";"Masindrano"
+"mrb";45.67482;-14.03053986;"Morombe";"SALFA TANANDAVA MRB";"Tanandava Station"
+"mrg";49.67482;-21.03053986;"Moramanga";"CSMI MRG";"Moramanga Ville"
+"mrt";49.67482;-17.03053986;"Maroantsetra";"CSBU MAROANTSETRA MRT";"Androkaroka"
+"mtn";47.67482;-22.03053986;"Maintirano";"CSBU MAINTIRANO MTN";"Andranovoribe"
+"nsb";43.67482;-24.03053986;"Nosy Be";"CSBU NOSYBE NSB";"Camp Vert"
+"sbv";44.67482;-16.03053986;"Sambava";"CSB2 SAMBAVA SBV";"Sambava Centre"
+"tdd";49.67482;-22.03053986;"Tsiroanomandidy";"CSB2 URBAIN TDD";"Name Unknown"
+"tgr";43.67482;-13.03053986;"Tolagnaro";"SALFA TGR";"Bazaribe"
+"tlr";47.67482;-14.03053986;"Toliary";"CSB2 TANAMBAO TLR";"Tanambao I"
+"toa";46.67482;-25.03053986;"Toamasina";"DU TANAMBAO I TOA";"Tanambao I 31/21"
+"tsl";46.67482;-19.03053986;"Tsaralalana";"CSB2 CSMI TSARALALANA";"Antanimalalaka Analakely"
+"mhj";48.67482;-21.03053986;"Mahajanga";"CSB2 TSARARANO MHJ";"Tsararano Ambony"
+"stm";44.67482;-24.03053986;"Ambodifototra";"CSBU SAINTE MARIE STM";"Ambodifotatra"

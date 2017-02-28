@@ -246,10 +246,7 @@ calculate_percentile=function(data=mydata,
     }
     cat("DONE\n")
   }
- 
- 
-  
-  
+  write.table(data,"PaluConfAlert.csv",sep=",",row.names = F)
   return (list(percentile_alerte=percentile_alerte,
                percentile_alerte_currentweek=percentile_alerte_currentweek,
                propsite_alerte_percentile=propsite_alerte_percentile,
